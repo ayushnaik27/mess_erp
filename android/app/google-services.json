@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "932574768473",
+    "project_id": "messerp-26027",
+    "storage_bucket": "messerp-26027.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:932574768473:android:5f0b30ed7a26707879b048",
+        "android_client_info": {
+          "package_name": "com.example.mess_erp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4G3aS7ylfG764KhaXKifHA_cCK24xbxQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
