@@ -21,7 +21,7 @@ class _MessBillScreenState extends State<MessBillScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Mess Bill'),
+        title: const Text('Mess Bill'),
       ),
       body: Column(
         children: [
@@ -42,36 +42,39 @@ class _MessBillScreenState extends State<MessBillScreen> {
               );
             }).toList(),
           ),
-
           Container(
             height: 500,
             child: FutureBuilder<List<MessBill>>(
               // Add your logic to fetch mess bills here
               future: Provider.of<MessBillProvider>(context, listen: false)
-                  .fetchMessBillsForStudent(widget.studentId,selectedSemester),
+                  .fetchMessBillsForStudent(widget.studentId, selectedSemester),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No mess bills available.'));
+                  return const Center(child: Text('No mess bills available.'));
                 } else {
                   // Display mess bills
                   return ListView.builder(
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
-                      final monthNumber = snapshot.data![index].month!.split('_')[1];
+                      final monthNumber =
+                          snapshot.data![index].month!.split('_')[1];
                       return ListTile(
                         title: Text('Month: $monthNumber'),
-                        subtitle: Column(
+                        subtitle: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Total Diets: ${snapshot.data![index].totalDiets}'),
-                            Text('Total Extra: ${snapshot.data![index].totalExtra}'),
-                            Text('Fine: ${snapshot.data![index].fine}'),
+                            Text(
+                                'Total Diets: ${snapshot.data![index].totalDiets}  '),
+                            Text(
+                                'Total Extra: ${snapshot.data![index].totalExtra}  '),
+                            Text('Fine: ${snapshot.data![index].fine}  '),
                           ],
                         ),
+                        trailing: IconButton(onPressed: (){}, icon: Icon(Icons.arrow_forward_ios)),
                       );
                     },
                   );

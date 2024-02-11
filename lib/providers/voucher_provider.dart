@@ -204,6 +204,7 @@ class PaymentVoucherProvider with ChangeNotifier {
         .set({
       'voucherNumber': voucher.voucherNumber,
       'month': voucher.month,
+      'year': voucher.year,
       'vendorName': voucher.vendorName,
       'fromDate': voucher.fromDate,
       'toDate': voucher.toDate,

@@ -135,11 +135,9 @@ class ExtraItemsProvider with ChangeNotifier {
       String docId = DateFormat('dd-MM-yyyy').format(date);
 
       studentsBillCollection.doc(docId).set({
-        'date': {
-          'day': date.day,
-          'month': date.month,
-          'year': date.year,
-        },
+        'date': DateTime.now(),
+        'year': DateTime.now().year.toString(),
+        'month': DateTime.now().month.toString(),
         'items': FieldValue.arrayUnion([
           {
             'item': itemName,

@@ -46,6 +46,8 @@ class MonthlyReportProvider with ChangeNotifier {
 
     double totalMonthlyExpenditure = 0;
 
+    print(firstDayOfPreviousMonth.year.toString());
+
     QuerySnapshot<Map<String, dynamic>> voucherSnapshot =
         await FirebaseFirestore.instance
             .collection('paymentVouchers')

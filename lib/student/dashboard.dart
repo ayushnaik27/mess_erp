@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mess_erp/clerk/mess_bill_provider.dart';
+import 'package:mess_erp/helpers/mess_menu_helper.dart';
 import 'package:mess_erp/providers/user_provider.dart';
 import 'package:mess_erp/student/apply_leave_screen.dart';
 import 'package:mess_erp/student/mess_bill_screen.dart';
@@ -156,6 +157,11 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     }));
                   },
                   child: const Text('View Mess Bill')),
+              TextButton(
+                  onPressed: () {
+                    MessMenuHelper.viewMessMenu();
+                  },
+                  child: const Text('View Mess Menu')),
               SizedBox(
                 height: 500,
                 child: ListView.builder(

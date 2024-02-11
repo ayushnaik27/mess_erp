@@ -1,8 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:mess_erp/providers/user_provider.dart';
 import 'package:provider/provider.dart';
+
+import '../providers/user_provider.dart';
 
 class ApplyLeaveScreen extends StatefulWidget {
   static const routeName = '/applyLeave';
@@ -13,168 +14,136 @@ class ApplyLeaveScreen extends StatefulWidget {
 }
 
 class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
-  DateTime fromDate =
+  DateTime selectedFromDate =
       DateTime.now().add(const Duration(days: 1)); // Starting from tomorrow
-  String fromMeal = 'Breakfast';
-  DateTime toDate =
-      DateTime.now().add(const Duration(days: 2)); // Default to next day
-  String toMeal = 'Dinner';
+  String selectedFromMeal = '';
+  DateTime selectedToDate = DateTime.now().add(const Duration(days: 2));
 
-  Future<void> _selectFromDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: fromDate,
-      firstDate: DateTime.now().add(const Duration(days: 1)),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != fromDate) {
-      setState(() {
-        fromDate = picked;
-      });
-    }
-  }
+  String selectedToMeal = '';
+  List<String> fromMealOptions = ['Breakfast', 'Lunch', 'Dinner'];
+  List<String> toMealOptions = ['Breakfast', 'Lunch', 'Dinner'];
 
-  void _selectFromMeal() {
-    DateTime now = DateTime.now();
-    List<String> mealOptions = [];
-
-    if (fromDate.isBefore(DateTime.now().add(const Duration(days: 1)))) {
-      if (now.hour < 10) {
-        mealOptions = ['Breakfast', 'Lunch', 'Dinner'];
-      } else if (now.hour < 15) {
-        mealOptions = ['Lunch', 'Dinner'];
-      } else if (now.hour < 22) {
-        mealOptions = ['Dinner'];
+  void showFromMealOptions() {
+    List<String> options = [];
+    DateTime tommorrow = DateTime.now().add(const Duration(days: 1));
+    if (selectedFromDate.day == tommorrow.day) {
+      print('I am here');
+      int currentSystemTime = DateTime.now().hour;
+      if (currentSystemTime < 11) {
+        setState(() {
+          options = ['Breakfast', 'Lunch', 'Dinner'];
+          selectedFromMeal = options[0];
+          selectedToMeal = '';
+          selectedToDate = selectedFromDate;
+        });
+      } else if (currentSystemTime < 15) {
+        setState(() {
+          options = ['Lunch', 'Dinner'];
+          selectedFromMeal = options[0];
+          selectedToMeal = '';
+          selectedToDate = selectedFromDate.add(const Duration(days: 1));
+        });
+      } else if (currentSystemTime < 22) {
+        setState(() {
+          options = ['Dinner'];
+          selectedFromMeal = options[0];
+          selectedToMeal = '';
+          selectedToDate = selectedFromDate.add(const Duration(days: 1));
+        });
       } else {
         showDialog(
           context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: const Text('Invalid Selection'),
-              content: const Text(
-                  'You cannot turn the mess off from tomorrow. Please select some other date.'),
-              actions: <Widget>[
-                TextButton(
+          builder: (context) => AlertDialog(
+            title: const Text('Cannot apply for leave'),
+            content: const Text('You cannot apply for leave after 10pm'),
+            actions: [
+              TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: const Text('OK'),
-                ),
-              ],
-            );
-          },
-        );
-        return;
-      }
-    } else {
-      mealOptions = ['Breakfast', 'Lunch', 'Dinner'];
-    }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Select From Meal'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: mealOptions.map((meal) {
-              return ListTile(
-                title: Text(meal),
-                onTap: () {
-                  setState(() {
-                    fromMeal = meal;
-                  });
-                  Navigator.of(context).pop();
-                },
-              );
-            }).toList(),
+                  child: const Text('OK'))
+            ],
           ),
         );
-      },
-    );
-  }
-
-  void _selectToDate(BuildContext context) async {
-    DateTime currentDate = DateTime.now();
-    DateTime fromDate = this.fromDate;
-
-    // If the selected "From Meal" is breakfast, show dates starting from fd; else, show dates starting from fd + 1
-    if (fromMeal == 'Breakfast') {
-      fromDate = fromDate;
+      }
     } else {
-      fromDate = fromDate.add(const Duration(days: 1));
-    }
-
-    DateTime? toDate = await showDatePicker(
-      context: context,
-      initialDate: fromDate,
-      firstDate: fromDate,
-      lastDate: DateTime(currentDate.year + 1),
-    );
-
-    if (toDate != null) {
+      print('I am here 2');
       setState(() {
-        this.toDate = toDate;
+        options = ['Breakfast', 'Lunch', 'Dinner'];
+        selectedFromMeal = options[0];
+        selectedToMeal = '';
+        selectedToDate = selectedFromDate;
       });
     }
+
+    showAdaptiveDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text('Select Meal'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: options
+                    .map((e) => ListTile(
+                          title: Text(e),
+                          onTap: () {
+                            setState(() {
+                              selectedFromMeal = e;
+                            });
+                            Navigator.of(context).pop();
+                          },
+                        ))
+                    .toList(),
+              ),
+            ));
   }
 
-  void _selectToMeal() {
-    DateTime fromDate = this.fromDate;
-    DateTime toDate = this.toDate;
-
-    List<String> mealOptions = [
-      'Breakfast',
-      'Lunch',
-      'Dinner',
-    ];
-
-    // If the "From Date" is the same as the "To Date"
-    if (fromDate.isAtSameMomentAs(toDate)) {
+  void showToMealOptions() {
+    List<String> options = [];
+    if (selectedFromDate.day == selectedToDate.day) {
       setState(() {
-        toMeal = 'Dinner'; // Set "To Meal" to dinner
-        mealOptions = ['Dinner'];
+        options = ['Dinner'];
+        selectedToMeal = options[0];
+      });
+    } else if (selectedToDate.day == selectedFromDate.day + 1 ||
+        selectedToDate.month == selectedFromDate.month + 1 ||
+        selectedToDate.year == selectedFromDate.year + 1) {
+      print("I guuess i am here");
+      setState(() {
+        if (selectedFromMeal == 'Breakfast') {
+          options = ['Breakfast', 'Lunch', 'Dinner'];
+        } else if (selectedFromMeal == 'Lunch') {
+          options = ['Lunch', 'Dinner'];
+        } else {
+          options = ['Dinner'];
+        }
+        selectedToMeal = options[0];
+      });
+    } else {
+      setState(() {
+        options = ['Breakfast'];
+        selectedToMeal = options[0];
       });
     }
-    // If "To Date" is the day after "From Date"
-    else if (fromDate.add(const Duration(days: 1)).isAtSameMomentAs(toDate)) {
-      // Allow selecting any meal from "From Meal" to all meals
-      // For simplicity, let's assume meal options are stored in a List<String> called mealOptions
-      _showToMealOptions(mealOptions);
-    }
-    // For other cases
-    else {
-      setState(() {
-        toMeal = 'Breakfast'; // Set "To Meal" to breakfast
-      });
-    }
-  }
 
-// Method to show meal options and handle selection
-  void _showToMealOptions(List<String> mealOptions) async {
-    String? selectedToMeal = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Select To Meal'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: mealOptions.map((meal) {
-            return ListTile(
-              title: Text(meal),
-              onTap: () {
-                Navigator.of(context).pop(meal);
-              },
-            );
-          }).toList(),
-        ),
-      ),
-    );
-
-    if (selectedToMeal != null) {
-      setState(() {
-        toMeal = selectedToMeal;
-      });
-    }
+    showAdaptiveDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+              title: const Text('Select Meal'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: options
+                    .map((e) => ListTile(
+                          title: Text(e),
+                          onTap: () {
+                            setState(() {
+                              selectedToMeal = e;
+                            });
+                            Navigator.of(context).pop();
+                          },
+                        ))
+                    .toList(),
+              ),
+            ));
   }
 
   @override
@@ -190,44 +159,82 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
           children: [
             Row(
               children: [
+                const Text('From Date: '),
                 Expanded(
-                    child: Text(
-                        'From Date: ${DateFormat('dd-MM-yyyy').format(fromDate)}')),
+                  child:
+                      Text(DateFormat('dd-MM-yyyy').format(selectedFromDate)),
+                ),
+                IconButton(
+                    icon: const Icon(Icons.calendar_today),
+                    onPressed: () {
+                      showDatePicker(
+                        context: context,
+                        initialDate: selectedFromDate,
+                        firstDate: DateTime.now().add(const Duration(days: 1)),
+                        lastDate: DateTime.now().add(const Duration(days: 30)),
+                      ).then((value) {
+                        if (value != null) {
+                          setState(() {
+                            selectedFromDate = value;
+                            selectedFromMeal = '';
+                            selectedToMeal = '';
+                            selectedToDate = selectedFromDate;
+                          });
+                        }
+                      });
+                    }),
+              ],
+            ),
+            const Divider(),
+            Row(
+              children: [
+                const Text('From Meal: '),
+                Expanded(child: Text(selectedFromMeal)),
+                IconButton(
+                    onPressed: showFromMealOptions, icon: Icon(Icons.edit))
+              ],
+            ),
+            const Divider(),
+            Row(
+              children: [
+                const Text('To Date: '),
+                Expanded(
+                  child: Text(DateFormat('dd-MM-yyyy').format(selectedToDate)),
+                ),
                 IconButton(
                   icon: const Icon(Icons.calendar_today),
-                  onPressed: () => _selectFromDate(context),
+                  onPressed: () {
+                    DateTime firstDate = selectedFromMeal == 'Breakfast'
+                        ? selectedFromDate
+                        : selectedFromDate.add(const Duration(days: 1));
+                    showDatePicker(
+                      context: context,
+                      firstDate: firstDate,
+                      lastDate: DateTime.now().add(const Duration(days: 30)),
+                      initialDate: firstDate,
+                    ).then((value) {
+                      if (value != null) {
+                        setState(() {
+                          selectedToDate = value;
+                        });
+                      }
+                    });
+                  },
                 ),
               ],
             ),
+            const Divider(),
             Row(
               children: [
-                Expanded(child: Text('From Meal: $fromMeal')),
+                const Text('To Meal: '),
+                Expanded(child: Text(selectedToMeal)),
                 IconButton(
                   icon: const Icon(Icons.edit),
-                  onPressed: () => _selectFromMeal(),
+                  onPressed: showToMealOptions,
                 ),
               ],
             ),
-            Row(
-              children: [
-                Expanded(
-                    child: Text(
-                        'To Date: ${DateFormat('dd-MM-yyyy').format(toDate)}')),
-                IconButton(
-                  icon: const Icon(Icons.calendar_today),
-                  onPressed: () => _selectToDate(context),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(child: Text('To Meal: $toMeal')),
-                IconButton(
-                  icon: const Icon(Icons.edit),
-                  onPressed: () => _selectToMeal(),
-                ),
-              ],
-            ),
+            const Divider(),
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
@@ -266,13 +273,6 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
   }
 
   Future<bool> _submitLeaveRequest(String rollNumber) async {
-    // LeaveRequest leaveRequest = LeaveRequest(
-    //   fromDate: fromDate,
-    //   fromMeal: fromMeal,
-    //   toDate: toDate,
-    //   toMeal: toMeal,
-    // );
-
     QuerySnapshot<Map<String, dynamic>> leaveDetailSnapshot =
         await FirebaseFirestore.instance
             .collection('loginCredentials')
@@ -293,13 +293,13 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
         lastLeaveDetailSnapshot['day'],
       );
 
-      if (fromDate.isBefore(lastLeaveDate)) {
+      if (selectedFromDate.isBefore(lastLeaveDate)) {
         return false;
       }
     }
 
-    for (DateTime date = fromDate;
-        date.isBefore(toDate);
+    for (DateTime date = selectedFromDate;
+        date.isBefore(selectedToDate);
         date = date.add(const Duration(days: 1))) {
       final String docId = (leaveDetailSnapshot.docs.length + 1).toString();
 

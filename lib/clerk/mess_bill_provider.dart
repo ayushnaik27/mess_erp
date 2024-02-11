@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mess_erp/providers/extra_item_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -15,6 +16,7 @@ class MessBill {
   final num totalExtra;
   final num fine;
   final num totalAmount;
+  List<Map<String, dynamic>> extraList;
   String? month;
 
   MessBill({
@@ -23,6 +25,7 @@ class MessBill {
     required this.totalExtra,
     required this.fine,
     required this.totalAmount,
+    required this.extraList,
     this.month,
   });
 }
@@ -100,6 +103,7 @@ class MessBillProvider with ChangeNotifier {
           totalExtra: messBill['totalExtra'],
           fine: messBill['totalFine'],
           totalAmount: messBill['totalAmount'],
+          extraList: messBill['extraList'],
           month: messBill.id,
         ));
         print('I am her also');
@@ -112,8 +116,14 @@ class MessBillProvider with ChangeNotifier {
   Future<void> generateBill(double perDietCost) async {
     final int previousMonth =
         DateTime.now().month == 1 ? 12 : DateTime.now().month - 1;
+    final String previousMonthString = DateTime.now().month == 1
+        ? '12'
+        : (DateTime.now().month - 1).toString();
+    final int previousMonthYear = DateTime.now().month == 1
+        ? DateTime.now().year - 1
+        : DateTime.now().year;
     final yearMonth =
-        '${DateTime.now().year}_${previousMonth.toString().padLeft(2, '0')}';
+        '${previousMonthYear}_${previousMonth.toString().padLeft(2, '0')}';
 
     Map<int, int> monthDays = {
       1: 31,
@@ -184,6 +194,25 @@ class MessBillProvider with ChangeNotifier {
       final double totalAmount =
           totalDiets * perDietCost + totalExtra + totalFine;
 
+      QuerySnapshot<Map<String, dynamic>> extraListSnapshot =
+          await FirebaseFirestore.instance
+              .collection('loginCredentials')
+              .doc('roles')
+              .collection('student')
+              .doc(student.id)
+              .collection('bill')
+              .where('month', isEqualTo: previousMonthString)
+              .where('year', isEqualTo: previousMonthYear.toString())
+              .get();
+
+      final List<Map<String, dynamic>> extraList = [];
+
+      if (extraListSnapshot.docs.isNotEmpty) {
+        extraListSnapshot.docs.forEach((element) {
+          extraList.add(element.data());
+        });
+      }
+
       await FirebaseFirestore.instance
           .collection('loginCredentials')
           .doc('roles')
@@ -203,6 +232,7 @@ class MessBillProvider with ChangeNotifier {
         totalExtra: totalExtra,
         fine: totalFine,
         totalAmount: totalAmount,
+        extraList: extraList,
       ));
     });
 
