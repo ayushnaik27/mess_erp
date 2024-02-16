@@ -112,9 +112,9 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
         if (selectedFromMeal == 'Breakfast') {
           options = ['Breakfast', 'Lunch', 'Dinner'];
         } else if (selectedFromMeal == 'Lunch') {
-          options = ['Lunch', 'Dinner'];
+          options = ['Breakfast','Lunch', 'Dinner'];
         } else {
-          options = ['Dinner'];
+          options = ['Lunch','Dinner'];
         }
         selectedToMeal = options[0];
       });

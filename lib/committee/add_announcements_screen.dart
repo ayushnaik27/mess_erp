@@ -60,11 +60,19 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
               ElevatedButton(
                 onPressed: () {
                   if (_filePath == null) {
+                    Announcement newAnnouncement = Announcement(
+                      title: _titleController.text,
+                      description: _descriptionController.text,
+                    );
+                    AnnouncementServices().uploadAnnouncementWithoutFile(
+                        newAnnouncement);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('Please select a file'),
+                        content: Text('Announcement Added'),
                       ),
                     );
+                    Navigator.pop(
+                        context); // Return to the previous screen after adding announcement
                     return;
                   }
                   Announcement newAnnouncement = Announcement(

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:mess_erp/clerk/mess_bill_provider.dart';
 import 'package:mess_erp/helpers/mess_menu_helper.dart';
 import 'package:mess_erp/providers/user_provider.dart';
@@ -110,16 +111,36 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         itemBuilder: (context, index) {
                           return ListTile(
                             title: Text(announcements[index].title),
-                            subtitle: Text(announcements[index].description),
+                            subtitle: Column(
+                              children: [
+                                Text(announcements[index].description,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    DateFormat('dd/MM/yyyy').add_jm().format(
+                                        announcements[index]
+                                            .timestamp!
+                                            .toDate()),
+                                    style: const TextStyle(
+                                        fontSize: 10, color: Colors.grey),
+                                  ),
+                                ),
+                                const Divider()
+                              ],
+                            ),
                             onTap: () {
                               bool openBill = false;
                               if (announcements[index].title == 'Mess Bill') {
                                 openBill = true;
                               }
                               print(openBill);
-                              AnnouncementServices().openAnnouncement(
-                                  announcements[index].file!.path,
-                                  openBill: openBill);
+                              announcements[index].file == null
+                                  ? null
+                                  : AnnouncementServices().openAnnouncement(
+                                      announcements[index].file!.path,
+                                      openBill: openBill);
 
                               print(announcements[index].file!.path);
                             },

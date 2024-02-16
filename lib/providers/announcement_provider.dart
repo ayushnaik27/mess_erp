@@ -10,8 +10,13 @@ class Announcement {
   final String title;
   final String description;
   File? file;
+  Timestamp? timestamp;
 
-  Announcement({required this.title, required this.description, this.file});
+  Announcement(
+      {required this.title,
+      required this.description,
+      this.file,
+      this.timestamp});
 }
 
 class AnnouncementServices {
@@ -40,6 +45,20 @@ class AnnouncementServices {
     }
   }
 
+  Future<void> uploadAnnouncementWithoutFile(Announcement announcement) async {
+    try {
+      // Add announcement to firestore
+      await _annoucementCollectionReference.add({
+        'title': announcement.title,
+        'description': announcement.description,
+        'timestamp': FieldValue.serverTimestamp(),
+        'file': 'NoFile'
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
+
   Stream<List<Announcement>> getAnnouncements() {
     return _annoucementCollectionReference
         .orderBy('timestamp', descending: true)
@@ -47,9 +66,11 @@ class AnnouncementServices {
         .map((snapshot) {
       return snapshot.docs.map((doc) {
         return Announcement(
-            title: doc['title'],
-            description: doc['description'],
-            file: File(doc['file']));
+          title: doc['title'],
+          description: doc['description'],
+          file: doc['file']=='NoFile' ? null: File(doc['file']),
+          timestamp: doc['timestamp'],
+        );
       }).toList();
     });
   }
