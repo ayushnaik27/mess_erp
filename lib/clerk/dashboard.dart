@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mess_erp/clerk/all_tender_screen.dart';
+import 'package:mess_erp/clerk/open_tender_screen.dart';
+import 'package:mess_erp/committee/assigned_grievances_screen.dart';
 
 class ClerkDashboardScreen extends StatefulWidget {
   static const routeName = '/clerkDashboard';
@@ -16,59 +19,90 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
       appBar: AppBar(
         title: const Text('Clerk Dashboard'),
       ),
-      body: SafeArea(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed('/monthlyReportScreen');
-              },
-              child: const Text('Generate Monthly Report'),
-            ),
-            TextButton(
-              onPressed: () => showAdaptiveDialog(
-                context: context,
-                builder: (context) {
-                  return AddStudentDialog();
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/monthlyReportScreen');
                 },
+                child: const Text('Generate Monthly Report'),
               ),
-              child: const Text('Add Student'),
-            ),
-            TextButton(
-              onPressed: () => showAdaptiveDialog(
-                context: context,
-                builder: (context) {
-                  return ImposeFineDialog();
+              ElevatedButton(
+                onPressed: () => showAdaptiveDialog(
+                  context: context,
+                  builder: (context) {
+                    return AddStudentDialog();
+                  },
+                ),
+                child: const Text('Add Student'),
+              ),
+              ElevatedButton(
+                onPressed: () => showAdaptiveDialog(
+                  context: context,
+                  builder: (context) {
+                    return ImposeFineDialog();
+                  },
+                ),
+                child: const Text('Impose Fine on Student'),
+              ),
+              ElevatedButton(
+                onPressed: () => showAdaptiveDialog(
+                    context: context,
+                    builder: (context) {
+                      return AddManagerDialog();
+                    }),
+                child: const Text('Add Manager'),
+              ),
+              ElevatedButton(
+                onPressed: () => showAdaptiveDialog(
+                    context: context,
+                    builder: (context) {
+                      return AddMuneemDialog();
+                    }),
+                child: const Text('Add Muneem'),
+              ),
+              ElevatedButton(
+                onPressed: () => showAdaptiveDialog(
+                    context: context,
+                    builder: (context) {
+                      return AddCommitteeDialog();
+                    }),
+                child: const Text('Add Committee Member'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const AssignedGrievancesScreen(userType: 'clerk'),
+                      ));
                 },
+                child: const Text('View Assigned Grievances'),
               ),
-              child: const Text('Impose Fine on Student'),
-            ),
-            TextButton(
-              onPressed: () => showAdaptiveDialog(
-                  context: context,
-                  builder: (context) {
-                    return AddManagerDialog();
-                  }),
-              child: const Text('Add Manager'),
-            ),
-            TextButton(
-              onPressed: () => showAdaptiveDialog(
-                  context: context,
-                  builder: (context) {
-                    return AddMuneemDialog();
-                  }),
-              child: const Text('Add Muneem'),
-            ),
-            TextButton(
-              onPressed: () => showAdaptiveDialog(
-                  context: context,
-                  builder: (context) {
-                    return AddCommitteeDialog();
-                  }),
-              child: const Text('Add Committee Member'),
-            ),
-          ],
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => OpenTenderScreen()));
+                },
+                child: const Text('Open Tender'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => AllTendersScreen()));
+                },
+                child: const Text('View All Tenders'),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -103,11 +137,11 @@ class AddStudentDialog extends StatelessWidget {
         ],
       ),
       actions: [
-        TextButton(
+        ElevatedButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () => FirebaseFirestore.instance
               .collection('loginCredentials')
               .doc('roles')
@@ -156,11 +190,11 @@ class ImposeFineDialog extends StatelessWidget {
         ],
       ),
       actions: [
-        TextButton(
+        ElevatedButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () => FirebaseFirestore.instance
               .collection('loginCredentials')
               .doc('roles')
@@ -210,11 +244,11 @@ class AddManagerDialog extends StatelessWidget {
         ],
       ),
       actions: [
-        TextButton(
+        ElevatedButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () => FirebaseFirestore.instance
               .collection('loginCredentials')
               .doc('roles')
@@ -263,11 +297,11 @@ class AddCommitteeDialog extends StatelessWidget {
         ],
       ),
       actions: [
-        TextButton(
+        ElevatedButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () => FirebaseFirestore.instance
               .collection('loginCredentials')
               .doc('roles')
@@ -317,11 +351,11 @@ class AddMuneemDialog extends StatelessWidget {
         ],
       ),
       actions: [
-        TextButton(
+        ElevatedButton(
           onPressed: () => Navigator.pop(context),
           child: const Text('Cancel'),
         ),
-        TextButton(
+        ElevatedButton(
           onPressed: () => FirebaseFirestore.instance
               .collection('loginCredentials')
               .doc('roles')

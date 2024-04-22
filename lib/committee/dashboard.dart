@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mess_erp/committee/assigned_grievances_screen.dart';
 import 'package:mess_erp/committee/bill_screen.dart';
 import 'package:mess_erp/providers/announcement_provider.dart';
 
@@ -175,6 +176,20 @@ class _CommitteeDashboardScreenState extends State<CommitteeDashboardScreen> {
                   Navigator.of(context).pushNamed('/previousVouchers');
                 },
                 child: const Text('Previous Vouchers'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) {
+                    return const AssignedGrievancesScreen(userType: 'committee');
+                  }));
+                },
+                child: const Text('View Assigned Grievances'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/viewAllGrievances');
+                },
+                child: const Text('View All Grievances'),
               ),
             ],
           ),

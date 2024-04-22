@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mess_erp/providers/voucher_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/vendor_provider.dart';
+
 class PreviousVouchersScreen extends StatefulWidget {
   static const routeName = '/previousVouchers';
   const PreviousVouchersScreen({Key? key}) : super(key: key);
@@ -14,6 +16,17 @@ class _PreviousVouchersScreenState extends State<PreviousVouchersScreen> {
   String selectedMonth = '';
   String selectedVendor = '';
   bool clicked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchVendors();
+  }
+
+  void fetchVendors() async {
+    await Provider.of<VendorProvider>(context, listen: false)
+        .fetchAndSetVendors();
+  }
 
   List<String> months = [
     'January',
@@ -30,14 +43,10 @@ class _PreviousVouchersScreenState extends State<PreviousVouchersScreen> {
     'December'
   ];
 
-  List<String> vendors = [
-    'Green Fresh Veggie',
-    'Super Mart Rations',
-    'Milk & More Dairy',
-    'Fresh Fruit Haven',
-  ];
   @override
   Widget build(BuildContext context) {
+    final VendorProvider vendorProvider = Provider.of<VendorProvider>(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Previous Vouchers'),
@@ -130,7 +139,7 @@ class _PreviousVouchersScreenState extends State<PreviousVouchersScreen> {
                   value: '',
                   child: Text('Select Vendor'),
                 ),
-                ...vendors.map((vendor) {
+                ...vendorProvider.getVendorNames().map((vendor) {
                   return DropdownMenuItem<String>(
                     value: vendor,
                     child: Text(vendor),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mess_erp/committee/assigned_grievances_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/user_provider.dart';
@@ -66,6 +67,20 @@ class ManagerDashboardScreen extends StatelessWidget {
               },
               child: const Text('Previous Vouchers'),
             ),
+            ElevatedButton(
+              onPressed: () {
+                print('Hii');
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return const AssignedGrievancesScreen(userType: 'manager');
+                }));
+              },
+              child: const Text('View Assigned Grievances'),
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/viewAllGrievances');
+                },
+                child: const Text('View All Grievances'))
           ],
         ),
       ),

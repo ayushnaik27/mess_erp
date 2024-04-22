@@ -39,10 +39,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     });
   }
 
+  String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+
   final AnnouncementServices announcementService = AnnouncementServices();
   @override
   Widget build(BuildContext context) {
-    MyUser user = Provider.of<UserProvider>(context, listen: false).user;
+    MyUser user = Provider.of<UserProvider>(context).user;
+    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Student Dashboard'),
@@ -74,7 +77,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 child: FutureBuilder(
                   future: Future.delayed(const Duration(seconds: 1)),
                   builder: (context, snapshot) => Text(
-                    'Welcome ${user.name}',
+                    'Welcome ${capitalize(Provider.of<UserProvider>(context).user.name)}',
                     style: const TextStyle(
                       fontSize: 24.0,
                       fontWeight: FontWeight.bold,
@@ -105,6 +108,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     } else {
                       List<Announcement> announcements = snapshot.data ?? [];
 
+                      
+
                       // Display announcements
                       return ListView.builder(
                         itemCount: announcements.length,
@@ -113,9 +118,12 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                             title: Text(announcements[index].title),
                             subtitle: Column(
                               children: [
-                                Text(announcements[index].description,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2),
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(announcements[index].description,
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2),
+                                ),
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child: Text(
@@ -183,6 +191,18 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     MessMenuHelper.viewMessMenu();
                   },
                   child: const Text('View Mess Menu')),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/fileGrievance');
+                },
+                child: const Text('File Grievance'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/trackComplaints');
+                },
+                child: const Text('Track Complaints'),
+              ),
               SizedBox(
                 height: 500,
                 child: ListView.builder(

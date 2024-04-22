@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../providers/user_provider.dart';
 import '../student/dashboard.dart';
+import '../vendor/vendor_login_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -24,6 +25,13 @@ class _LoginScreenState extends State<LoginScreen> {
       appBar: AppBar(
         title: adminLogin ? const Text('Admin Login') : const Text('Login'),
         actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return VendorLoginScreen();
+                }));
+              },
+              child: const Text('Vendor Login')),
           adminLogin
               ? TextButton(
                   onPressed: () {
@@ -99,7 +107,7 @@ class _LoginScreenState extends State<LoginScreen> {
               ),
               const SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: () async{
+                onPressed: () async {
                   if (adminLogin) {
                     FirebaseFirestore.instance
                         .collection('loginCredentials')
@@ -141,7 +149,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               });
                         }
                       } else {
-                        print('value does not exist');
+                        print('value does not exist1');
                       }
                     });
                   }

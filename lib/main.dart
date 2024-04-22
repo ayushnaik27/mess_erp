@@ -6,9 +6,11 @@ import 'package:mess_erp/clerk/mess_bill_provider.dart';
 import 'package:mess_erp/clerk/monthly_report_provider.dart';
 import 'package:mess_erp/clerk/monthly_report_screen.dart';
 import 'package:mess_erp/committee/add_announcements_screen.dart';
+import 'package:mess_erp/committee/all_grievances_screen.dart';
 import 'package:mess_erp/committee/bill_screen.dart';
 import 'package:mess_erp/committee/dashboard.dart';
 import 'package:mess_erp/committee/extra_items_screen.dart';
+import 'package:mess_erp/committee/view_grievance_details_committee.dart';
 import 'package:mess_erp/firebase_options.dart';
 import 'package:mess_erp/manager/dashboard.dart';
 import 'package:mess_erp/manager/generate_voucher_screen.dart';
@@ -20,13 +22,18 @@ import 'package:mess_erp/muneem/dashboard.dart';
 import 'package:mess_erp/providers/bills_of_purchase_provider.dart';
 import 'package:mess_erp/providers/extra_item_provider.dart';
 import 'package:mess_erp/providers/stock_provider.dart';
+import 'package:mess_erp/providers/tender_provider.dart';
 import 'package:mess_erp/providers/user_provider.dart';
 import 'package:mess_erp/providers/vendor_provider.dart';
 import 'package:mess_erp/providers/voucher_provider.dart';
 import 'package:mess_erp/student/apply_leave_screen.dart';
 import 'package:mess_erp/student/dashboard.dart';
 import 'package:mess_erp/student/request_extra_items_screen.dart';
+import 'package:mess_erp/student/track_complaints_screen.dart';
 import 'package:provider/provider.dart';
+
+import 'providers/grievance_provider.dart';
+import 'student/file_grievance_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,7 +55,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PaymentVoucherProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
         ChangeNotifierProvider(create: (_) => MonthlyReportProvider()),
-        ChangeNotifierProvider(create: (_) => MessBillProvider())
+        ChangeNotifierProvider(create: (_) => MessBillProvider()),
+        ChangeNotifierProvider(create: (_) => GrievanceProvider()),
+        ChangeNotifierProvider(create: (_) => TenderProvider()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
@@ -65,7 +74,8 @@ class MyApp extends StatelessWidget {
               const ManagerDashboardScreen(),
           CommitteeDashboardScreen.routeName: (context) =>
               const CommitteeDashboardScreen(),
-          MuneemDashboardScreen.routeName: (context) => MuneemDashboardScreen(),
+          MuneemDashboardScreen.routeName: (context) =>
+              const MuneemDashboardScreen(),
           AddAnnouncementScreen.routeName: (context) => AddAnnouncementScreen(),
           RequestExtraItemsScreen.routeName: (context) =>
               const RequestExtraItemsScreen(),
@@ -78,10 +88,17 @@ class MyApp extends StatelessWidget {
               const PreviousVouchersScreen(),
           ApproveExtraItemsScreen.routeName: (context) =>
               ApproveExtraItemsScreen(),
-          ApplyLeaveScreen.routeName: (context) => ApplyLeaveScreen(),
-          MonthlyReportScreen.routeName: (context) => MonthlyReportScreen(),
+          ApplyLeaveScreen.routeName: (context) => const ApplyLeaveScreen(),
+          MonthlyReportScreen.routeName: (context) =>
+              const MonthlyReportScreen(),
+          FileGrievanceScreen.routeName: (context) => FileGrievanceScreen(),
+          TrackComplaintScreen.routeName: (context) =>
+              const TrackComplaintScreen(),
+          AllGrievancesScreen.routeName: (context) =>
+              const AllGrievancesScreen(),
+          
         },
-        home: LoginScreen(),
+        home: const LoginScreen(),
       ),
     );
   }

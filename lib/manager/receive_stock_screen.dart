@@ -25,6 +25,16 @@ class _ReceiveStockScreenState extends State<ReceiveStockScreen> {
   bool submitting = false;
 
   @override
+  void initState() {
+    super.initState();
+    fetchVendors();
+  }
+
+  void fetchVendors() async{
+    await Provider.of<VendorProvider>(context, listen: false).fetchAndSetVendors();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final vendorProvider = Provider.of<VendorProvider>(context);
     return Scaffold(

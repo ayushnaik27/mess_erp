@@ -16,13 +16,15 @@ class ExtraItemRequest {
   final String itemName;
   final int quantity;
   double amount;
+  DateTime timestamp;
 
   ExtraItemRequest(
       {required this.rollNumber,
       required this.itemName,
       required this.quantity,
       required this.id,
-      this.amount = 0});
+      this.amount = 0,
+      required this.timestamp});
 }
 
 class ExtraItemsProvider with ChangeNotifier {
@@ -95,6 +97,7 @@ class ExtraItemsProvider with ChangeNotifier {
       'itemName': itemName,
       'quantity': quantity,
       'amount': amount,
+      'timestamp': DateTime.now(),
     });
   }
 
@@ -110,6 +113,7 @@ class ExtraItemsProvider with ChangeNotifier {
           quantity: doc['quantity'],
           id: doc.id,
           amount: doc['amount'],
+          timestamp: doc['timestamp'].toDate(),
         );
       }).toList();
     });

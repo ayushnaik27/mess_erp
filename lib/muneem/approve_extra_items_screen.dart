@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/extra_item_provider.dart';
@@ -19,7 +20,7 @@ class ApproveExtraItemsScreen extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-
+          print(snapshot.data);
           List<ExtraItemRequest> requests = snapshot.data!;
 
           if (requests.isEmpty) {
@@ -32,12 +33,21 @@ class ApproveExtraItemsScreen extends StatelessWidget {
               final request = requests[index];
 
               return ListTile(
-                title: Text(request.itemName),
+                title: Text(
+                  request.itemName,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text('Quantity: ${request.quantity}'),
                     Text('Roll Number: ${request.rollNumber}'),
+                    Text(
+                        DateFormat('dd/MM/yyyy')
+                            .add_jm()
+                            .format(request.timestamp),
+                        style:
+                            const TextStyle(fontSize: 10, color: Colors.grey)),
                   ],
                 ),
                 trailing: ElevatedButton(
