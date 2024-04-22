@@ -72,7 +72,7 @@ class _AllTendersScreenState extends State<AllTendersScreen> {
                           // Add more relevant information as needed
                         ],
                       ),
-                      onTap: tender.openingDate.isAfter(DateTime.now())
+                      onTap: tender.openingDate.isBefore(DateTime.now())
                           ? () {
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {

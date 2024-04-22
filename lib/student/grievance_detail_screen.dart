@@ -152,7 +152,7 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
                 <String>['Updated By', 'Date', 'Action', 'Remarks'],
                 ...widget.grievance.history.reversed.map((entry) {
                   return <String>[
-                    entry['updatedBy'],
+                    capitalize(entry['updatedBy']),
                     DateFormat.yMMMMd()
                         .format(entry['date'].toDate())
                         .toString(),
@@ -173,6 +173,8 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
     doc.save().then((value) => File(tempDocumentPath).writeAsBytes(value!));
     return File(tempDocumentPath);
   }
+
+  String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
   void _sendReminderEmail(String receipentEmail, int x) async {
     // Implement remainder functionality
@@ -196,7 +198,7 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
         ..subject =
             'Reminder! No action on complaint ${widget.grievance.grievanceId} for last $x days'
         ..text =
-            'Dear MBH F \n\nThis is a gentle reminder sent by $studentName that no action has been taken by you on his complaint ${widget.grievance.grievanceId} for last $x days.\nPlease look into it on urgent basis.\n\nRegardsMess \nERP Notifications Team';
+            'Dear MBH F \n\nThis is a gentle reminder sent by ${capitalize(studentName)} that no action has been taken by you on his complaint ${widget.grievance.grievanceId} for last $x days.\nPlease look into it on urgent basis.\n\nRegardsMess \nERP Notifications Team';
 
       // final message2 = Message()
       //   ..from = Address(username)
@@ -215,7 +217,7 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
             'MBH F not taking any action on complaint ${widget.grievance.grievanceId} of $studentName for last $x days'
         ..html = '''
       <p>Dear Sir,</p>
-      <p>This is a gentle reminder sent by $studentName that his complaint no. ${widget.grievance.grievanceId} is pending with Hostel MBH F, and no action has been taken by the said hostel for the last $x days.</p>
+      <p>This is a gentle reminder sent by ${capitalize(studentName)} that his complaint no. ${widget.grievance.grievanceId} is pending with Hostel MBH F, and no action has been taken by the said hostel for the last $x days.</p>
       <p>Please look into it on an urgent basis.</p>
       <p>More details regarding the complaint are attached herewith.</p>
       <p>Regards,<br>Mess ERP Notifications Team</p>
@@ -396,7 +398,7 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
                                       .name; // Get the name of the student from the grievance object
                                   final newEntry = {
                                     'date': Timestamp.now(),
-                                    'updatedBy': studentName,
+                                    'updatedBy': capitalize(studentName),
                                     'action': 'Reminder Sent',
                                     'remarks':
                                         'Reminder sent to $receipentEmail'
