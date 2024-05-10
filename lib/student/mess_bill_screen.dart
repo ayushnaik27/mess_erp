@@ -1,7 +1,10 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../clerk/mess_bill_provider.dart';
+import 'mess_bill_details_screen.dart';
 
 class MessBillScreen extends StatefulWidget {
   static const routeName = '/messBill';
@@ -42,17 +45,19 @@ class _MessBillScreenState extends State<MessBillScreen> {
               );
             }).toList(),
           ),
-          Container(
+          SizedBox(
             height: 500,
             child: FutureBuilder<List<MessBill>>(
-              // Add your logic to fetch mess bills here
+              // Adding logic to fetch mess bills here
               future: Provider.of<MessBillProvider>(context, listen: false)
                   .fetchMessBillsForStudent(widget.studentId, selectedSemester),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
+                  return Center(
+                      child: Text(
+                          'Error: ${snapshot.error}${snapshot.stackTrace}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text('No mess bills available.'));
                 } else {
@@ -64,17 +69,33 @@ class _MessBillScreenState extends State<MessBillScreen> {
                           snapshot.data![index].month!.split('_')[1];
                       return ListTile(
                         title: Text('Month: $monthNumber'),
-                        subtitle: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                                'Total Diets: ${snapshot.data![index].totalDiets}  '),
-                            Text(
-                                'Total Extra: ${snapshot.data![index].totalExtra}  '),
-                            Text('Fine: ${snapshot.data![index].fine}  '),
-                          ],
+                        subtitle: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  'Total Diets: ${snapshot.data![index].totalDiets}  '),
+                              Text(
+                                  'Total Extra: ${snapshot.data![index].totalExtra}  '),
+                              Text('Fine: ${snapshot.data![index].fine}  '),
+                            ],
+                          ),
                         ),
-                        trailing: IconButton(onPressed: (){}, icon: Icon(Icons.arrow_forward_ios)),
+                        trailing: IconButton(
+                            onPressed: () {
+                              log('View mess bill details');
+                              log('${snapshot.data![index].extraList}');
+
+                              // Navigate to the mess bill details screen
+                              // You can pass the mess bill details to the next screen
+                              // using arguments
+                              Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => MessBillDetailsScreen(
+                                        messBill: snapshot.data![index],
+                                      )));
+                            },
+                            icon: Icon(Icons.arrow_forward_ios)),
                       );
                     },
                   );

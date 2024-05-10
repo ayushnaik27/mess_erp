@@ -254,4 +254,78 @@ class MonthlyReportProvider with ChangeNotifier {
   }
 
   Future<void> generateBill() async {}
+
+  Future<void> deleteOldBills() async {
+    QuerySnapshot<Map<String, dynamic>> studentSnapshot =
+        await FirebaseFirestore.instance
+            .collection('loginCredentials')
+            .doc('roles')
+            .collection('student')
+            .get();
+
+    await Future.forEach(studentSnapshot.docs, (student) async {
+      await FirebaseFirestore.instance
+          .collection('loginCredentials')
+          .doc('roles')
+          .collection('student')
+          .doc(student.id)
+          .collection('bill')
+          .get()
+          .then((value) {
+        value.docs.forEach((element) {
+          element.reference.delete();
+        });
+      });
+    });
+  }
+
+  Future<void> deleteLeaves() async {
+    QuerySnapshot<Map<String, dynamic>> studentSnapshot =
+        await FirebaseFirestore.instance
+            .collection('loginCredentials')
+            .doc('roles')
+            .collection('student')
+            .get();
+
+    await Future.forEach(studentSnapshot.docs, (student) async {
+      await FirebaseFirestore.instance
+          .collection('loginCredentials')
+          .doc('roles')
+          .collection('student')
+          .doc(student.id)
+          .collection('leaveDetails')
+          .get()
+          .then((value) {
+        value.docs.forEach((element) {
+          element.reference.delete();
+        });
+      });
+
+      await FirebaseFirestore.instance
+          .collection('loginCredentials')
+          .doc('roles')
+          .collection('student')
+          .doc(student.id)
+          .set({
+        'totalExtra': 0.0,
+      }, SetOptions(merge: true));
+    });
+
+    // Delete fine details
+
+    await Future.forEach(studentSnapshot.docs, (student) async {
+      await FirebaseFirestore.instance
+          .collection('loginCredentials')
+          .doc('roles')
+          .collection('student')
+          .doc(student.id)
+          .collection('fineDetails')
+          .get()
+          .then((value) {
+        value.docs.forEach((element) {
+          element.reference.delete();
+        });
+      });
+    });
+  }
 }

@@ -6,7 +6,8 @@ class TenderDetailsClerkScreen extends StatelessWidget {
   final List<Bid> bids;
 
   const TenderDetailsClerkScreen(
-      {super.key, required this.tender, required this.bids});
+      {Key? key, required this.tender, required this.bids})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +32,11 @@ class TenderDetailsClerkScreen extends StatelessWidget {
             // Get the lowest bid for the current item
             final lowestBid = itemBids.isNotEmpty ? itemBids.first : null;
 
+            // Find all bids with the lowest price
+            final lowestBids = itemBids.where((bid) =>
+                bid.itemPrices[item.itemName] ==
+                (lowestBid?.itemPrices[item.itemName]));
+
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -45,6 +51,7 @@ class TenderDetailsClerkScreen extends StatelessWidget {
                     DataColumn(label: Text('Price')),
                   ],
                   rows: itemBids
+                      .toList()
                       .asMap()
                       .entries
                       .map(
@@ -60,14 +67,21 @@ class TenderDetailsClerkScreen extends StatelessWidget {
                       .toList(),
                 ),
                 if (lowestBid != null)
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8.0),
-                    child: Text(
-                      'Lowest Bid: ${lowestBid.vendorName} (${lowestBid.itemPrices[item.itemName]} ${item.units})',
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 8.0),
+                      const Text(
+                        'Lowest Bid:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      for (final bid in lowestBids)
+                        Text(
+                          '${bid.vendorName} (${bid.itemPrices[item.itemName]} ${item.units})',
+                        ),
+                    ],
                   ),
-                
-                const SizedBox(height: 32.0)
+                const SizedBox(height: 32.0),
               ],
             );
           },

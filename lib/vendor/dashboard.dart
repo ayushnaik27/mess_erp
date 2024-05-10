@@ -30,49 +30,59 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
       appBar: AppBar(
         title: const Text('Vendor Dashboard'),
       ),
-      body: ListView.builder(
-        itemCount: activeTenders.length,
-        itemBuilder: (context, index) {
-          final tender = activeTenders[index];
-          return ListTile(
-            title: Text(
-              tender.title,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: activeTenders.isEmpty
+          ? const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
-                  'Deadline: ${DateFormat('dd-MM-yyyy').format(tender.deadline)}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Text(
-                  'Opening Date: ${DateFormat('dd-MM-yyyy').format(tender.openingDate)}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const Text(
-                  'Items Required:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: tender.tenderItems.map((item) {
-                    return Text(
-                      '- ${item.itemName}: ${item.quantity} ${item.units}',
-                    );
-                  }).toList(),
-                ),
+                Text('No active tenders available.'),
+                Text('Please check back later.'),
               ],
+            ))
+          : ListView.builder(
+              itemCount: activeTenders.length,
+              itemBuilder: (context, index) {
+                final tender = activeTenders[index];
+                return ListTile(
+                  title: Text(
+                    tender.title,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Deadline: ${DateFormat('dd-MM-yyyy').format(tender.deadline)}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        'Opening Date: ${DateFormat('dd-MM-yyyy').format(tender.openingDate)}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      const Text(
+                        'Items Required:',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: tender.tenderItems.map((item) {
+                          return Text(
+                            '- ${item.itemName}: ${item.quantity} ${item.units}',
+                          );
+                        }).toList(),
+                      ),
+                    ],
+                  ),
+                  onTap: () {
+                    // Navigate to the details screen for the selected tender
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) {
+                      return TenderDetailsScreen(tender: tender);
+                    }));
+                  },
+                );
+              },
             ),
-            onTap: () {
-              // Navigate to the details screen for the selected tender
-              Navigator.push(context, MaterialPageRoute(builder: (context) {
-                return TenderDetailsScreen(tender: tender);
-              }));
-            },
-          );
-        },
-      ),
     );
   }
 }

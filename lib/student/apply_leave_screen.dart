@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -112,9 +114,9 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
         if (selectedFromMeal == 'Breakfast') {
           options = ['Breakfast', 'Lunch', 'Dinner'];
         } else if (selectedFromMeal == 'Lunch') {
-          options = ['Breakfast','Lunch', 'Dinner'];
+          options = ['Breakfast', 'Lunch', 'Dinner'];
         } else {
-          options = ['Lunch','Dinner'];
+          options = ['Lunch', 'Dinner'];
         }
         selectedToMeal = options[0];
       });
@@ -170,7 +172,8 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                       showDatePicker(
                         context: context,
                         initialDate: selectedFromDate,
-                        firstDate: DateTime.now().add(const Duration(days: 1)),
+                        firstDate:
+                            DateTime.now().subtract(const Duration(days: 5)),
                         lastDate: DateTime.now().add(const Duration(days: 30)),
                       ).then((value) {
                         if (value != null) {
@@ -299,9 +302,39 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
     }
 
     for (DateTime date = selectedFromDate;
-        date.isBefore(selectedToDate);
+        date.isBefore(selectedToDate.add(const Duration(days: 1)));
         date = date.add(const Duration(days: 1))) {
+      int i = 0;
+      final String year = date.year.toString();
+      final String month = date.month.toString();
+      final String day = date.day.toString();
       final String docId = (leaveDetailSnapshot.docs.length + 1).toString();
+
+      List<String> onLeaveMeals = date == selectedFromDate
+          ? fromMealOptions.sublist(fromMealOptions.indexOf(selectedFromMeal))
+          : date == selectedToDate
+              ? toMealOptions.sublist(
+                  0, toMealOptions.indexOf(selectedToMeal) + 1)
+              : toMealOptions;
+      log('Date: $date');
+      log('On Leave Meals: $onLeaveMeals');
+
+      String leaveDate = DateFormat('dd-MM-yyyy').format(date);
+
+      await FirebaseFirestore.instance
+          .collection('loginCredentials')
+          .doc('roles')
+          .collection('student')
+          .doc(rollNumber)
+          .collection('newLeaveDetails')
+          .doc(leaveDate)
+          .set({
+        'date': leaveDate,
+        'onLeaveMeals': onLeaveMeals,
+        'timestamp': date,
+        'fromDate': DateFormat('dd-MM-yyyy').format(selectedFromDate),
+        'toDate': DateFormat('dd-MM-yyyy').format(selectedToDate),
+      }, SetOptions(merge: true));
 
       await FirebaseFirestore.instance
           .collection('loginCredentials')
@@ -319,12 +352,12 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
       }, SetOptions(merge: true));
 
       // Show success message or navigate to another screen
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Leave request submitted successfully!'),
-        ),
-      );
     }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Leave request submitted successfully!'),
+      ),
+    );
     return true;
   }
 }

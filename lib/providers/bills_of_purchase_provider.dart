@@ -32,6 +32,10 @@ class BillsOfPurchaseProvider extends ChangeNotifier {
     OpenFilex.open(tempDocumentPath);
   }
 
+  Map<String, dynamic> getBillByNumber(String billNumber) {
+    return _bills.firstWhere((bill) => bill['billNumber'] == billNumber);
+  }
+
   Future<List<Map<String, dynamic>>> fetchBills() async {
     try {
       final QuerySnapshot<Map<String, dynamic>> snapshot =
@@ -60,25 +64,51 @@ class BillsOfPurchaseProvider extends ChangeNotifier {
     } catch (e) {
       return false;
     }
+  }
 
-    // final billData = await FirebaseFirestore.instance
-    //     .collection('billsOfPurchase')
-    //     .doc(billNumber)
-    //     .get();
-    // print(billData.data());
-    // final receivedItems = billData.data()!['receivedItems'] as List<dynamic>;
-    // print(receivedItems);
-    // receivedItems.forEach((element) {
-    //   print(element['itemName']);
-    //   Provider.of<StockProvider>(context, listen: false).addStock(
-    //     itemName: element['itemName'],
-    //     transactionDate: DateTime.now(),
-    //     vendor: billData.data()!['vendorName'],
-    //     receivedQuantity: element['quantityReceived'],
-    //     issuedQuantity: 0,
-    //     balance: element['quantityReceived'] * element['ratePerUnit'],
-    //   );
-    // });
+  Future<void> rejectBill(String billNumber, String remarks) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('billsOfPurchase')
+          .doc(billNumber)
+          .update({'approvalStatus': 'rejected', 'remarks': remarks});
+      await fetchBills();
+    } catch (e) {
+      print('Error rejecting bill: $e');
+    }
+  }
+
+  Future<void> updateBill({
+    required String billNumber,
+    required String vendorName,
+    required DateTime billDate,
+    required String billImagePath,
+    required double billAmount,
+    required String approvalStatus,
+    required String remarks,
+    required List<ItemEntry> receivedItems,
+  }) async {
+    try {
+      await _billsCollection.doc(billNumber).update({
+        'vendorName': vendorName,
+        'billNumber': billNumber,
+        'billDate': billDate,
+        'billImagePath': billImagePath,
+        'billAmount': billAmount,
+        'approvalStatus': approvalStatus,
+        'remarks': remarks,
+        'receivedItems': receivedItems
+            .map((item) => {
+                  'itemName': item.itemName,
+                  'ratePerUnit': item.ratePerUnit,
+                  'quantityReceived': item.quantityReceived,
+                })
+            .toList(),
+      });
+      await fetchBills(); // Refresh the list after updating a bill
+    } catch (e) {
+      print('Error updating bill: $e');
+    }
   }
 
   Future<void> addBill({

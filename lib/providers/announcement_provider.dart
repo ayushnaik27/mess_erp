@@ -95,7 +95,7 @@ class AnnouncementServices {
     final bytes = response.bodyBytes;
 
     final tempDir = await getTemporaryDirectory();
-    final tempDocumentPath = '${tempDir.path}/announcement.pdf';
+    final tempDocumentPath = '${tempDir.path}/${openBill ? '${DateTime.now().month.toString()}_Mess_Bill' : 'announcement.pdf'}';
 
     await File(tempDocumentPath).writeAsBytes(bytes);
     OpenFilex.open(tempDocumentPath,

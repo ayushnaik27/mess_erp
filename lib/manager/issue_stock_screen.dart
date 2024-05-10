@@ -79,10 +79,10 @@ class _IssueStockScreenState extends State<IssueStockScreen> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 // Perform the stock issuing logic here
                 final double amount = items[selectedItem]! * quantityToIssue;
-                Provider.of<StockProvider>(context, listen: false)
+                await Provider.of<StockProvider>(context, listen: false)
                     .issueStock(selectedItem, quantityToIssue, amount);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(

@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mess_erp/clerk/all_tender_screen.dart';
 import 'package:mess_erp/clerk/open_tender_screen.dart';
 import 'package:mess_erp/committee/assigned_grievances_screen.dart';
+import 'package:mess_erp/providers/hash_helper.dart';
 
 class ClerkDashboardScreen extends StatefulWidget {
   static const routeName = '/clerkDashboard';
@@ -142,19 +143,22 @@ class AddStudentDialog extends StatelessWidget {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () => FirebaseFirestore.instance
-              .collection('loginCredentials')
-              .doc('roles')
-              .collection('student')
-              .doc(rollNumberController.text)
-              .set({
-                'name': nameController.text,
-                'rollNumber': rollNumberController.text,
-                'role': 'student',
-                'password': '12345678'
-              })
-              .then((value) => Navigator.pop(context))
-              .catchError((error) => print('Failed to add student: $error')),
+          onPressed: () {
+            String password = HashHelper.encode('12345678');
+            FirebaseFirestore.instance
+                .collection('loginCredentials')
+                .doc('roles')
+                .collection('student')
+                .doc(rollNumberController.text)
+                .set({
+                  'name': nameController.text,
+                  'rollNumber': rollNumberController.text,
+                  'role': 'student',
+                  'password': password
+                })
+                .then((value) => Navigator.pop(context))
+                .catchError((error) => print('Failed to add student: $error'));
+          },
           child: const Text('Add'),
         ),
       ],
@@ -249,19 +253,22 @@ class AddManagerDialog extends StatelessWidget {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () => FirebaseFirestore.instance
-              .collection('loginCredentials')
-              .doc('roles')
-              .collection('manager')
-              .doc(emailController.text)
-              .set({
-                'name': nameController.text,
-                'email': emailController.text,
-                'role': 'manager',
-                'password': '12345678'
-              })
-              .then((value) => Navigator.pop(context))
-              .catchError((error) => print('Failed to add manager: $error')),
+          onPressed: () {
+            String password = HashHelper.encode('12345678');
+            FirebaseFirestore.instance
+                .collection('loginCredentials')
+                .doc('roles')
+                .collection('manager')
+                .doc(emailController.text)
+                .set({
+                  'name': nameController.text,
+                  'email': emailController.text,
+                  'role': 'manager',
+                  'password': password
+                })
+                .then((value) => Navigator.pop(context))
+                .catchError((error) => print('Failed to add manager: $error'));
+          },
           child: const Text('Add'),
         ),
       ],
@@ -302,20 +309,23 @@ class AddCommitteeDialog extends StatelessWidget {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () => FirebaseFirestore.instance
-              .collection('loginCredentials')
-              .doc('roles')
-              .collection('committee')
-              .doc(emailController.text)
-              .set({
-                'name': nameController.text,
-                'email': emailController.text,
-                'role': 'committee',
-                'password': '12345678'
-              })
-              .then((value) => Navigator.pop(context))
-              .catchError(
-                  (error) => print('Failed to add committee member: $error')),
+          onPressed: () {
+            String password = HashHelper.encode('12345678');
+            FirebaseFirestore.instance
+                .collection('loginCredentials')
+                .doc('roles')
+                .collection('committee')
+                .doc(emailController.text)
+                .set({
+                  'name': nameController.text,
+                  'email': emailController.text,
+                  'role': 'committee',
+                  'password': password
+                })
+                .then((value) => Navigator.pop(context))
+                .catchError(
+                    (error) => print('Failed to add committee member: $error'));
+          },
           child: const Text('Add'),
         ),
       ],
@@ -356,19 +366,22 @@ class AddMuneemDialog extends StatelessWidget {
           child: const Text('Cancel'),
         ),
         ElevatedButton(
-          onPressed: () => FirebaseFirestore.instance
-              .collection('loginCredentials')
-              .doc('roles')
-              .collection('muneem')
-              .doc(emailController.text)
-              .set({
-                'name': nameController.text,
-                'email': emailController.text,
-                'role': 'muneem',
-                'password': '12345678'
-              })
-              .then((value) => Navigator.pop(context))
-              .catchError((error) => print('Failed to add muneem: $error')),
+          onPressed: () {
+            String password = HashHelper.encode('12345678');
+            FirebaseFirestore.instance
+                .collection('loginCredentials')
+                .doc('roles')
+                .collection('muneem')
+                .doc(emailController.text)
+                .set({
+                  'name': nameController.text,
+                  'email': emailController.text,
+                  'role': 'muneem',
+                  'password': password
+                })
+                .then((value) => Navigator.pop(context))
+                .catchError((error) => print('Failed to add muneem: $error'));
+          },
           child: const Text('Add'),
         ),
       ],

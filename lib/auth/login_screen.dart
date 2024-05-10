@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:mess_erp/providers/hash_helper.dart';
 import 'package:mess_erp/providers/vendor_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -119,7 +120,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (value.exists) {
                         print('value exists ${value.data()}');
                         if (value.data()!['password'] ==
-                            passwordController.text) {
+                            HashHelper.encode(passwordController.text)) {
                           print('password is correct');
                           Provider.of<UserProvider>(context, listen: false)
                               .fetchUserDetails(usernameController.text,
@@ -165,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       if (value.exists) {
                         print('value exists ${value.data()}');
                         if (value.data()!['password'] ==
-                            passwordController.text) {
+                            HashHelper.encode(passwordController.text)) {
                           print('password is correct');
                           Provider.of<UserProvider>(context, listen: false)
                               .fetchUserDetails(usernameController.text,

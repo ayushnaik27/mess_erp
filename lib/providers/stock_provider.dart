@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 
@@ -85,7 +87,7 @@ class StockProvider extends ChangeNotifier {
           await _stockCollection
               .orderBy('transactionDate', descending: false)
               .get() as QuerySnapshot<Map<String, dynamic>>;
-      return snapshot.docs.last['balance'];
+      return double.parse(snapshot.docs.last['balance'].toString());
     } catch (e) {
       print('Error fetching stock: $e');
       return 0;
@@ -94,6 +96,7 @@ class StockProvider extends ChangeNotifier {
 
   Future<void> issueStock(
       String itemName, int quantityToIssue, double amount) async {
+        log('Issuing stock');
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await _stockCollection
           .orderBy('transactionDate', descending: false)
@@ -103,10 +106,11 @@ class StockProvider extends ChangeNotifier {
         // Document with the specified itemName exists
         print('Document exists!');
         // You can access the document data using snapshot.docs[0].data() or iterate through them
-        final double previousBalance = snapshot.docs.last['balance'];
+        final double previousBalance = double.parse(snapshot.docs.last['balance'].toString());
 
         int previousQuantity = snapshot.docs.lastWhere((element) =>
-            element['itemName'] == itemName)['receivedQuantity'] as int;
+            element['itemName'] == itemName)['quantity'] as int;
+        log('Previous quantity: $previousQuantity');
         final DateTime transactionDate = DateTime.now();
         print('Previous balance: $previousBalance');
         await _stockCollection.doc().set({
@@ -120,6 +124,7 @@ class StockProvider extends ChangeNotifier {
             'year': transactionDate.year,
           },
           'quantity': previousQuantity - quantityToIssue,
+          'receivedQuantity': 0,
         });
       } else {
         // Document does not exist

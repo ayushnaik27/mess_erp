@@ -62,7 +62,12 @@ class _RequestExtraItemsScreenState extends State<RequestExtraItemsScreen> {
                           .map((ExtraItem item) {
                         return DropdownMenuItem(
                           value: item.name,
-                          child: Text(item.name),
+                          child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start
+                            ,children: [
+                            Text(item.name),
+                            Text('Price:  ₹${item.price}',style: TextStyle(fontSize: 10),),
+                          ]),
                         );
                       }).toList(),
 
@@ -90,11 +95,6 @@ class _RequestExtraItemsScreenState extends State<RequestExtraItemsScreen> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: () {
-                  // TODO: Implement logic to submit the request
-                  print(Provider.of<UserProvider>(context, listen: false)
-                      .user
-                      .username);
-                  print(rollNumber);
                   print('Selected Item: $selectedItem, Quantity: $quantity');
                   if (selectedItem.name.isEmpty || quantity == 0) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

@@ -151,8 +151,15 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                                       ),
                                       ElevatedButton(
                                         onPressed: () {
-                                          // Implement the reject logic here
-                                          // You might want to update the bill status in Firestore
+                                          // Call a function to update the approval status in Firestore
+                                          Provider.of<BillsOfPurchaseProvider>(
+                                                  context,
+                                                  listen: false)
+                                              .rejectBill(
+                                            widget.billDetails['billNumber'],
+                                            remarksController.text,
+                                          );
+                                          Navigator.of(context).pop();
                                         },
                                         child: const Text('Reject'),
                                       ),

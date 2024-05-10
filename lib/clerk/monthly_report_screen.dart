@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:mess_erp/clerk/mess_bill_provider.dart';
 import 'package:mess_erp/clerk/monthly_report_provider.dart';
 import 'package:provider/provider.dart';
@@ -381,6 +382,8 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
                           });
 
                           generateBillPressed();
+                          deleteLeaves();
+                          deleteOldBills();
 
                           setState(() {
                             generating = false;
@@ -394,6 +397,16 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
         ),
       ),
     );
+  }
+
+  void deleteLeaves() async {
+    await Provider.of<MonthlyReportProvider>(context, listen: false)
+        .deleteLeaves();
+  }
+
+  void deleteOldBills() async {
+    await Provider.of<MonthlyReportProvider>(context, listen: false)
+        .deleteOldBills();
   }
 
   void generateBillPressed() async {

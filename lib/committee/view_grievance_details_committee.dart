@@ -11,7 +11,6 @@ import '../providers/grievance_provider.dart';
 import '../student/grievance_detail_screen.dart';
 
 class GrievanceDetailsForCommitteeScreen extends StatefulWidget {
-  
   final Grievance grievance;
   final String userType;
 
@@ -175,16 +174,25 @@ class _GrievanceDetailsForCommitteeScreenState
             ),
             ElevatedButton(
               onPressed: () {
-                Provider.of<GrievanceProvider>(context, listen: false)
-                    .resolveGrievanceWithRemarks(
-                        widget.grievance.grievanceId, remarks, widget.userType);
-                // Implement resolve action here
-                // Update grievance status to resolved
-                // Save remarks and other details to history
+                if (remarks.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter remarks'),
+                    ),
+                  );
+                  return;
+                } else {
+                  Provider.of<GrievanceProvider>(context, listen: false)
+                      .resolveGrievanceWithRemarks(widget.grievance.grievanceId,
+                          remarks, widget.userType);
+                  // Implement resolve action here
+                  // Update grievance status to resolved
+                  // Save remarks and other details to history
 
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                }
               },
               child: const Text('Resolve'),
             ),
@@ -196,6 +204,7 @@ class _GrievanceDetailsForCommitteeScreenState
 
   // Implement similar methods for Forward and Mark in Process actions
   void _showForwardDialog() {
+    print('User Type: ${widget.userType}');
     // Implement forward dialog
     String? selectedForwardTo = widget.userType == 'manager'
         ? 'Clerk'
@@ -226,22 +235,32 @@ class _GrievanceDetailsForCommitteeScreenState
                   width: 150,
                   child: DropdownButtonFormField<String>(
                     isExpanded: true,
-                    value: selectedForwardTo,
+                    value: '',
                     onChanged: (newValue) {
                       setState(() {
                         selectedForwardTo = newValue!;
                       });
                     },
                     items: [
+                      const DropdownMenuItem(
+                        value: '',
+                        child: Text('Select User'),
+                      ),
                       if (widget.userType != 'manager')
                         const DropdownMenuItem(
-                            value: 'Manager', child: Text('Manager')),
+                          value: 'Manager',
+                          child: Text('Manager'),
+                        ),
                       if (widget.userType != 'clerk')
                         const DropdownMenuItem(
-                            value: 'Clerk', child: Text('Clerk')),
+                          value: 'Clerk',
+                          child: Text('Clerk'),
+                        ),
                       if (widget.userType != 'committee')
                         const DropdownMenuItem(
-                            value: 'Committee', child: Text('Committee')),
+                          value: 'Committee',
+                          child: Text('Committee'),
+                        ),
                     ],
                     decoration: const InputDecoration(
                       labelText: 'Forward To',
@@ -260,13 +279,31 @@ class _GrievanceDetailsForCommitteeScreenState
             ),
             ElevatedButton(
               onPressed: () {
-                // Forward grievance logic goes here
-                Provider.of<GrievanceProvider>(context, listen: false)
-                    .forwardGrievanceWithRemarks(widget.grievance.grievanceId,
-                        remarks, selectedForwardTo!, widget.userType);
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                if (selectedForwardTo == '') {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text(
+                          'Please select a user to forward the grievance to'),
+                    ),
+                  );
+                  return;
+                }
+                if (remarks.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter remarks'),
+                    ),
+                  );
+                  return;
+                } else {
+                  // Forward grievance logic goes here
+                  Provider.of<GrievanceProvider>(context, listen: false)
+                      .forwardGrievanceWithRemarks(widget.grievance.grievanceId,
+                          remarks, selectedForwardTo!, widget.userType);
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                }
               },
               child: const Text('Forward'),
             ),
@@ -300,13 +337,24 @@ class _GrievanceDetailsForCommitteeScreenState
             ),
             ElevatedButton(
               onPressed: () async {
-                // Mark in process logic goes here
-                await Provider.of<GrievanceProvider>(context, listen: false)
-                    .markInProcessGrievanceWithRemarks(
-                        widget.grievance.grievanceId, remarks, widget.userType);
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
+                if (remarks.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Please enter remarks'),
+                    ),
+                  );
+                  return;
+                } else {
+                  // Mark in process logic goes here
+                  await Provider.of<GrievanceProvider>(context, listen: false)
+                      .markInProcessGrievanceWithRemarks(
+                          widget.grievance.grievanceId,
+                          remarks,
+                          widget.userType);
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                }
               },
               child: const Text('Mark in Process'),
             ),

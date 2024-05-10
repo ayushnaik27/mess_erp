@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:mess_erp/muneem/netx_three_meals_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/extra_item_provider.dart';
 import '../providers/user_provider.dart';
+import 'show_qr_screen.dart';
 
 class MuneemDashboardScreen extends StatelessWidget {
   static const routeName = '/muneemDashboard';
@@ -58,6 +60,21 @@ class MuneemDashboardScreen extends StatelessWidget {
               },
               child: const Text('Impose Extra Amount'),
             ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return ShowQRScreen();
+                }));
+              },
+              child: const Text('Show QR'),
+            ),
+            ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => NextThreeMealsScreen()));
+                },
+                child: const Text('Next Three Meals'))
           ],
         ),
       ),

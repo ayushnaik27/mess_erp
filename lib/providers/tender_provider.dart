@@ -174,7 +174,7 @@ class TenderProvider extends ChangeNotifier {
   Future<void> fetchAndSetActiveTenders() async {
     final snapshot = await FirebaseFirestore.instance
         .collection('tenders')
-        .where('deadline', isGreaterThan: DateTime.now())
+        .where('deadline', isGreaterThanOrEqualTo: DateTime.now())
         .get();
     _activeTenders = snapshot.docs.map((doc) {
       final data = doc.data();

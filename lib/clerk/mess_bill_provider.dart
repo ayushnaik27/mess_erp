@@ -103,10 +103,12 @@ class MessBillProvider with ChangeNotifier {
           totalExtra: messBill['totalExtra'],
           fine: messBill['totalFine'],
           totalAmount: messBill['totalAmount'],
-          extraList: messBill['extraList'],
+          extraList: (messBill['extraList'] as List<dynamic>)
+              .map((item) => item as Map<String, dynamic>)
+              .toList(),
           month: messBill.id,
         ));
-        print('I am her also');
+        print('I am here also');
       }
     });
 
@@ -225,6 +227,7 @@ class MessBillProvider with ChangeNotifier {
         'totalFine': totalFine,
         'totalDiets': totalDiets,
         'totalAmount': totalAmount,
+        'extraList': extraList
       });
       _messBills.add(MessBill(
         rollNumber: student.id,
@@ -238,7 +241,8 @@ class MessBillProvider with ChangeNotifier {
 
     final pdfBytes = await generateMessBillPDF();
     final output = await getTemporaryDirectory();
-    final file = File('${output.path}/mess_bill.pdf');
+    final file =
+        File('${output.path}/mess_bill_${DateTime.now().month.toString()}.pdf');
     file.writeAsBytesSync(pdfBytes);
 
     AnnouncementServices().uploadAnnouncement(

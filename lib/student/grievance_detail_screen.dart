@@ -1,18 +1,15 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:mess_erp/api_keys.dart';
-import 'package:mess_erp/providers/user_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:pdf/widgets.dart' as pdf;
-import 'package:provider/provider.dart';
 
 import '../providers/grievance_provider.dart';
 
@@ -40,58 +37,14 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
     showReminderButton = _shouldShowRemainderButton();
   }
 
-  // bool _shouldShowRemainderButton() {
-  //   DateTime now = DateTime.now();
-  //   DateTime lastUpdated = widget.grievance.history.last['date'].toDate();
-  //   String lastAction = widget.grievance.history.last['action'];
-
-  //   if (lastAction == 'Reminder Sent' &&
-  //       now.difference(lastUpdated).inDays + 1 < 7) {
-  //     return false;
-  //   }
-
-  //   if (lastAction == 'Reminder Sent' &&
-  //       now.difference(lastUpdated).inDays + 1 >= 7) {
-  //     setState(() {
-  //       receipentEmail = 'deepak.it.22@nitj.ac.in';
-  //     });
-  //     return true;
-  //   }
-
-  //   if (now.difference(lastUpdated).inDays + 1 >= 7) {
-  //     setState(() {
-  //       receipentEmail = 'naveenk.it.22@nitj.ac.in';
-  //     });
-  //   }
-
-  //   if (now.difference(lastUpdated).inDays + 1 >= 14 &&
-  //       widget.grievance.reminderCount == 1) {
-  //     setState(() {
-  //       receipentEmail = 'deepakm.it.22@nitj.ac.in';
-  //     });
-  //   }
-
-  //   return now.difference(lastUpdated).inDays + 1 >= 7 &&
-  //       widget.grievance.status == 'pending';
-  // }
-
   bool _shouldShowRemainderButton() {
     DateTime now = DateTime.now();
     DateTime lastUpdated = widget.grievance.history.last['date'].toDate();
     String lastAction = widget.grievance.history.last['action'];
 
-    bool isFirstReminderSent = widget.grievance.reminderCount > 0;
-
     if (lastAction == 'Reminder Sent' &&
         now.difference(lastUpdated).inDays + 1 < 7) {
       return false;
-    }
-
-    if (!isFirstReminderSent) {
-      setState(() {
-        receipentEmail = 'naveenk.it.22@nitj.ac.in';
-      });
-      return true;
     }
 
     if (lastAction == 'Reminder Sent' &&
@@ -108,16 +61,61 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
       });
     }
 
-    if (now.difference(lastUpdated).inDays + 1 >= 14 && !isFirstReminderSent) {
+    if (now.difference(lastUpdated).inDays + 1 >= 14 &&
+        widget.grievance.reminderCount == 1) {
       setState(() {
         receipentEmail = 'deepakm.it.22@nitj.ac.in';
       });
     }
 
     return now.difference(lastUpdated).inDays + 1 >= 7 &&
-            widget.grievance.status == 'pending' ||
-        widget.grievance.status == 'in progress';
+            widget.grievance.status == 'pending' ;
+        // widget.grievance.status == 'in process';
   }
+
+  // bool _shouldShowRemainderButton() {
+  //   DateTime now = DateTime.now();
+  //   DateTime lastUpdated = widget.grievance.history.last['date'].toDate();
+  //   String lastAction = widget.grievance.history.last['action'];
+
+  //   bool isFirstReminderSent = widget.grievance.reminderCount > 0;
+
+  //   if (lastAction == 'Reminder Sent' &&
+  //       now.difference(lastUpdated).inDays + 1 < 7) {
+  //     return false;
+  //   }
+
+  //   if (!isFirstReminderSent) {
+  //     setState(() {
+  //       receipentEmail = 'naveenk.it.20@nitj.ac.in';
+  //     });
+  //     return true;
+  //   }
+
+  //   if (lastAction == 'Reminder Sent' &&
+  //       now.difference(lastUpdated).inDays + 1 >= 7) {
+  //     setState(() {
+  //       receipentEmail = 'deepak.it.20@nitj.ac.in';
+  //     });
+  //     return true;
+  //   }
+
+  //   if (now.difference(lastUpdated).inDays + 1 >= 7) {
+  //     setState(() {
+  //       receipentEmail = 'naveenk.it.20@nitj.ac.in';
+  //     });
+  //   }
+
+  //   if (now.difference(lastUpdated).inDays + 1 >= 14 && !isFirstReminderSent) {
+  //     setState(() {
+  //       receipentEmail = 'deepakm.it.20@nitj.ac.in';
+  //     });
+  //   }
+
+  //   return now.difference(lastUpdated).inDays + 1 >= 7 &&
+  //           widget.grievance.status == 'pending' ||
+  //       widget.grievance.status == 'in process';
+  // }
 
   Future<File> generateHistoryPDF() async {
     final pdf.Document doc = pdf.Document();
@@ -170,7 +168,7 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
     final tempDir = await getTemporaryDirectory();
     final tempDocumentPath =
         '${tempDir.path}/${widget.grievance.grievanceId}.pdf';
-    doc.save().then((value) => File(tempDocumentPath).writeAsBytes(value!));
+    doc.save().then((value) => File(tempDocumentPath).writeAsBytes(value));
     return File(tempDocumentPath);
   }
 
@@ -467,7 +465,7 @@ class HistoryTable extends StatelessWidget {
         rows: history.map((entry) {
           return DataRow(cells: [
             DataCell(
-              Text(capitalize(entry['updatedBy']) ?? ''),
+              Text(capitalize(entry['updatedBy'])),
             ),
             DataCell(SizedBox(
                 width: 100, child: Text(_formatDate(entry['date'].toDate())))),

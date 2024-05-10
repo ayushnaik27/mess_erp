@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -6,10 +8,12 @@ import 'package:mess_erp/helpers/mess_menu_helper.dart';
 import 'package:mess_erp/providers/user_provider.dart';
 import 'package:mess_erp/student/apply_leave_screen.dart';
 import 'package:mess_erp/student/mess_bill_screen.dart';
+import 'package:mess_erp/student/qr_scanner_screen.dart';
 import 'package:mess_erp/student/request_extra_items_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/announcement_provider.dart';
+import '../providers/hash_helper.dart';
 
 class StudentDashboardScreen extends StatefulWidget {
   static const routeName = '/studentDashboard';
@@ -22,20 +26,31 @@ class StudentDashboardScreen extends StatefulWidget {
 
 class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   List<MessBill> messBills = [];
+  late bool isMealLive;
   @override
   void initState() {
     super.initState();
     AnnouncementServices().deleteOldAnnouncements();
+    FirebaseFirestore.instance
+        .collection('meal')
+        .doc('meal')
+        .snapshots()
+        .listen((event) {
+      setState(() {
+        isMealLive = event.data()?['status'] == 'started';
+      });
+    });
   }
 
   void changePassword(String rollNumber, String newPassword) async {
+    String hashedPassword = HashHelper.encode(newPassword);
     await FirebaseFirestore.instance
         .collection('loginCredentials')
         .doc('roles')
         .collection('student')
         .doc(rollNumber)
         .update({
-      'password': newPassword,
+      'password': hashedPassword,
     });
   }
 
@@ -45,7 +60,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     MyUser user = Provider.of<UserProvider>(context).user;
-    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Student Dashboard'),
@@ -73,19 +87,13 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: FutureBuilder(
-                  future: Future.delayed(const Duration(seconds: 1)),
-                  builder: (context, snapshot) => Text(
+                  padding: const EdgeInsets.only(top: 16.0, left: 16.0),
+                  child: Text(
                     'Welcome ${capitalize(Provider.of<UserProvider>(context).user.name)}',
                     style: const TextStyle(
-                      fontSize: 24.0,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16.0),
+                        fontSize: 30, fontWeight: FontWeight.bold),
+                  )),
+              const SizedBox(height: 8.0),
               const Padding(
                 padding: EdgeInsets.all(16.0),
                 child: Text('Announcements'),
@@ -107,8 +115,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       return Text('Error: ${snapshot.error}');
                     } else {
                       List<Announcement> announcements = snapshot.data ?? [];
-
-                      
 
                       // Display announcements
                       return ListView.builder(
@@ -203,25 +209,17 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 },
                 child: const Text('Track Complaints'),
               ),
-              SizedBox(
-                height: 500,
-                child: ListView.builder(
-                  itemCount: messBills.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text('Month: ${messBills[index]}'),
-                      subtitle: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Total Diets: ${messBills[index].totalDiets}'),
-                          Text('Total Extra: ${messBills[index].totalExtra}'),
-                          Text('Fine: ${messBills[index].fine}'),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
+              isMealLive
+                  ? TextButton(
+                      onPressed: () {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (context) {
+                          return QRScannerScreen(rollNumber: user.username);
+                        }));
+                      },
+                      child: const Text('Scan QR Code'),
+                    )
+                  : const SizedBox(),
             ],
           ),
         ),
