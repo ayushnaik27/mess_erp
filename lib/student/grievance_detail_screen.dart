@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:mess_erp/api_keys.dart';
+// import 'package:mess_erp/api_keys.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:mailer/mailer.dart';
@@ -50,21 +50,21 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
     if (lastAction == 'Reminder Sent' &&
         now.difference(lastUpdated).inDays + 1 >= 7) {
       setState(() {
-        receipentEmail = 'deepak.it.22@nitj.ac.in';
+        receipentEmail = 'guptank@nitj.ac.in';
       });
       return true;
     }
 
     if (now.difference(lastUpdated).inDays + 1 >= 7) {
       setState(() {
-        receipentEmail = 'naveenk.it.22@nitj.ac.in';
+        receipentEmail = 'deepakm.it.20@nitj.ac.in';
       });
     }
 
     if (now.difference(lastUpdated).inDays + 1 >= 14 &&
         widget.grievance.reminderCount == 1) {
       setState(() {
-        receipentEmail = 'deepakm.it.22@nitj.ac.in';
+        receipentEmail = 'guptank@nitj.ac.in';
       });
     }
 
@@ -181,8 +181,8 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
     print('Sending email to $receipentEmail');
 
     try {
-      String username = 'naikayush68@gmail.com';
-      String password = passWord;
+      String username = 'naveenk.it.20@nitj.ac.in';
+      String password = 'eklf grtp dwlk qivf';
 
       final smtpServer = gmail(username, password);
       String studentName = widget.grievance
@@ -221,7 +221,7 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
       <p>Regards,<br>Mess ERP Notifications Team</p>
   ''';
 
-      if (receipentEmail == 'naveenk.it.22@gmail.com') {
+      if (receipentEmail == 'deepakm.it.20@nitj.ac.in') {
         final sendReport = await send(message1, smtpServer);
         print('Message sent: $sendReport');
       } else {
