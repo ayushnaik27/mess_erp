@@ -23,6 +23,7 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
   Widget build(BuildContext context) {
     Timestamp billDate = widget.billDetails['billDate'];
     DateTime date = billDate.toDate();
+    bool isRejected = widget.billDetails['approvalStatus'] == 'rejected';
     bool approvalStatus =
         widget.billDetails['approvalStatus'] == 'approved' ? true : false;
 
@@ -116,7 +117,14 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                         color: Colors.green,
                       ),
                     )
-                  : Row(
+                  : isRejected ? const Text(
+                      'Bill Rejected',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red,
+                      ),
+                    ): Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         ElevatedButton(
@@ -150,9 +158,9 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                                         child: const Text('Cancel'),
                                       ),
                                       ElevatedButton(
-                                        onPressed: () {
+                                        onPressed: () async {
                                           // Call a function to update the approval status in Firestore
-                                          Provider.of<BillsOfPurchaseProvider>(
+                                          await Provider.of<BillsOfPurchaseProvider>(
                                                   context,
                                                   listen: false)
                                               .rejectBill(
@@ -160,6 +168,15 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                                             remarksController.text,
                                           );
                                           Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                          Navigator.of(context).pop();
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                  'Bill rejected successfully'),
+                                            ),
+                                          );
                                         },
                                         child: const Text('Reject'),
                                       ),

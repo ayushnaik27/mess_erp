@@ -68,8 +68,14 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
       });
     }
 
+    print(now.difference(lastUpdated).inDays + 1 >= 7 &&
+        widget.grievance.status == 'pending' ||
+        widget.grievance.status == 'in process');
+
+    print(receipentEmail);
+
     return now.difference(lastUpdated).inDays + 1 >= 7 &&
-            widget.grievance.status == 'pending' ;
+            widget.grievance.status == 'pending' || widget.grievance.status == 'in process';
         // widget.grievance.status == 'in process';
   }
 
