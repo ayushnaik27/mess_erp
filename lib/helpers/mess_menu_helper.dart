@@ -10,7 +10,10 @@ import 'package:url_launcher/url_launcher.dart';
 
 class MessMenuHelper {
   static Future<bool> pickDocsFile() async {
-    final result = await FilePicker.platform.pickFiles();
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf'],
+    );
     if (result != null) {
       final file = File(result.files.single.path!);
 
@@ -36,7 +39,7 @@ class MessMenuHelper {
 
     final tempDir = await getTemporaryDirectory();
     final file =
-        await File('${tempDir.path}/mess_menu.docs').writeAsBytes(bytes);
+        await File('${tempDir.path}/mess_menu.pdf').writeAsBytes(bytes);
 
     OpenFilex.open(file.path);
   }

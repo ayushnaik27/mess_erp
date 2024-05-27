@@ -21,6 +21,10 @@ class ApproveExtraItemsScreen extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
           print(snapshot.data);
+
+          if (snapshot.data == null) {
+            return const Center(child: Text('No requests to approve'));
+          }
           List<ExtraItemRequest> requests = snapshot.data!;
 
           if (requests.isEmpty) {
