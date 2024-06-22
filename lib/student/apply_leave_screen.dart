@@ -183,7 +183,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                       context: context,
                       initialDate: selectedFromDate,
                       firstDate:
-                          DateTime.now().subtract(const Duration(days: 5)),
+                          DateTime.now().add(const Duration(days: 1)),
                       lastDate: DateTime.now().add(const Duration(days: 30)),
                     ).then((value) {
                       if (value != null) {

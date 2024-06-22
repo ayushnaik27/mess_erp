@@ -15,11 +15,20 @@ class _IssueStockScreenState extends State<IssueStockScreen> {
   double currentBalance = 0; // Current balance (initially set to 0)
   int itemQuantity = 0; // Quantity of the selected item
 
-  // Dummy list of items for the dropdown (replace it with your actual items)
+  // Map of items and their rates
   Map<String, double> items = {
-    'x1': 10.0,
-    'y1': 20.0,
-    'z1': 30.0,
+    'Atta': 40,
+    'Rice': 50,
+    'Oil': 100,
+    'Butter': 20,
+    'Milk': 30,
+    'Curd': 20,
+    'Pulses': 60,
+    'Grams': 50,
+    'Cereals': 40,
+    'Tea': 30,
+    'Cornflakes': 40,
+    'Maggie': 20,
   };
   // List<String> items = ['x1', 'y1', 'z1', 'Other'];
 
@@ -27,7 +36,7 @@ class _IssueStockScreenState extends State<IssueStockScreen> {
   void initState() {
     super.initState();
     getBalance();
-    selectedItem = 'x1'; // Default to 'x1'
+    selectedItem = 'Atta'; // Default to 'Atta'
   }
 
   void getBalance() async {

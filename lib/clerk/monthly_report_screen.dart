@@ -381,14 +381,14 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
               ElevatedButton(
                   onPressed: generating
                       ? null
-                      : () {
+                      : () async {
                           print("generate bill pressed");
 
                           setState(() {
                             generating = true;
                           });
 
-                          generateBillPressed();
+                          await generateBillPressed();
                           deleteLeaves();
                           deleteOldBills();
 
@@ -422,7 +422,7 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
         .deleteOldBills();
   }
 
-  void generateBillPressed() async {
+  Future<void> generateBillPressed() async {
     await Provider.of<MessBillProvider>(context, listen: false)
         .generateBill(double.parse(perDietCostController.text));
   }
