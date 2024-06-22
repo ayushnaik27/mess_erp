@@ -28,7 +28,7 @@ class GrievanceDetailScreen extends StatefulWidget {
 
 class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
   late bool showReminderButton;
-  late String receipentEmail;
+  String receipentEmail = '';
 
   @override
   void initState() {
@@ -43,27 +43,30 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
 
     if (lastAction == 'Reminder Sent' &&
         now.difference(lastUpdated).inDays + 1 < 7) {
+      setState(() {
+        receipentEmail = '';
+      });
       return false;
     }
 
     if (lastAction == 'Reminder Sent' &&
         now.difference(lastUpdated).inDays + 1 >= 7) {
       setState(() {
-        receipentEmail = 'guptank@nitj.ac.in';
+        receipentEmail = 'rakeshkumar@nitj.ac.in';
       });
       return true;
     }
 
     if (now.difference(lastUpdated).inDays + 1 >= 7) {
       setState(() {
-        receipentEmail = 'deepakm.it.20@nitj.ac.in';
+        receipentEmail = 'naikayush68@gmail.com';
       });
     }
 
     if (now.difference(lastUpdated).inDays + 1 >= 14 &&
         widget.grievance.reminderCount == 1) {
       setState(() {
-        receipentEmail = 'guptank@nitj.ac.in';
+        receipentEmail = 'rakeshkumar@nitj.ac.in';
       });
     }
 
@@ -309,15 +312,13 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
                 ],
               ),
               const SizedBox(height: 8.0),
-              const Text(
+              Text(
                 'Description:',
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium,
               ),
               const SizedBox(height: 4.0),
-              Text(widget.grievance.grievanceDesc),
+              Text(widget.grievance.grievanceDesc,
+                  style: Theme.of(context).textTheme.labelMedium),
               const SizedBox(height: 32.0),
               if (widget.grievance.fileUpload.isNotEmpty)
                 ElevatedButton(
@@ -441,9 +442,16 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
                           ),
                         );
                       },
-                      icon: const Icon(Icons.email),
-                      label: const Text('Send Reminder'),
-                    )
+                      icon: Icon(Icons.email,
+                          color: Theme.of(context).colorScheme.tertiary),
+                      label: Text(
+                        'Send Reminder',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        primary: Theme.of(context).primaryColor,
+                      ))
               : null)
           : null,
     );

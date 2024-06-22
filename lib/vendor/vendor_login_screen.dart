@@ -16,8 +16,10 @@ class _VendorLoginScreenState extends State<VendorLoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Theme.of(context).colorScheme.primary,
       appBar: AppBar(
         title: const Text('Vendor Login'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -25,7 +27,9 @@ class _VendorLoginScreenState extends State<VendorLoginScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 80.0),
+              const SizedBox(height: 40.0),
+              Image.asset('assets/images/nitj.png',
+                  height: 100.0, width: 100.0),
               const Text(
                 'Welcome to NITJ Mess',
                 style: TextStyle(
@@ -51,21 +55,29 @@ class _VendorLoginScreenState extends State<VendorLoginScreen> {
               ElevatedButton(
                 onPressed: () async {
                   // Implement login functionality
-                  FirebaseFirestore.instance.collection('vendors').doc(usernameController.text).get().then((value) async {
+                  FirebaseFirestore.instance
+                      .collection('vendors')
+                      .doc(usernameController.text)
+                      .get()
+                      .then((value) async {
                     if (value.exists) {
-                      if (value.data()!['password'] == passwordController.text) {
-
-                        await Provider.of<VendorProvider>(context, listen: false).setCurrentVendor(usernameController.text);
+                      if (value.data()!['password'] ==
+                          passwordController.text) {
+                        await Provider.of<VendorProvider>(context,
+                                listen: false)
+                            .setCurrentVendor(usernameController.text);
 
                         // Navigate to dashboard
-                        Navigator.push(context, MaterialPageRoute(builder: (context) {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
                           return VendorDashboardScreen();
                         }));
                         print('Username : ${usernameController.text}');
                         usernameController.clear();
                         passwordController.clear();
                       } else {
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
                           content: Text('Invalid Password'),
                         ));
                       }
@@ -76,7 +88,12 @@ class _VendorLoginScreenState extends State<VendorLoginScreen> {
                     }
                   });
                 },
-                child: const Text('Login'),
+                style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).colorScheme.tertiary,
+                ),
+                child: Text('Login',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary)),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -88,14 +105,17 @@ class _VendorLoginScreenState extends State<VendorLoginScreen> {
                     ),
                   ),
                   TextButton(
-                    onPressed: () {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (context) {
-                        return VendorRegisterScreen();
-                      }));
-                    },
-                    child: const Text('Register Here'),
-                  ),
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return VendorRegisterScreen();
+                        }));
+                      },
+                      child: Text('Register Here',
+                          style: TextStyle(
+                            fontSize: 10.0,
+                            color: Theme.of(context).colorScheme.tertiary,
+                          ))),
                 ],
               ),
             ],

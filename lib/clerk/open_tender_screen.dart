@@ -40,7 +40,7 @@ class _OpenTenderScreenState extends State<OpenTenderScreen> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Tender Title'),
+                decoration: InputDecoration(labelText: 'Tender Title',labelStyle: Theme.of(context).textTheme.bodyMedium),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a title';
@@ -100,7 +100,11 @@ class _OpenTenderScreenState extends State<OpenTenderScreen> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _addItem,
-                child: const Text('Add Item'),
+                style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).primaryColor),
+                child: Text('Add Item',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.tertiary)),
               ),
               const SizedBox(height: 16.0),
               Row(
@@ -143,8 +147,12 @@ class _OpenTenderScreenState extends State<OpenTenderScreen> {
                           });
                         }
                       },
+                      style: ElevatedButton.styleFrom(
+                          primary: Theme.of(context).primaryColor),
                       child: Text(
-                          _filePath == '' ? 'Upload File' : 'File Selected'),
+                          _filePath == '' ? 'Upload File' : 'File Selected',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.tertiary)),
                     ),
                   ),
                   if (_filePath != '')
@@ -157,7 +165,11 @@ class _OpenTenderScreenState extends State<OpenTenderScreen> {
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _submitTender,
-                child: const Text('Submit Tender'),
+                style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).primaryColor),
+                child: Text('Submit Tender',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.tertiary)),
               ),
             ],
           ),
@@ -236,7 +248,11 @@ class _OpenTenderScreenState extends State<OpenTenderScreen> {
                 _brandController.clear();
                 setState(() {});
               },
-              child: const Text('Add Item'),
+              style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).primaryColor),
+              child: Text('Add Item',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.tertiary)),
             ),
           ],
         ),
@@ -284,7 +300,7 @@ class _OpenTenderScreenState extends State<OpenTenderScreen> {
       );
       return;
     }
-    if(_tenderItems.isEmpty){
+    if (_tenderItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Please add at least one item'),
@@ -316,7 +332,6 @@ class _OpenTenderScreenState extends State<OpenTenderScreen> {
         bids: [],
       );
       // Save tender to provider or database
-
 
       Provider.of<TenderProvider>(context, listen: false).addTender(tender);
       ScaffoldMessenger.of(context).showSnackBar(

@@ -30,14 +30,25 @@ class AssignedGrievancesScreen extends StatelessWidget {
               itemCount: grievances.length,
               itemBuilder: (context, index) {
                 return ListTile(
-                  title: Text(grievances[index].grievanceTitle),
+                  title: Text(
+                    grievances[index].grievanceTitle,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                          'Date: ${DateFormat.yMMMMd().format(grievances[index].dateOfFiling)} at ${DateFormat.jm().format(grievances[index].dateOfFiling)}'),
-                      Text('Title: ${grievances[index].grievanceTitle}'),
-                      Text('Status: ${grievances[index].status}'),
+                        'Date: ${DateFormat.yMMMMd().format(grievances[index].dateOfFiling)} at ${DateFormat.jm().format(grievances[index].dateOfFiling)}',
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
+                      Text(
+                        'Title: ${grievances[index].grievanceTitle}',
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
+                      Text(
+                        'Status: ${grievances[index].status}',
+                        style: Theme.of(context).textTheme.labelMedium,
+                      ),
                     ],
                   ),
                   trailing: ElevatedButton(
@@ -75,6 +86,4 @@ class AssignedGrievancesScreen extends StatelessWidget {
       ),
     );
   }
-
-  
 }

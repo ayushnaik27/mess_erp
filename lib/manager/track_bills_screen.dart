@@ -36,9 +36,14 @@ class _TrackBillsScreenState extends State<TrackBillsScreen> {
                     itemBuilder: (context, index) {
                       String status = snapshot.data![index]['approvalStatus'];
                       return ListTile(
-                        title: Text(snapshot.data![index]['billNumber']),
-                        subtitle: Text(DateFormat('dd/MM/yyyy').format(
-                            snapshot.data![index]['billDate'].toDate())),
+                        title: Text(
+                          snapshot.data![index]['billNumber'],
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        subtitle: Text(
+                            DateFormat('dd/MM/yyyy').format(
+                                snapshot.data![index]['billDate'].toDate()),
+                            style: Theme.of(context).textTheme.bodySmall),
                         trailing: IconButton(
                           icon: status == 'pending'
                               ? const Icon(Icons.pending_actions,

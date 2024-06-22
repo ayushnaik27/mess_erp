@@ -112,7 +112,7 @@ class ExtraItemsProvider with ChangeNotifier {
           itemName: doc['itemName'],
           quantity: doc['quantity'],
           id: doc.id,
-          amount: doc['amount'],
+          amount: double.parse(doc['amount'].toString()),
           timestamp: doc['timestamp'].toDate(),
         );
       }).toList();

@@ -63,6 +63,9 @@ class _RequestExtraItemsScreenState extends State<RequestExtraItemsScreen> {
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: DropdownButton<String>(
+                      dropdownColor: Theme.of(context).colorScheme.primary,
+                      
+                      elevation: 0,
                       value: selectedItem.name,
                       items: [
                         DropdownMenuItem(

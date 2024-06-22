@@ -119,6 +119,7 @@ class MyApp extends StatelessWidget {
               color: Colors.black,
             ),
           ),
+          
           snackBarTheme: const SnackBarThemeData(
             backgroundColor: Colors.red,
             contentTextStyle: TextStyle(

@@ -20,7 +20,7 @@ class ApproveExtraItemsScreen extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-          print(snapshot.data);
+          print(snapshot);
 
           if (snapshot.data == null) {
             return const Center(child: Text('No requests to approve'));

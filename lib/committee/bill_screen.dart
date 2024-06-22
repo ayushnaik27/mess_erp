@@ -1,7 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mess_erp/providers/bills_of_purchase_provider.dart';
-import 'package:mess_erp/providers/stock_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'approve_or_reject_bill_screen.dart';
@@ -55,8 +53,14 @@ class _BillsScreenState extends State<BillsScreen> {
                           );
                         },
                         child: ListTile(
-                            title: Text('Bill No: ${bill['billNumber']}'),
-                            subtitle: Text('Vendor: ${bill['vendorName']}'),
+                            title: Text(
+                              'Bill No: ${bill['billNumber']}',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                            subtitle: Text(
+                              'Vendor: ${bill['vendorName']}',
+                              style: Theme.of(context).textTheme.bodySmall,
+                            ),
                             trailing: approvalStatus == 'approved'
                                 ? const Icon(
                                     Icons.check_circle,

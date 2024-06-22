@@ -167,6 +167,11 @@ class _GenerateVoucherScreenState extends State<GenerateVoucherScreen> {
                       content: Text('Please select all fields!')));
                   return;
                 }
+                if(bills.isEmpty){
+                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text('There are no bills to generate voucher for!')));
+                  return;
+                }
                 // Perform logic to fetch bills and generate vouchers
                 Provider.of<PaymentVoucherProvider>(context, listen: false)
                     .generateVoucher(selectedDateRange, bills);
@@ -174,7 +179,13 @@ class _GenerateVoucherScreenState extends State<GenerateVoucherScreen> {
                     content: Text('Voucher generated successfully!')));
                 Navigator.pop(context);
               },
-              child: const Text('Generate Voucher'),
+              style: ElevatedButton.styleFrom(
+                primary: Theme.of(context).primaryColor,
+              ),
+              child: Text(
+                'Generate Voucher',
+                style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+              ),
             ),
 
             const SizedBox(height: 16),

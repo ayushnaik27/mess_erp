@@ -3,8 +3,10 @@ import 'package:intl/intl.dart';
 import 'package:mess_erp/committee/assigned_grievances_screen.dart';
 import 'package:mess_erp/committee/bill_screen.dart';
 import 'package:mess_erp/providers/announcement_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../helpers/mess_menu_helper.dart';
+import '../providers/user_provider.dart';
 
 class CommitteeDashboardScreen extends StatefulWidget {
   static const routeName = '/committeeDashboard';
@@ -23,9 +25,86 @@ class _CommitteeDashboardScreenState extends State<CommitteeDashboardScreen> {
     AnnouncementServices().deleteOldAnnouncements();
   }
 
+  String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
+
   @override
   Widget build(BuildContext context) {
+    MyUser user = Provider.of<UserProvider>(context).user;
     return Scaffold(
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    backgroundColor: Theme.of(context).colorScheme.tertiary,
+                    radius: 30,
+                    child: Text(user.name[0].toUpperCase()),
+                    // child: Text("H"),
+                  ),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        capitalize(user.name),
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                      Text(
+                        user.username,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              title: Text(
+                'Add Announcement',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              onTap: () {
+                Navigator.of(context).pushNamed('/addAnnouncement');
+              },
+            ),
+            ListTile(
+              title: Text(
+                'Manage Extra Items',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              onTap: () {
+                Navigator.of(context).pushNamed('/extraItems');
+              },
+            ),
+            ListTile(
+              title: Text(
+                'View Bills',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              onTap: () {
+                Navigator.of(context).pushNamed(BillsScreen.routeName);
+              },
+            ),
+            ListTile(
+              title: Text(
+                'Log Out',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            )
+          ],
+        ),
+      ),
       appBar: AppBar(
         title: const Text('Committee Dashboard'),
       ),
@@ -34,69 +113,20 @@ class _CommitteeDashboardScreenState extends State<CommitteeDashboardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Padding(
-                padding: EdgeInsets.all(16.0),
+              Padding(
+                padding: const EdgeInsets.only(top: 16.0, left: 16.0),
                 child: Text(
-                  'Committee Dashboard',
-                  style: TextStyle(
-                    fontSize: 24.0,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  'Welcome ${capitalize(Provider.of<UserProvider>(context).user.name)}',
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
-              const SizedBox(height: 8.0),
-              ElevatedButton(
-                onPressed: () {
-                  MessMenuHelper.viewMessMenu();
-                },
-                child: const Text('Show Mess Menu'),
-              ),
-              const SizedBox(height: 8.0),
-              ElevatedButton(
-                onPressed: () {
-                  MessMenuHelper.pickDocsFile().then(
-                    (uploaded) {
-                      if (uploaded) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Mess Menu Uploaded'),
-                          ),
-                        );
-                      } else {
-                        showAdaptiveDialog(
-                            context: context,
-                            builder: (
-                              context,
-                            ) {
-                              return const AlertDialog(
-                                title: Text('Error'),
-                                content: Text('Error Uploading Mess Menu'),
-                              );
-                            });
-                      }
-                    },
-                  );
-                },
-                child: const Text('Upload Mess Menu'),
-              ),
-              const SizedBox(height: 8.0),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed(BillsScreen.routeName);
-                },
-                child: const Text('Show Bills'),
-              ),
-              const SizedBox(height: 8.0),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/addAnnouncement');
-                },
-                child: const Text('Add Announcement'),
-              ),
-              const SizedBox(height: 8.0),
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text('Announcements'),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Text(
+                  'Announcements',
+                  style: Theme.of(context).textTheme.titleSmall,
+                ),
               ),
               Container(
                 height: 250,
@@ -104,6 +134,7 @@ class _CommitteeDashboardScreenState extends State<CommitteeDashboardScreen> {
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(8.0),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                 ),
                 child: Scrollbar(
                     child: StreamBuilder<List<Announcement>>(
@@ -116,19 +147,32 @@ class _CommitteeDashboardScreenState extends State<CommitteeDashboardScreen> {
                     } else {
                       List<Announcement> announcements = snapshot.data ?? [];
 
+                      if (announcements.isEmpty) {
+                        return const Center(
+                            child: Text('No announcements available'));
+                      }
+
                       // Display announcements
                       return ListView.builder(
                         itemCount: announcements.length,
                         itemBuilder: (context, index) {
                           return ListTile(
-                            title: Text(announcements[index].title),
+                            title: Text(
+                              announcements[index].title,
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
                             subtitle: Column(
                               children: [
                                 Align(
                                   alignment: Alignment.centerLeft,
-                                  child: Text(announcements[index].description,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2),
+                                  child: Text(
+                                    announcements[index].description,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .displaySmall,
+                                  ),
                                 ),
                                 Align(
                                   alignment: Alignment.centerLeft,
@@ -137,24 +181,26 @@ class _CommitteeDashboardScreenState extends State<CommitteeDashboardScreen> {
                                         announcements[index]
                                             .timestamp!
                                             .toDate()),
-                                    style: const TextStyle(
-                                        fontSize: 10, color: Colors.grey),
+                                    style:
+                                        Theme.of(context).textTheme.labelSmall,
                                   ),
                                 ),
                                 const Divider()
                               ],
                             ),
                             onTap: () {
-                              // Handle tap on announcement
                               bool openBill = false;
                               if (announcements[index].title == 'Mess Bill') {
                                 openBill = true;
                               }
+                              print(openBill);
                               announcements[index].file == null
                                   ? null
                                   : AnnouncementServices().openAnnouncement(
                                       announcements[index].file!.path,
                                       openBill: openBill);
+
+                              print(announcements[index].file?.path);
                             },
                           );
                         },
@@ -163,34 +209,275 @@ class _CommitteeDashboardScreenState extends State<CommitteeDashboardScreen> {
                   },
                 )),
               ),
-              const SizedBox(height: 8.0),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/extraItems');
-                },
-                child: const Text('Extra Items'),
+              const SizedBox(height: 16.0),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GridView(
+                  physics: const ScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.5,
+                  ),
+                  shrinkWrap: true,
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        MessMenuHelper.viewMessMenu();
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.food_bank),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Show Mess Menu',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        MessMenuHelper.pickDocsFile().then(
+                          (uploaded) {
+                            if (uploaded) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Mess Menu Uploaded'),
+                                ),
+                              );
+                            } else {
+                              showAdaptiveDialog(
+                                  context: context,
+                                  builder: (
+                                    context,
+                                  ) {
+                                    return const AlertDialog(
+                                      title: Text('Error'),
+                                      content:
+                                          Text('Error Uploading Mess Menu'),
+                                    );
+                                  });
+                            }
+                          },
+                        );
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.upload_file),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Upload Mess Menu',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(BillsScreen.routeName);
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.receipt),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Show Bills',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed('/addAnnouncement');
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.announcement),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Add Announcement',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed('/extraItems');
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.add_shopping_cart),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Extra Items',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed('/previousVouchers');
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.receipt_long),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Previous Vouchers',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) {
+                          return const AssignedGrievancesScreen(
+                              userType: 'committee');
+                        }));
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.assignment),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'View Assigned Grievances',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed('/viewAllGrievances');
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.assignment_turned_in),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'View All Grievances',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 8.0),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/previousVouchers');
-                },
-                child: const Text('Previous Vouchers'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                    return const AssignedGrievancesScreen(userType: 'committee');
-                  }));
-                },
-                child: const Text('View Assigned Grievances'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/viewAllGrievances');
-                },
-                child: const Text('View All Grievances'),
-              ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     MessMenuHelper.viewMessMenu();
+              //   },
+              //   child: const Text('Show Mess Menu'),
+              // ),
+              // const SizedBox(height: 8.0),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     MessMenuHelper.pickDocsFile().then(
+              //       (uploaded) {
+              //         if (uploaded) {
+              //           ScaffoldMessenger.of(context).showSnackBar(
+              //             const SnackBar(
+              //               content: Text('Mess Menu Uploaded'),
+              //             ),
+              //           );
+              //         } else {
+              //           showAdaptiveDialog(
+              //               context: context,
+              //               builder: (
+              //                 context,
+              //               ) {
+              //                 return const AlertDialog(
+              //                   title: Text('Error'),
+              //                   content: Text('Error Uploading Mess Menu'),
+              //                 );
+              //               });
+              //         }
+              //       },
+              //     );
+              //   },
+              //   child: const Text('Upload Mess Menu'),
+              // ),
+              // const SizedBox(height: 8.0),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.of(context).pushNamed(BillsScreen.routeName);
+              //   },
+              //   child: const Text('Show Bills'),
+              // ),
+              // const SizedBox(height: 8.0),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.of(context).pushNamed('/addAnnouncement');
+              //   },
+              //   child: const Text('Add Announcement'),
+              // ),
+              // const SizedBox(height: 8.0),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.of(context).pushNamed('/extraItems');
+              //   },
+              //   child: const Text('Extra Items'),
+              // ),
+              // const SizedBox(height: 8.0),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.of(context).pushNamed('/previousVouchers');
+              //   },
+              //   child: const Text('Previous Vouchers'),
+              // ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.push(context, MaterialPageRoute(builder: (context) {
+              //       return const AssignedGrievancesScreen(
+              //           userType: 'committee');
+              //     }));
+              //   },
+              //   child: const Text('View Assigned Grievances'),
+              // ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.of(context).pushNamed('/viewAllGrievances');
+              //   },
+              //   child: const Text('View All Grievances'),
+              // ),
             ],
           ),
         ),

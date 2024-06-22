@@ -24,7 +24,8 @@ class _LoginScreenState extends State<LoginScreen> {
     TextEditingController passwordController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        // backgroundColor: const Color.fromRGBO(254, 214, 91, 1),
+        backgroundColor: Theme.of(context).colorScheme.primary,
         title: adminLogin ? const Text('Admin Login') : const Text('Login'),
         actions: [
           TextButton(
@@ -33,6 +34,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   return VendorLoginScreen();
                 }));
               },
+              style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.tertiary,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(32.0))),
               child: const Text('Vendor Login')),
           adminLogin
               ? TextButton(
@@ -41,6 +46,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       adminLogin = false;
                     });
                   },
+                  style: TextButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.tertiary,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32.0))),
                   child: const Text('Student Login'))
               : TextButton(
                   onPressed: () {
@@ -48,21 +57,42 @@ class _LoginScreenState extends State<LoginScreen> {
                       adminLogin = true;
                     });
                   },
+                  style: TextButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.tertiary,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(32.0))),
                   child: const Text('Admin Login')),
         ],
       ),
+      backgroundColor: Theme.of(context).colorScheme.primary,
       body: Stack(
-        
         children: [
-          
-          
+          // Image.asset(
+          //   'assets/images/icon_background.png',
+          //   fit: BoxFit.cover,
+          //   height: double.infinity,
+          //   width: double.infinity,
+          //   alignment: Alignment.center,
+          // ),
+          Opacity(
+            opacity: 0.05,
+            child: Image.asset(
+              'assets/images/icon_foreground.png',
+              fit: BoxFit.cover,
+              height: double.infinity,
+              width: double.infinity,
+              alignment: Alignment.center,
+            ),
+          ),
           SingleChildScrollView(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 20),
+                  Image.asset('assets/images/nitj.png',
+                      height: 100.0, width: 100.0),
                   const Text(
                     'Welcome to NITJ Mess',
                     style: TextStyle(
@@ -73,6 +103,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 30.0),
                   if (adminLogin)
                     DropdownButton(
+                        dropdownColor: Theme.of(context).colorScheme.primary,
                         hint: Text(role),
                         elevation: 0,
                         autofocus: false,
@@ -102,17 +133,47 @@ class _LoginScreenState extends State<LoginScreen> {
                   if (!adminLogin) const SizedBox(height: 47.0),
                   TextField(
                     controller: usernameController,
-                    decoration: const InputDecoration(
-                        labelText: 'Username', border: OutlineInputBorder()),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.tertiary),
+                        ),
+                        labelStyle: TextStyle(
+                            fontSize: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .fontSize,
+                            color: Colors.black),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        labelText: 'Username',
+                        border: const OutlineInputBorder()),
                   ),
                   const SizedBox(height: 16.0),
                   TextField(
                     controller: passwordController,
+                    style: Theme.of(context).textTheme.bodyMedium,
                     obscureText: true,
-                    decoration: const InputDecoration(
-                        labelText: 'Password', border: OutlineInputBorder()),
+                    decoration: InputDecoration(
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Theme.of(context).colorScheme.tertiary),
+                        ),
+                        labelStyle: TextStyle(
+                            fontSize: Theme.of(context)
+                                .textTheme
+                                .bodyMedium!
+                                .fontSize,
+                            color: Colors.black),
+                        enabledBorder: const OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.black),
+                        ),
+                        labelText: 'Password',
+                        border: const OutlineInputBorder()),
                   ),
-                  const SizedBox(height: 16.0),
+                  const SizedBox(height: 32.0),
                   ElevatedButton(
                     onPressed: () async {
                       if (adminLogin) {
@@ -215,6 +276,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                       }
                     },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                      foregroundColor: Theme.of(context).colorScheme.primary,
+                      shadowColor: Theme.of(context).colorScheme.secondary,
+                    ),
                     child: const Text('Login'),
                   ),
                   TextButton(
@@ -226,6 +292,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           duration: Duration(seconds: 2),
                         ));
                       },
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Theme.of(context).colorScheme.tertiary,
+                        shadowColor: Theme.of(context).colorScheme.secondary,
+                      ),
                       child: const Text('Forgot Password?'))
                 ],
               ),

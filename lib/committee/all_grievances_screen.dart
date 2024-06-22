@@ -42,14 +42,17 @@ class _AllGrievancesScreenState extends State<AllGrievancesScreen> {
               Provider.of<GrievanceProvider>(context).grievances[index];
           Color statusColor = getStatusColor(grievance.status);
           return ListTile(
-            title: Text('ID: ${grievance.grievanceId}'),
+            title: Text('ID: ${grievance.grievanceId}',style: Theme.of(context).textTheme.bodyMedium),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                    'Date: ${DateFormat.yMMMMd().format(grievance.dateOfFiling)} at ${DateFormat.jm().format(grievance.dateOfFiling)}'),
-                Text('Title: ${grievance.grievanceTitle}'),
-                Text('Status: ${grievance.status}'),
+                    'Date: ${DateFormat.yMMMMd().format(grievance.dateOfFiling)} at ${DateFormat.jm().format(grievance.dateOfFiling)}',
+                    style: Theme.of(context).textTheme.labelMedium),
+                Text('Title: ${grievance.grievanceTitle}',
+                    style: Theme.of(context).textTheme.labelMedium),
+                Text('Status: ${grievance.status}',
+                    style: Theme.of(context).textTheme.labelMedium),
               ],
             ),
             trailing: ElevatedButton(

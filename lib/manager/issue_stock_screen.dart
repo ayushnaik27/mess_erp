@@ -74,8 +74,9 @@ class _IssueStockScreenState extends State<IssueStockScreen> {
                   quantityToIssue = int.tryParse(value) ?? 0;
                 });
               },
-              decoration:
-                  const InputDecoration(labelText: 'Enter Quantity to Issue'),
+              decoration: InputDecoration(
+                  labelText: 'Enter Quantity to Issue',
+                  labelStyle: Theme.of(context).textTheme.bodyMedium),
             ),
             const SizedBox(height: 16),
             ElevatedButton(
@@ -92,7 +93,12 @@ class _IssueStockScreenState extends State<IssueStockScreen> {
                 );
                 Navigator.of(context).pop();
               },
-              child: const Text('Submit'),
+              style: ElevatedButton.styleFrom(
+                primary: Theme.of(context).primaryColor,
+              ),
+              child: Text('Submit',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.tertiary)),
             ),
             const SizedBox(height: 16),
             FutureBuilder(

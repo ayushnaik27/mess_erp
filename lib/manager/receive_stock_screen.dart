@@ -158,8 +158,10 @@ class _ReceiveStockScreenState extends State<ReceiveStockScreen> {
                               billNo = value;
                             });
                           },
-                    decoration:
-                        const InputDecoration(labelText: 'Enter Bill No.'),
+                    decoration: InputDecoration(
+                      labelText: 'Enter Bill No.',
+                      labelStyle: Theme.of(context).textTheme.bodyMedium,
+                    ),
                   ),
                   const SizedBox(height: 16.0),
                   Row(
@@ -221,8 +223,14 @@ class _ReceiveStockScreenState extends State<ReceiveStockScreen> {
                             });
                           }
                         },
-                        icon: const Icon(Icons.upload),
-                        label: const Text('Upload Bill'),
+                        style: ElevatedButton.styleFrom(
+                          primary: Theme.of(context).primaryColor,
+                        ),
+                        icon: Icon(Icons.upload,
+                            color: Theme.of(context).colorScheme.tertiary),
+                        label: Text('Upload Bill',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.tertiary)),
                       ),
                     ],
                   ),
@@ -237,7 +245,12 @@ class _ReceiveStockScreenState extends State<ReceiveStockScreen> {
                         ),
                       );
                     },
-                    child: const Text('Add Items'),
+                    style: ElevatedButton.styleFrom(
+                      primary: Theme.of(context).primaryColor,
+                    ),
+                    child: Text('Add Items',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary)),
                   ),
                   const SizedBox(height: 16.0),
                   SizedBox(
@@ -278,9 +291,20 @@ class _ReceiveStockScreenState extends State<ReceiveStockScreen> {
                         submitting = false;
                       });
                     },
+              style: ElevatedButton.styleFrom(
+                primary: Theme.of(context).primaryColor,
+              ),
               child: editing
-                  ? Text(submitting ? 'Updating' : 'Update')
-                  : Text(submitting ? 'Submitting' : 'Submit'),
+                  ? Text(
+                      submitting ? 'Updating' : 'Update',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.tertiary),
+                    )
+                  : Text(
+                      submitting ? 'Submitting' : 'Submit',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.tertiary),
+                    ),
             ),
     );
   }
