@@ -11,7 +11,14 @@ class MessBillDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    // Get the timestamp of the first extra item
+    Timestamp timestamp = Timestamp.now();
+
+    if(messBill.extraList.isNotEmpty)
     Timestamp timestamp = messBill.extraList[0]['date'] as Timestamp;
+
+
 
     return Scaffold(
       appBar: AppBar(
@@ -60,7 +67,7 @@ class MessBillDetailsScreen extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            if (messBill.totalAmount > 0)
+            if (messBill.extraList.isNotEmpty)
               DataTable(
                 dataRowMaxHeight: 100,
                 columns: const [

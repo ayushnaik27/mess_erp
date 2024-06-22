@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mess_erp/clerk/mess_bill_provider.dart';
@@ -10,6 +11,7 @@ import 'package:mess_erp/student/apply_leave_screen.dart';
 import 'package:mess_erp/student/mess_bill_screen.dart';
 import 'package:mess_erp/student/qr_scanner_screen.dart';
 import 'package:mess_erp/student/request_extra_items_screen.dart';
+import 'package:mess_erp/student/track_leaves_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/announcement_provider.dart';
@@ -61,24 +63,143 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   Widget build(BuildContext context) {
     MyUser user = Provider.of<UserProvider>(context).user;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Student Dashboard'),
-        actions: [
-          TextButton(
-            onPressed: () => showAdaptiveDialog(
-              context: context,
-              builder: (context) {
-                return ChangePasswordDialog(
-                  rollNumber: widget.rollNumber,
-                  changePassword: changePassword,
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            DrawerHeader(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    child: Text(user.name[0].toUpperCase()),
+                  ),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        capitalize(user.name),
+                        style: const TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        user.username,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              title: const Text('Track Leaves'),
+              onTap: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return TrackLeavesScreen(studentRollNumber: user.username);
+                }));
+              },
+            ),
+            ListTile(
+              title: const Text('Track Complaints'),
+              onTap: () {
+                Navigator.of(context).pushNamed('/trackComplaints');
+              },
+            ),
+            ListTile(
+              title: const Text('File Grievance'),
+              onTap: () {
+                Navigator.of(context).pushNamed('/fileGrievance');
+              },
+            ),
+            ListTile(
+              title: const Text('View Mess Menu'),
+              onTap: () {
+                MessMenuHelper.viewMessMenu();
+              },
+            ),
+            ListTile(
+              title: const Text('View Mess Bill'),
+              onTap: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return MessBillScreen(studentId: user.username);
+                }));
+              },
+            ),
+            ListTile(
+              title: const Text('Apply for Leave'),
+              onTap: () {
+                Navigator.of(context).pushNamed(ApplyLeaveScreen.routeName,
+                    arguments: user.username);
+              },
+            ),
+            ListTile(
+              title: const Text('Request Extra Items'),
+              onTap: () {
+                Navigator.of(context).pushNamed(
+                    RequestExtraItemsScreen.routeName,
+                    arguments: user.username);
+              },
+            ),
+            ListTile(
+              title: const Text('Mess Bill'),
+              onTap: () {
+                Navigator.of(context).pushNamed(MessBillScreen.routeName,
+                    arguments: user.username);
+              },
+            ),
+            ListTile(
+              title: const Text('Change Password'),
+              onTap: () {
+                showAdaptiveDialog(
+                  context: context,
+                  builder: (context) {
+                    return ChangePasswordDialog(
+                      rollNumber: user.username,
+                      changePassword: changePassword,
+                    );
+                  },
                 );
               },
             ),
-            child: const Text(
-              'change password',
-              style: TextStyle(fontSize: 10),
-            ),
-          ),
+            ListTile(
+              title: const Text('Log Out'),
+              onTap: () {},
+            )
+          ],
+        ),
+      ),
+      appBar: AppBar(
+        title: const Text('Student Dashboard'),
+        actions: [
+          isMealLive
+              ? IconButton(
+                  onPressed: () {
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) {
+                      return QRScannerScreen(rollNumber: user.username);
+                    }));
+                  },
+                  icon: const Icon(Icons.qr_code_scanner))
+              : const SizedBox(),
+          // TextButton(
+          //   onPressed: () => showAdaptiveDialog(
+          //     context: context,
+          //     builder: (context) {
+          //       return ChangePasswordDialog(
+          //         rollNumber: widget.rollNumber,
+          //         changePassword: changePassword,
+          //       );
+          //     },
+          //   ),
+          //   child: const Text(
+          //     'change password',
+          //     style: TextStyle(fontSize: 10),
+          //   ),
+          // ),
         ],
       ),
       body: SafeArea(
@@ -115,6 +236,11 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       return Text('Error: ${snapshot.error}');
                     } else {
                       List<Announcement> announcements = snapshot.data ?? [];
+
+                      if (announcements.isEmpty) {
+                        return const Center(
+                            child: Text('No announcements available'));
+                      }
 
                       // Display announcements
                       return ListView.builder(
@@ -165,61 +291,201 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   },
                 )),
               ),
-              TextButton(
-                  onPressed: () {
-                    print(user.name);
-                    Navigator.of(context).pushNamed(
-                        RequestExtraItemsScreen.routeName,
-                        arguments: user.username);
-                    // MaterialPageRoute(builder: (context) {
-                    //   return RequestExtraItemsScreen();
-                    // });
-                  },
-                  child: const Text('Request Extra Items')),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed(ApplyLeaveScreen.routeName,
-                      arguments: user.username);
-                },
-                child: const Text('Apply for Leave'),
+              const SizedBox(height: 16.0),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GridView(
+                  physics: const ScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    childAspectRatio: 1.5,
+                  ),
+                  shrinkWrap: true,
+                  children: [
+                    Card(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.food_bank),
+                          const SizedBox(height: 8.0),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed(
+                                  RequestExtraItemsScreen.routeName,
+                                  arguments: user.username);
+                            },
+                            child: const Text('Request Extra Items'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Card(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.calendar_month),
+                          const SizedBox(height: 8.0),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed(
+                                  ApplyLeaveScreen.routeName,
+                                  arguments: user.username);
+                            },
+                            child: const Text('Apply for Leave'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Card(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.pageview),
+                          const SizedBox(height: 8.0),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(builder: (context) {
+                                return MessBillScreen(studentId: user.username);
+                              }));
+                            },
+                            child: const Text('View Mess Bill'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Card(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.food_bank),
+                          const SizedBox(height: 8.0),
+                          TextButton(
+                            onPressed: () {
+                              MessMenuHelper.viewMessMenu();
+                            },
+                            child: const Text('View Mess Menu'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Card(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.error),
+                          const SizedBox(height: 8.0),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed('/fileGrievance');
+                            },
+                            child: const Text('File Grievance'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Card(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.track_changes_outlined),
+                          const SizedBox(height: 8.0),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pushNamed('/trackComplaints');
+                            },
+                            child: const Text('Track Complaints'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Card(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(Icons.food_bank),
+                          const SizedBox(height: 8.0),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .push(MaterialPageRoute(builder: (context) {
+                                return TrackLeavesScreen(
+                                    studentRollNumber: user.username);
+                              }));
+                            },
+                            child: const Text('Track Leaves'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
-              TextButton(
-                  onPressed: () {
-                    print(user.username);
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) {
-                      return MessBillScreen(studentId: user.username);
-                    }));
-                  },
-                  child: const Text('View Mess Bill')),
-              TextButton(
-                  onPressed: () {
-                    MessMenuHelper.viewMessMenu();
-                  },
-                  child: const Text('View Mess Menu')),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/fileGrievance');
-                },
-                child: const Text('File Grievance'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/trackComplaints');
-                },
-                child: const Text('Track Complaints'),
-              ),
-              isMealLive
-                  ? TextButton(
-                      onPressed: () {
-                        Navigator.of(context)
-                            .push(MaterialPageRoute(builder: (context) {
-                          return QRScannerScreen(rollNumber: user.username);
-                        }));
-                      },
-                      child: const Text('Scan QR Code'),
-                    )
-                  : const SizedBox(),
+              // TextButton(
+              //     onPressed: () {
+              //       print(user.name);
+              //       Navigator.of(context).pushNamed(
+              //           RequestExtraItemsScreen.routeName,
+              //           arguments: user.username);
+              //       // MaterialPageRoute(builder: (context) {
+              //       //   return RequestExtraItemsScreen();
+              //       // });
+              //     },
+              //     child: const Text('Request Extra Items')),
+              // TextButton(
+              //   onPressed: () {
+              //     Navigator.of(context).pushNamed(ApplyLeaveScreen.routeName,
+              //         arguments: user.username);
+              //   },
+              //   child: const Text('Apply for Leave'),
+              // ),
+              // TextButton(
+              //     onPressed: () {
+              //       print(user.username);
+              //       Navigator.of(context)
+              //           .push(MaterialPageRoute(builder: (context) {
+              //         return MessBillScreen(studentId: user.username);
+              //       }));
+              //     },
+              //     child: const Text('View Mess Bill')),
+              // TextButton(
+              //     onPressed: () {
+              //       MessMenuHelper.viewMessMenu();
+              //     },
+              //     child: const Text('View Mess Menu')),
+              // TextButton(
+              //   onPressed: () {
+              //     Navigator.of(context).pushNamed('/fileGrievance');
+              //   },
+              //   child: const Text('File Grievance'),
+              // ),
+              // TextButton(
+              //   onPressed: () {
+              //     Navigator.of(context).pushNamed('/trackComplaints');
+              //   },
+              //   child: const Text('Track Complaints'),
+              // ),
+              // isMealLive
+              //     ? TextButton(
+              //         onPressed: () {
+              //           Navigator.of(context)
+              //               .push(MaterialPageRoute(builder: (context) {
+              //             return QRScannerScreen(rollNumber: user.username);
+              //           }));
+              //         },
+              //         child: const Text('Scan QR Code'),
+              //       )
+              //     : const SizedBox(),
+              // TextButton(
+              //   child: const Text("Track Leaves"),
+              //   onPressed: () {
+              //     Navigator.of(context)
+              //         .push(MaterialPageRoute(builder: (context) {
+              //       return TrackLeavesScreen(studentRollNumber: user.username);
+              //     }));
+              //   },
+              // )
             ],
           ),
         ),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -162,6 +164,7 @@ class MonthlyReportProvider with ChangeNotifier {
 
   Future<int> getTotalDiets() async {
     print('getTotalDiets');
+    int previousMonth = DateTime.now().month == 1 ? 12 : DateTime.now().month - 1;
     int currentMonth = DateTime.now().month;
     Map<int, int> monthAndDays = {
       1: 31,
@@ -178,7 +181,7 @@ class MonthlyReportProvider with ChangeNotifier {
       12: 31,
     };
 
-    num TD = monthAndDays[currentMonth]! * 3;
+    num TD = monthAndDays[previousMonth]! * 3;
     num totalLeaves = 0;
     QuerySnapshot<Map<String, dynamic>> studentSnapshot =
         await FirebaseFirestore.instance
@@ -194,18 +197,21 @@ class MonthlyReportProvider with ChangeNotifier {
               .doc('roles')
               .collection('student')
               .doc(student.id)
-              .collection('leaveDetails')
+              .collection('newLeaveDetails')
               .get();
 
       if (studentLeaveSnapshot.docs.isNotEmpty) {
         print('Hello');
-        totalLeaves += studentLeaveSnapshot.docs.last['leaveCount'];
+        studentLeaveSnapshot.docs.forEach((leave) {
+          totalLeaves += leave['onLeaveMeals'].length;
+        });
       }
     });
 
-    TD -= totalLeaves * 3;
+    TD -= totalLeaves;
     _totalDiets = TD.toInt();
     notifyListeners();
+    log('Total Diets: $_totalDiets');
     return _totalDiets;
   }
 
@@ -293,7 +299,7 @@ class MonthlyReportProvider with ChangeNotifier {
           .doc('roles')
           .collection('student')
           .doc(student.id)
-          .collection('leaveDetails')
+          .collection('newLeaveDetails')
           .get()
           .then((value) {
         value.docs.forEach((element) {
