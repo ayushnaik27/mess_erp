@@ -61,7 +61,9 @@ Future<Map<String, Map<String, dynamic>>>
         Map<String, dynamic> leaveData =
             leaveSnapshot.data() as Map<String, dynamic>;
         if (leaveData.containsKey('onLeaveMeals')) {
-          List<String> onLeaveMeals = leaveData['onLeaveMeals'];
+          List<dynamic> onLeaveMealsDyanamic = leaveData['onLeaveMeals'];
+          List<String> onLeaveMeals = onLeaveMealsDyanamic
+              .cast<String>(); // Casting List<dynamic> to List<String>
           if (onLeaveMeals.contains('Breakfast')) {
             meal1++;
             numStudentForNextThreeMeals--;
@@ -117,7 +119,9 @@ Future<Map<String, Map<String, dynamic>>>
         Map<String, dynamic> leaveTodayData =
             leaveTodaySnapshot.data() as Map<String, dynamic>;
         if (leaveTodayData.containsKey('onLeaveMeals')) {
-          List<String> onLeaveMeals = leaveTodayData['onLeaveMeals'];
+          List<dynamic> onLeaveMealsDynamic = leaveTodayData['onLeaveMeals'];
+          List<String> onLeaveMeals = onLeaveMealsDynamic
+              .cast<String>(); // Casting List<dynamic> to List<String>
           if (onLeaveMeals.contains('Lunch')) {
             meal1++;
             numStudentForNextThreeMeals--;
@@ -133,7 +137,9 @@ Future<Map<String, Map<String, dynamic>>>
         Map<String, dynamic> leaveTomorrowData =
             leaveTomorrowSnapshot.data() as Map<String, dynamic>;
         if (leaveTomorrowData.containsKey('onLeaveMeals')) {
-          List<String> onLeaveMeals = leaveTomorrowData['onLeaveMeals'];
+          List<dynamic> onLeaveMealsDynamic = leaveTomorrowData['onLeaveMeals'];
+          List<String> onLeaveMeals = onLeaveMealsDynamic
+              .cast<String>(); // Casting List<dynamic> to List<String>
           if (onLeaveMeals.contains('Breakfast')) {
             meal3++;
             numStudentForNextThreeMeals--;
@@ -254,7 +260,9 @@ Future<Map<String, Map<String, dynamic>>>
         Map<String, dynamic> leaveTomorrowData =
             leaveTomorrowSnapshot.data() as Map<String, dynamic>;
         if (leaveTomorrowData.containsKey('onLeaveMeals')) {
-          List<String> onLeaveMeals = leaveTomorrowData['onLeaveMeals'];
+          List<dynamic> onLeaveMealsDynamic = leaveTomorrowData['onLeaveMeals'];
+          List<String> onLeaveMeals = onLeaveMealsDynamic
+              .cast<String>(); // Casting List<dynamic> to List<String>
           if (onLeaveMeals.contains('Breakfast')) {
             meal1++;
             numStudentForNextThreeMeals--;

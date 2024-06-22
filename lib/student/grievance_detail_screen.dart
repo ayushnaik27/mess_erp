@@ -59,7 +59,7 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
 
     if (now.difference(lastUpdated).inDays + 1 >= 7) {
       setState(() {
-        receipentEmail = 'naikayush68@gmail.com';
+        receipentEmail = 'ayushsn.it.22@nitj.ac.in';
       });
     }
 
@@ -230,7 +230,7 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
       <p>Regards,<br>Mess ERP Notifications Team</p>
   ''';
 
-      if (receipentEmail == 'deepakm.it.20@nitj.ac.in') {
+      if (receipentEmail == 'ayushsn.it.22@nitj.ac.in') {
         final sendReport = await send(message1, smtpServer);
         print('Message sent: $sendReport');
       } else {

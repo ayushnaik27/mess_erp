@@ -32,7 +32,7 @@ class MessBillDetailsScreen extends StatelessWidget {
             _buildInfoRow('Total Extra: ', '₹${messBill.totalExtra}'),
             const SizedBox(height: 10),
             if (messBill.extraList.isNotEmpty && timestamp != null)
-              _buildExtraItemsTable(timestamp),
+              _buildExtraItemsTable(timestamp, context),
           ],
         ),
       ),
@@ -53,7 +53,7 @@ class MessBillDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildExtraItemsTable(Timestamp timestamp) {
+  Widget _buildExtraItemsTable(Timestamp timestamp, BuildContext context) {
     return DataTable(
       dataRowMaxHeight: 100,
       columns: const [
@@ -65,9 +65,13 @@ class MessBillDetailsScreen extends StatelessWidget {
         for (var extra in messBill.extraList)
           for (var item in extra['items'])
             DataRow(cells: [
-              DataCell(Text('At ${DateFormat.jm().format(timestamp.toDate())} on ${DateFormat.yMMMd().format(timestamp.toDate())}')),
-              DataCell(Text(item['item'])),
-              DataCell(Text('₹${item['amount']}')),
+              DataCell(Text(
+                  'At ${DateFormat.jm().format(extra['date'].toDate())} on ${DateFormat.yMMMMd().format(extra['date'].toDate())}',
+                  style: Theme.of(context).textTheme.labelMedium)),
+              DataCell(Text(item['item'],
+                  style: Theme.of(context).textTheme.bodySmall)),
+              DataCell(Text('₹${item['amount']}',
+                  style: Theme.of(context).textTheme.bodySmall)),
             ]),
       ],
     );

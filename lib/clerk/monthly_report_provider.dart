@@ -147,7 +147,7 @@ class MonthlyReportProvider with ChangeNotifier {
         });
       });
 
-      log(studentExtra.toString());
+      log('Student Extra $studentExtra');
 
       await FirebaseFirestore.instance
           .collection('loginCredentials')
