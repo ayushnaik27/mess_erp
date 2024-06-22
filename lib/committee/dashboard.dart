@@ -44,7 +44,7 @@ class _CommitteeDashboardScreenState extends State<CommitteeDashboardScreen> {
                   CircleAvatar(
                     backgroundColor: Theme.of(context).colorScheme.tertiary,
                     radius: 30,
-                    child: Text(user.name[0].toUpperCase()),
+                    child: const Text('M'),
                     // child: Text("H"),
                   ),
                   const SizedBox(width: 16),
