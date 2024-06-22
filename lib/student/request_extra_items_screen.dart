@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mess_erp/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +18,7 @@ class RequestExtraItemsScreen extends StatefulWidget {
 class _RequestExtraItemsScreenState extends State<RequestExtraItemsScreen> {
   // String selectedItem = '';
   ExtraItem selectedItem = ExtraItem(name: '', price: 0);
-
+  TextEditingController quantityController = TextEditingController();
   int quantity = 0;
   String rollNumber = '';
 
@@ -41,7 +42,9 @@ class _RequestExtraItemsScreenState extends State<RequestExtraItemsScreen> {
                       return Container();
                     }
                     rollNumber = snapshot.data!.username;
-                    return Text(snapshot.data!.username);
+                    return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(snapshot.data!.username));
                   }),
               FutureBuilder(
                 future: Provider.of<ExtraItemsProvider>(context, listen: false)
@@ -52,75 +55,134 @@ class _RequestExtraItemsScreenState extends State<RequestExtraItemsScreen> {
                       child: CircularProgressIndicator(),
                     );
                   }
-                  return DropdownButton<String>(
-                    value: selectedItem.name,
-                    items: [
-                      const DropdownMenuItem(
-                          value: '', child: Text('Select an extra item')),
-                      ...Provider.of<ExtraItemsProvider>(context, listen: false)
-                          .extraItems
-                          .map((ExtraItem item) {
-                        return DropdownMenuItem(
-                          value: item.name,
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start
-                            ,children: [
-                            Text(item.name),
-                            Text('Price:  ₹${item.price}',style: TextStyle(fontSize: 10),),
-                          ]),
-                        );
-                      }).toList(),
-
-                      // Add extra item names fetched from table 5
-                    ],
-                    onChanged: (String? value) {
-                      setState(() {
-                        selectedItem.name = value ?? '';
-                      });
-                    },
-                    hint: const Text('Select an extra item'),
+                  return Container(
+                    padding: const EdgeInsets.all(8),
+                    margin: const EdgeInsets.symmetric(horizontal: 8),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.primary,
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                    child: DropdownButton<String>(
+                      value: selectedItem.name,
+                      items: [
+                        DropdownMenuItem(
+                          value: '',
+                          child: Text(
+                            'Select an extra item',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                        ...Provider.of<ExtraItemsProvider>(context,
+                                listen: false)
+                            .extraItems
+                            .map((ExtraItem item) {
+                          return DropdownMenuItem(
+                            value: item.name,
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.name,
+                                    style:
+                                        Theme.of(context).textTheme.bodyMedium,
+                                  ),
+                                  Text(
+                                    'Price:  ₹${item.price}',
+                                    style:
+                                        Theme.of(context).textTheme.bodySmall,
+                                  ),
+                                ]),
+                          );
+                        }).toList(),
+                      ],
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedItem.name = value ?? '';
+                        });
+                      },
+                      hint: const Text('Select an extra item'),
+                      isExpanded: true,
+                    ),
                   );
                 },
               ),
               const SizedBox(height: 16.0),
-              TextFormField(
-                keyboardType: TextInputType.number,
-                decoration: const InputDecoration(labelText: 'Enter Quantity'),
-                onChanged: (value) {
-                  setState(() {
-                    quantity = int.tryParse(value) ?? 0;
-                  });
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: TextFormField(
+                  keyboardType: TextInputType.number,
+                  cursorColor: Colors.black,
+                  decoration: InputDecoration(
+                    labelText: 'Enter Quantity',
+                    focusColor: Theme.of(context).colorScheme.tertiary,
+                    labelStyle: Theme.of(context).textTheme.bodyMedium,
+                    prefixIconColor: Colors.black,
+                    iconColor: Colors.black,
+                    hoverColor: Colors.black,
+                    focusedBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                      ),
+                    ),
+                    enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  onChanged: (value) {
+                    quantityController.text = value;
+                  },
+                ),
               ),
               const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  print('Selected Item: $selectedItem, Quantity: $quantity');
-                  if (selectedItem.name.isEmpty || quantity == 0) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                        content:
-                            Text('Please select an item and enter quantity')));
-                    return;
-                  }
-                  ExtraItem ourItem =
-                      Provider.of<ExtraItemsProvider>(context, listen: false)
-                          .extraItems
-                          .firstWhere(
-                              (element) => element.name == selectedItem.name);
-                  print(ourItem.name);
-                  print(ourItem.price);
-
-                  Provider.of<ExtraItemsProvider>(context, listen: false)
-                      .addExtraItemRequest(
-                          rollNumber: rollNumber,
-                          itemName: selectedItem.name,
-                          quantity: quantity,
-                          amount: ourItem.price * quantity);
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Extra item request submitted')));
-                  Navigator.of(context).pop();
-                },
-                child: const Text('Submit Request'),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      quantity = int.tryParse(quantityController.text) ?? 0;
+                    });
+                    print('Selected Item: $selectedItem, Quantity: $quantity');
+                    if (selectedItem.name.isEmpty || quantity == 0) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text(
+                              'Please select an item and enter quantity')));
+                      return;
+                    }
+                    ExtraItem ourItem =
+                        Provider.of<ExtraItemsProvider>(context, listen: false)
+                            .extraItems
+                            .firstWhere(
+                                (element) => element.name == selectedItem.name);
+                    print(ourItem.name);
+                    print(ourItem.price);
+                    Provider.of<ExtraItemsProvider>(context, listen: false)
+                        .addExtraItemRequest(
+                            rollNumber: rollNumber,
+                            itemName: selectedItem.name,
+                            quantity: quantity,
+                            amount: ourItem.price * quantity);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Extra item request submitted'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Theme.of(context).colorScheme.tertiary,
+                  ),
+                  child: Text(
+                    'Submit Request',
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyMedium!
+                        .copyWith(color: Colors.white),
+                  ),
+                ),
               ),
             ],
           ),
