@@ -1,7 +1,4 @@
-import 'dart:developer';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mess_erp/clerk/mess_bill_provider.dart';
@@ -28,7 +25,7 @@ class StudentDashboardScreen extends StatefulWidget {
 
 class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   List<MessBill> messBills = [];
-  late bool isMealLive;
+  bool isMealLive = false;
   @override
   void initState() {
     super.initState();
@@ -67,12 +64,17 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         child: ListView(
           children: [
             DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+              ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   CircleAvatar(
+                    backgroundColor: Theme.of(context).colorScheme.tertiary,
                     radius: 30,
                     child: Text(user.name[0].toUpperCase()),
+                    // child: Text("H"),
                   ),
                   const SizedBox(width: 16),
                   Column(
@@ -173,6 +175,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         ),
       ),
       appBar: AppBar(
+        backgroundColor: Theme.of(context).colorScheme.secondary,
         title: const Text('Student Dashboard'),
         actions: [
           isMealLive
@@ -185,21 +188,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   },
                   icon: const Icon(Icons.qr_code_scanner))
               : const SizedBox(),
-          // TextButton(
-          //   onPressed: () => showAdaptiveDialog(
-          //     context: context,
-          //     builder: (context) {
-          //       return ChangePasswordDialog(
-          //         rollNumber: widget.rollNumber,
-          //         changePassword: changePassword,
-          //       );
-          //     },
-          //   ),
-          //   child: const Text(
-          //     'change password',
-          //     style: TextStyle(fontSize: 10),
-          //   ),
-          // ),
         ],
       ),
       body: SafeArea(
@@ -282,7 +270,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                                       announcements[index].file!.path,
                                       openBill: openBill);
 
-                              print(announcements[index].file!.path);
+                              print(announcements[index].file?.path);
                             },
                           );
                         },
@@ -302,121 +290,127 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   ),
                   shrinkWrap: true,
                   children: [
-                    Card(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.food_bank),
-                          const SizedBox(height: 8.0),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pushNamed(
-                                  RequestExtraItemsScreen.routeName,
-                                  arguments: user.username);
-                            },
-                            child: const Text('Request Extra Items'),
-                          ),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                            RequestExtraItemsScreen.routeName,
+                            arguments: user.username);
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.food_bank),
+                            SizedBox(height: 16.0),
+                            Text('Request Extra Items'),
+                          ],
+                        ),
                       ),
                     ),
-                    Card(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.calendar_month),
-                          const SizedBox(height: 8.0),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pushNamed(
-                                  ApplyLeaveScreen.routeName,
-                                  arguments: user.username);
-                            },
-                            child: const Text('Apply for Leave'),
-                          ),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed(
+                            ApplyLeaveScreen.routeName,
+                            arguments: user.username);
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.calendar_month),
+                            SizedBox(height: 16.0),
+                            Text('Apply for Leave'),
+                          ],
+                        ),
                       ),
                     ),
-                    Card(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.pageview),
-                          const SizedBox(height: 8.0),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .push(MaterialPageRoute(builder: (context) {
-                                return MessBillScreen(studentId: user.username);
-                              }));
-                            },
-                            child: const Text('View Mess Bill'),
-                          ),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (context) {
+                          return MessBillScreen(studentId: user.username);
+                        }));
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.pageview),
+                            SizedBox(height: 16.0),
+                            Text('View Mess Bill'),
+                          ],
+                        ),
                       ),
                     ),
-                    Card(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.food_bank),
-                          const SizedBox(height: 8.0),
-                          TextButton(
-                            onPressed: () {
-                              MessMenuHelper.viewMessMenu();
-                            },
-                            child: const Text('View Mess Menu'),
-                          ),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        MessMenuHelper.viewMessMenu();
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.food_bank),
+                            SizedBox(height: 16.0),
+                            Text('View Mess Menu'),
+                          ],
+                        ),
                       ),
                     ),
-                    Card(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.error),
-                          const SizedBox(height: 8.0),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pushNamed('/fileGrievance');
-                            },
-                            child: const Text('File Grievance'),
-                          ),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed('/fileGrievance');
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.error),
+                            SizedBox(height: 16.0),
+                            Text('File Grievance'),
+                          ],
+                        ),
                       ),
                     ),
-                    Card(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.track_changes_outlined),
-                          const SizedBox(height: 8.0),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pushNamed('/trackComplaints');
-                            },
-                            child: const Text('Track Complaints'),
-                          ),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).pushNamed('/trackComplaints');
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.track_changes_outlined),
+                            SizedBox(height: 16.0),
+                            Text('Track Complaints'),
+                          ],
+                        ),
                       ),
                     ),
-                    Card(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.food_bank),
-                          const SizedBox(height: 8.0),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .push(MaterialPageRoute(builder: (context) {
-                                return TrackLeavesScreen(
-                                    studentRollNumber: user.username);
-                              }));
-                            },
-                            child: const Text('Track Leaves'),
-                          ),
-                        ],
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (context) {
+                          return TrackLeavesScreen(
+                              studentRollNumber: user.username);
+                        }));
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: const Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.food_bank),
+                            SizedBox(height: 16.0),
+                            Text('Track Leaves'),
+                          ],
+                        ),
                       ),
                     ),
                   ],

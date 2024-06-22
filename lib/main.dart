@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:mess_erp/auth/login_screen.dart';
 import 'package:mess_erp/clerk/dashboard.dart';
 import 'package:mess_erp/clerk/mess_bill_provider.dart';
@@ -10,7 +11,6 @@ import 'package:mess_erp/committee/all_grievances_screen.dart';
 import 'package:mess_erp/committee/bill_screen.dart';
 import 'package:mess_erp/committee/dashboard.dart';
 import 'package:mess_erp/committee/extra_items_screen.dart';
-import 'package:mess_erp/committee/view_grievance_details_committee.dart';
 import 'package:mess_erp/firebase_options.dart';
 import 'package:mess_erp/manager/dashboard.dart';
 import 'package:mess_erp/manager/generate_voucher_screen.dart';
@@ -62,7 +62,12 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'Flutter Demo',
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          colorScheme: const ColorScheme.light(
+            primary: Color(0xFFF1E5D1),
+            secondary: Color(0xFFDBB5B5),
+            tertiary: Color(0xFF987070),
+            brightness: Brightness.light,
+          ),
           useMaterial3: true,
         ),
         routes: {
@@ -96,7 +101,6 @@ class MyApp extends StatelessWidget {
               const TrackComplaintScreen(),
           AllGrievancesScreen.routeName: (context) =>
               const AllGrievancesScreen(),
-          
         },
         home: const LoginScreen(),
       ),

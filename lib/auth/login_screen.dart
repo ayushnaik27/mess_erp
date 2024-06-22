@@ -175,9 +175,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => StudentDashboardScreen(
-                                      rollNumber: usernameController.text,
-                                    )),
+                              builder: (context) => StudentDashboardScreen(
+                                rollNumber: usernameController.text,
+                              ),
+                            ),
                           );
                           passwordController.clear();
                           usernameController.clear();
