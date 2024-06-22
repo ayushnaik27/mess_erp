@@ -66,11 +66,12 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   'Pulses',
                   'Grams',
                   'Cereals'
-                  'Tea',
+                      'Tea',
                   'Cornflakes',
                   'Maggie',
                   'Other',
-                ].map((name) =>
+                ]
+                    .map((name) =>
                         DropdownMenuItem(value: name, child: Text(name)))
                     .toList(),
               ),
@@ -88,7 +89,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 onChanged: (value) {
                   ratePerUnit = double.tryParse(value) ?? 0.0;
                 },
-                decoration: const InputDecoration(labelText: 'Rate per Unit'),
+                decoration: InputDecoration(
+                  labelText: 'Rate per Unit',
+                  labelStyle: Theme.of(context).textTheme.bodyMedium,
+                ),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 16.0),
@@ -96,8 +100,10 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 onChanged: (value) {
                   quantityReceived = int.tryParse(value) ?? 0;
                 },
-                decoration:
-                    const InputDecoration(labelText: 'Quantity Received'),
+                decoration: InputDecoration(
+                  labelText: 'Quantity Received',
+                  labelStyle: Theme.of(context).textTheme.bodyMedium,
+                ),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 16.0),
@@ -116,7 +122,14 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   );
                   Navigator.pop(context);
                 },
-                child: const Text('Add Item'),
+                style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).primaryColor,
+                ),
+                child: Text(
+                  'Add Item',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.tertiary),
+                ),
               ),
             ],
           ),

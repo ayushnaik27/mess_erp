@@ -157,7 +157,13 @@ class _PreviousVouchersScreenState extends State<PreviousVouchersScreen> {
                   clicked = true;
                 });
               },
-              child: const Text('Submit'),
+              style: ElevatedButton.styleFrom(
+                primary: Theme.of(context).primaryColor,
+              ),
+              child: Text(
+                'Submit',
+                style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+              ),
             ),
             // Implement the UI to show the fetched vouchers here
             const SizedBox(height: 16),

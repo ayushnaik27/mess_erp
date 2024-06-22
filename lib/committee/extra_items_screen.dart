@@ -31,9 +31,9 @@ class _ExtraItemsScreenState extends State<ExtraItemsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
+            Text(
               'Manage Extra Items:',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 16.0),
             Expanded(
@@ -41,19 +41,19 @@ class _ExtraItemsScreenState extends State<ExtraItemsScreen> {
                   future: extraItemsProvider.fetchExtraItems(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                          child: CircularProgressIndicator(
-                        
-                      ));
+                      return const Center(child: CircularProgressIndicator());
                     } else {
                       return Consumer<ExtraItemsProvider>(
-                        builder:(context, extraItemData, child) =>  ListView.builder(
+                        builder: (context, extraItemData, child) =>
+                            ListView.builder(
                           itemCount: extraItemData.extraItems.length,
                           itemBuilder: (context, index) {
                             final item = extraItemData.extraItems[index];
                             return ListTile(
                               title: Text(
-                                  '${item.name} - ₹${item.price.toString()}'),
+                                '${item.name} - ₹${item.price.toString()}',
+                                style: Theme.of(context).textTheme.bodyMedium,
+                              ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -66,9 +66,33 @@ class _ExtraItemsScreenState extends State<ExtraItemsScreen> {
                                   IconButton(
                                     icon: const Icon(Icons.delete),
                                     onPressed: () {
-                                      extraItemData
-                                          .deleteExtraItem(item.id!);
-                                      setState(() {});
+                                      showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return AlertDialog(
+                                              title: Text('Delete ${item.name}'),
+                                              content: Text(
+                                                  'Are you sure you want to delete ${item.name} ?'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                  },
+                                                  child: const Text('Cancel'),
+                                                ),
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    Navigator.of(context).pop();
+                                                    extraItemData
+                                                        .deleteExtraItem(
+                                                            item.id!);
+                                                    setState(() {});
+                                                  },
+                                                  child: const Text('Delete'),
+                                                ),
+                                              ],
+                                            );
+                                          });
                                     },
                                   ),
                                 ],
@@ -85,7 +109,15 @@ class _ExtraItemsScreenState extends State<ExtraItemsScreen> {
               onPressed: () {
                 _showAddItemDialog();
               },
-              child: const Text('Add New Item'),
+
+              style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).primaryColor,
+                ),
+                child: Text(
+                  'Add New Item',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.tertiary),
+                ),
             ),
           ],
         ),
@@ -149,17 +181,26 @@ class _ExtraItemsScreenState extends State<ExtraItemsScreen> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text('Edit Extra Item'),
+          title: Text('Edit Extra Item',
+              style: Theme.of(context).textTheme.bodyMedium),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: itemNameController,
-                decoration: const InputDecoration(labelText: 'Item Name'),
+                style: Theme.of(context).textTheme.bodyMedium,
+                decoration: InputDecoration(
+                  labelText: 'Item Name',
+                  labelStyle: Theme.of(context).textTheme.bodyMedium,
+                ),
               ),
               TextField(
                 controller: itemPriceController,
-                decoration: const InputDecoration(labelText: 'Item Price'),
+                style: Theme.of(context).textTheme.bodyMedium,
+                decoration: InputDecoration(
+                  labelText: 'Item Price',
+                  labelStyle: Theme.of(context).textTheme.bodyMedium,
+                ),
                 keyboardType: TextInputType.number,
               ),
             ],

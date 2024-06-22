@@ -16,15 +16,16 @@ class StockProvider extends ChangeNotifier {
     required double balance,
   }) async {
     try {
-      QuerySnapshot<Map<String, dynamic>> snapshot =
-          await _stockCollection.orderBy('transactionDate',descending: false).get() as QuerySnapshot<Map<String, dynamic>>;
+      QuerySnapshot<Map<String, dynamic>> snapshot = await _stockCollection
+          .orderBy('transactionDate', descending: false)
+          .get() as QuerySnapshot<Map<String, dynamic>>;
 
       if (snapshot.docs.isNotEmpty) {
         print('Document exists!');
 
         final double previousBalance = snapshot.docs.last['balance'];
 
-        if(snapshot.docs.where((element) => element == itemName).isEmpty){
+        if (snapshot.docs.where((element) => element == itemName).isEmpty) {
           print('Item does not exist');
           await _stockCollection.doc().set({
             'itemName': itemName,
@@ -42,7 +43,7 @@ class StockProvider extends ChangeNotifier {
           });
           return;
         }
-        
+
         final int previousQuantity = snapshot.docs.lastWhere(
             (element) => element['itemName'] == itemName)['quantity'] as int;
         print('Previous balance: $previousBalance');
@@ -80,7 +81,6 @@ class StockProvider extends ChangeNotifier {
       }
     } catch (e) {
       print('Error adding stock: $e');
-      
     }
   }
 
@@ -117,7 +117,7 @@ class StockProvider extends ChangeNotifier {
 
   Future<void> issueStock(
       String itemName, int quantityToIssue, double amount) async {
-        log('Issuing stock');
+    log('Issuing stock');
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await _stockCollection
           .orderBy('transactionDate', descending: false)
@@ -127,10 +127,11 @@ class StockProvider extends ChangeNotifier {
         // Document with the specified itemName exists
         print('Document exists!');
         // You can access the document data using snapshot.docs[0].data() or iterate through them
-        final double previousBalance = double.parse(snapshot.docs.last['balance'].toString());
+        final double previousBalance =
+            double.parse(snapshot.docs.last['balance'].toString());
 
-        int previousQuantity = snapshot.docs.lastWhere((element) =>
-            element['itemName'] == itemName)['quantity'] as int;
+        int previousQuantity = snapshot.docs.lastWhere(
+            (element) => element['itemName'] == itemName)['quantity'] as int;
         log('Previous quantity: $previousQuantity');
         final DateTime transactionDate = DateTime.now();
         print('Previous balance: $previousBalance');

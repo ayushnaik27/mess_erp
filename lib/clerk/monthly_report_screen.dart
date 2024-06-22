@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:mess_erp/clerk/mess_bill_provider.dart';
@@ -62,7 +64,10 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
   void getExtra() async {
     if (Provider.of<MonthlyReportProvider>(context, listen: false)
             .totalExtraConsumed !=
-        -1) return;
+        -1) {
+      return;
+    }
+
     await Provider.of<MonthlyReportProvider>(context, listen: false)
         .getTotalExtra();
   }
@@ -232,9 +237,10 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
                         controller: couponPriceController,
                         onTapOutside: (event) =>
                             FocusScope.of(context).unfocus(),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                             labelText: 'Enter the amount',
-                            border: OutlineInputBorder(
+                            labelStyle: Theme.of(context).textTheme.labelLarge,
+                            border: const OutlineInputBorder(
                                 borderSide: BorderSide(width: 0.1))),
                       ),
                     )
@@ -337,8 +343,9 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
                         controller: perDietCostController,
                         onTapOutside: (event) =>
                             FocusScope.of(context).unfocus(),
-                        decoration: const InputDecoration(
+                        decoration: InputDecoration(
                             labelText: 'Enter the amount',
+                            labelStyle: Theme.of(context).textTheme.labelLarge,
                             border: OutlineInputBorder(
                                 borderSide: BorderSide(width: 0.1))),
                       ),
@@ -389,9 +396,15 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
                             generating = false;
                           });
                         },
+                  style: ElevatedButton.styleFrom(
+                      primary: Theme.of(context).primaryColor),
                   child: generating
-                      ? const Text('Generating')
-                      : const Text('Generate Bill')),
+                      ? Text('Generating',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.tertiary))
+                      : Text('Generate Bill',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.tertiary))),
             ],
           ),
         ),

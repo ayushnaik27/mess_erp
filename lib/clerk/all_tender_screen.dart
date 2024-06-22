@@ -57,17 +57,18 @@ class _AllTendersScreenState extends State<AllTendersScreen> {
                   itemBuilder: (context, index) {
                     final tender = _tenders[index];
                     return ListTile(
-                      title: Text(tender.title),
+                      title: Text(tender.title,
+                          style: Theme.of(context).textTheme.bodyMedium),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             'Deadline: ${DateFormat('dd-MM-yyyy').format(tender.deadline)}',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.labelMedium,
                           ),
                           Text(
                             'Opening Date: ${DateFormat('dd-MM-yyyy').format(tender.openingDate)}',
-                            style: const TextStyle(fontWeight: FontWeight.bold),
+                            style: Theme.of(context).textTheme.labelMedium,
                           ),
                           // Add more relevant information as needed
                         ],

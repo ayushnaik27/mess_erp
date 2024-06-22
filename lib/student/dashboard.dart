@@ -198,7 +198,11 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 'Log Out',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
-              onTap: () {},
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+
+              },
             )
           ],
         ),

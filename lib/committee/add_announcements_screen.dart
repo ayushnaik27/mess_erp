@@ -40,21 +40,30 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
             children: [
               TextFormField(
                 controller: _titleController,
-                decoration: const InputDecoration(labelText: 'Title'),
+                decoration: InputDecoration(
+                    labelText: 'Title',
+                    labelStyle: Theme.of(context).textTheme.bodyMedium),
               ),
               const SizedBox(height: 16.0),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(
+                    labelText: 'Description',
+                    labelStyle: Theme.of(context).textTheme.bodyMedium),
               ),
               const SizedBox(height: 16.0),
-              _filePath != null
-                  ? Container(child: Image.file(File(_filePath!)))
-                  : Container(),
+              _filePath != null ? Image.file(File(_filePath!)) : Container(),
               const SizedBox(height: 16.0),
               ElevatedButton(
                 onPressed: _pickFile,
-                child: const Text('Pick File'),
+                style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).primaryColor,
+                ),
+                child: Text(
+                  'Pick File',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.tertiary),
+                ),
               ),
               const SizedBox(height: 16.0),
               ElevatedButton(
@@ -64,8 +73,8 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
                       title: _titleController.text,
                       description: _descriptionController.text,
                     );
-                    AnnouncementServices().uploadAnnouncementWithoutFile(
-                        newAnnouncement);
+                    AnnouncementServices()
+                        .uploadAnnouncementWithoutFile(newAnnouncement);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Announcement Added'),
@@ -93,7 +102,14 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
                   Navigator.pop(
                       context); // Return to the previous screen after adding announcement
                 },
-                child: const Text('Add Announcement'),
+                style: ElevatedButton.styleFrom(
+                  primary: Theme.of(context).primaryColor,
+                ),
+                child: Text(
+                  'Add Announcement',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.tertiary),
+                ),
               ),
             ],
           ),

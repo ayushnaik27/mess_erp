@@ -42,7 +42,7 @@ class TenderDetailsClerkScreen extends StatelessWidget {
               children: [
                 Text(
                   'Item: ${item.itemName}, Quantity: ${item.quantity} ${item.units}',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 DataTable(
                   columns: const [
@@ -57,10 +57,18 @@ class TenderDetailsClerkScreen extends StatelessWidget {
                       .map(
                         (entry) => DataRow(
                           cells: [
-                            DataCell(Text((entry.key + 1).toString())),
-                            DataCell(Text(entry.value.vendorName)),
-                            DataCell(Text(entry.value.itemPrices[item.itemName]!
-                                .toString())),
+                            DataCell(Text(
+                              (entry.key + 1).toString(),
+                              style: Theme.of(context).textTheme.labelMedium,
+                            )),
+                            DataCell(Text(entry.value.vendorName,
+                                style:
+                                    Theme.of(context).textTheme.labelMedium)),
+                            DataCell(Text(
+                                entry.value.itemPrices[item.itemName]!
+                                    .toString(),
+                                style:
+                                    Theme.of(context).textTheme.labelMedium)),
                           ],
                         ),
                       )

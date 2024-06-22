@@ -127,19 +127,40 @@ class _GrievanceDetailsForCommitteeScreenState
                         onPressed: () {
                           _showResolveDialog();
                         },
-                        child: const Text('Resolve'),
+                        style: ElevatedButton.styleFrom(
+                          primary: Theme.of(context).primaryColor,
+                        ),
+                        child: Text(
+                          'Resolve',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.tertiary),
+                        ),
                       ),
                       ElevatedButton(
                         onPressed: () {
                           _showForwardDialog();
                         },
-                        child: const Text('Forward'),
+                        style: ElevatedButton.styleFrom(
+                          primary: Theme.of(context).primaryColor,
+                        ),
+                        child: Text(
+                          'Forward',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.tertiary),
+                        ),
                       ),
                       ElevatedButton(
                         onPressed: () {
                           _showMarkInProgressDialog();
                         },
-                        child: const Text('Mark in Process'),
+                        style: ElevatedButton.styleFrom(
+                          primary: Theme.of(context).primaryColor,
+                        ),
+                        child: Text(
+                          'Mark In Process',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.tertiary),
+                        ),
                       ),
                     ],
                   ),

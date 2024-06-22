@@ -11,7 +11,7 @@ import '../providers/user_provider.dart';
 class FileGrievanceScreen extends StatefulWidget {
   static const routeName = '/fileGrievance';
 
-  FileGrievanceScreen({super.key});
+  const FileGrievanceScreen({super.key});
 
   @override
   State<FileGrievanceScreen> createState() => _FileGrievanceScreenState();
@@ -64,23 +64,28 @@ class _FileGrievanceScreenState extends State<FileGrievanceScreen> {
                 }
               },
               style: ElevatedButton.styleFrom(
-                primary: theme.colorScheme.secondary,
+                backgroundColor: theme.colorScheme.secondary,
                 textStyle: theme.textTheme.bodySmall,
               ),
               child: Column(
                 children: [
-                  Text('Upload Supporting Document (if any)', style: theme.textTheme.bodyMedium),
-                  Text('PDF only', style: TextStyle(fontSize: 8, color: theme.colorScheme.tertiary)),
+                  Text('Upload Supporting Document (if any)',
+                      style: theme.textTheme.bodySmall),
+                  Text('PDF only',
+                      style: TextStyle(
+                          fontSize: 8, color: theme.colorScheme.tertiary)),
                 ],
               ),
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                if (titleController.text.isEmpty || descController.text.isEmpty) {
+                if (titleController.text.isEmpty ||
+                    descController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Please fill all the fields', style: theme.textTheme.bodyMedium),
+                      content: Text('Please fill all the fields',
+                          style: theme.textTheme.bodyMedium),
                     ),
                   );
                   return;
@@ -102,13 +107,15 @@ class _FileGrievanceScreenState extends State<FileGrievanceScreen> {
   void submitGrievance(BuildContext context) async {
     String grievanceId = generateGrievanceId();
     DateTime timestamp = DateTime.now();
-    MyUser user = await Provider.of<UserProvider>(context, listen: false).getUser();
+    MyUser user =
+        await Provider.of<UserProvider>(context, listen: false).getUser();
     String rollNumber = user.username;
     String name = user.name;
     String fileUrl = '';
 
     if (_filePath != '') {
-      Reference ref = FirebaseStorage.instance.ref().child('grievances').child(grievanceId);
+      Reference ref =
+          FirebaseStorage.instance.ref().child('grievances').child(grievanceId);
       await ref.putFile(File(_filePath!));
       fileUrl = await ref.getDownloadURL();
       print('File uploaded to $fileUrl');
@@ -135,11 +142,13 @@ class _FileGrievanceScreenState extends State<FileGrievanceScreen> {
       reminderCount: 0,
     );
 
-    Provider.of<GrievanceProvider>(context, listen: false).fileGrievance(grievance);
+    Provider.of<GrievanceProvider>(context, listen: false)
+        .fileGrievance(grievance);
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Grievance filed successfully', style: Theme.of(context).textTheme.bodyMedium),
+        content: Text('Grievance filed successfully',
+            style: Theme.of(context).textTheme.bodyMedium),
       ),
     );
     Navigator.of(context).pop();

@@ -83,9 +83,9 @@ class MonthlyReportProvider with ChangeNotifier {
             element['date']['month'] == previousMonth &&
             element['date']['year'] == previousYear);
 
-    _previousMonthStockBalance = requiredSnapshot['balance'];
+    _previousMonthStockBalance = double.parse(requiredSnapshot['balance'].toString());
     notifyListeners();
-    return requiredSnapshot['balance'];
+    return double.parse(requiredSnapshot['balance'].toString());
   }
 
   Future<double> getNextMonthStockBalance() async {
@@ -117,6 +117,7 @@ class MonthlyReportProvider with ChangeNotifier {
   }
 
   Future<double> getTotalExtra() async {
+    log('getTotalExtra');
     print('getTotalExtra');
     double totalExtra = 0.0;
 
@@ -146,6 +147,8 @@ class MonthlyReportProvider with ChangeNotifier {
         });
       });
 
+      log(studentExtra.toString());
+
       await FirebaseFirestore.instance
           .collection('loginCredentials')
           .doc('roles')
@@ -164,7 +167,8 @@ class MonthlyReportProvider with ChangeNotifier {
 
   Future<int> getTotalDiets() async {
     print('getTotalDiets');
-    int previousMonth = DateTime.now().month == 1 ? 12 : DateTime.now().month - 1;
+    int previousMonth =
+        DateTime.now().month == 1 ? 12 : DateTime.now().month - 1;
     int currentMonth = DateTime.now().month;
     Map<int, int> monthAndDays = {
       1: 31,
