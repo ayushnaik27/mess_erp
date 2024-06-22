@@ -13,8 +13,6 @@ class ItemEntry {
   });
 }
 
-
-
 class AddItemScreen extends StatefulWidget {
   final Function(ItemEntry) onAddItem;
 
@@ -34,7 +32,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
   @override
   void initState() {
     super.initState();
-    itemName = 'x1'; // Default to 'x1'
+    itemName = 'Atta'; // Default to 'Atta'
     isOtherItem = false;
   }
 
@@ -58,8 +56,21 @@ class _AddItemScreenState extends State<AddItemScreen> {
                     isOtherItem = itemName == 'Other';
                   });
                 },
-                items: ['x1', 'y1', 'z1', 'Other']
-                    .map((name) =>
+                items: [
+                  'Rice',
+                  'Atta',
+                  'Oil',
+                  'Butter',
+                  'Milk',
+                  'Curd',
+                  'Pulses',
+                  'Grams',
+                  'Cereals'
+                  'Tea',
+                  'Cornflakes',
+                  'Maggie',
+                  'Other',
+                ].map((name) =>
                         DropdownMenuItem(value: name, child: Text(name)))
                     .toList(),
               ),
@@ -69,7 +80,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   onChanged: (value) {
                     itemName = value;
                   },
-                  decoration: const InputDecoration(labelText: 'Enter Item Name'),
+                  decoration:
+                      const InputDecoration(labelText: 'Enter Item Name'),
                 ),
               const SizedBox(height: 16.0),
               TextField(
@@ -84,7 +96,8 @@ class _AddItemScreenState extends State<AddItemScreen> {
                 onChanged: (value) {
                   quantityReceived = int.tryParse(value) ?? 0;
                 },
-                decoration: const InputDecoration(labelText: 'Quantity Received'),
+                decoration:
+                    const InputDecoration(labelText: 'Quantity Received'),
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 16.0),
@@ -112,4 +125,3 @@ class _AddItemScreenState extends State<AddItemScreen> {
     );
   }
 }
-

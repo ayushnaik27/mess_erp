@@ -17,12 +17,32 @@ class StockProvider extends ChangeNotifier {
   }) async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot =
-          await _stockCollection.get() as QuerySnapshot<Map<String, dynamic>>;
+          await _stockCollection.orderBy('transactionDate',descending: false).get() as QuerySnapshot<Map<String, dynamic>>;
 
       if (snapshot.docs.isNotEmpty) {
         print('Document exists!');
 
         final double previousBalance = snapshot.docs.last['balance'];
+
+        if(snapshot.docs.where((element) => element == itemName).isEmpty){
+          print('Item does not exist');
+          await _stockCollection.doc().set({
+            'itemName': itemName,
+            'transactionDate': transactionDate,
+            'date': {
+              'day': transactionDate.day,
+              'month': transactionDate.month,
+              'year': transactionDate.year,
+            },
+            'vendor': vendor,
+            'receivedQuantity': receivedQuantity,
+            'issuedQuantity': issuedQuantity,
+            'balance': balance + previousBalance,
+            'quantity': receivedQuantity,
+          });
+          return;
+        }
+        
         final int previousQuantity = snapshot.docs.lastWhere(
             (element) => element['itemName'] == itemName)['quantity'] as int;
         print('Previous balance: $previousBalance');
@@ -43,7 +63,7 @@ class StockProvider extends ChangeNotifier {
       } else {
         // Document does not exist
         print('Document does not exist!');
-        await _stockCollection.doc("1").set({
+        await _stockCollection.doc().set({
           'itemName': itemName,
           'transactionDate': transactionDate,
           'date': {
@@ -60,6 +80,7 @@ class StockProvider extends ChangeNotifier {
       }
     } catch (e) {
       print('Error adding stock: $e');
+      
     }
   }
 
