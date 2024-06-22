@@ -1,8 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mess_erp/auth/login_screen.dart';
 import 'package:mess_erp/clerk/dashboard.dart';
 import 'package:mess_erp/clerk/mess_bill_provider.dart';
@@ -65,9 +62,9 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeData(
           colorScheme: const ColorScheme.light(
-            primary: Color(0xFFF1E5D1),
-            secondary: Color(0xFFDBB5B5),
-            tertiary: Color(0xFF987070),
+            primary: Color.fromRGBO(249, 214, 137, 1),
+            secondary: Color.fromRGBO(224, 167, 94,1),
+            tertiary: Color.fromRGBO(151, 49, 49,1),
             brightness: Brightness.light,
           ),
           textTheme: const TextTheme(
@@ -115,7 +112,7 @@ class MyApp extends StatelessWidget {
           ),
           useMaterial3: true,
           appBarTheme: const AppBarTheme(
-            backgroundColor: Color(0xFFDBB5B5),
+            backgroundColor: Color.fromRGBO(224, 167, 94, 1),
             titleTextStyle: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,

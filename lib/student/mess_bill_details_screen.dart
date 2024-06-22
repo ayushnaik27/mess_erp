@@ -11,14 +11,11 @@ class MessBillDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Timestamp? timestamp;
 
-    // Get the timestamp of the first extra item
-    Timestamp timestamp = Timestamp.now();
-
-    if(messBill.extraList.isNotEmpty)
-    Timestamp timestamp = messBill.extraList[0]['date'] as Timestamp;
-
-
+    if (messBill.extraList.isNotEmpty) {
+      timestamp = messBill.extraList[0]['date'] as Timestamp?;
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -28,66 +25,51 @@ class MessBillDetailsScreen extends StatelessWidget {
         padding: const EdgeInsets.all(8.0),
         child: Column(
           children: [
-            Row(
-              children: [
-                const Expanded(
-                  child: Text(
-                    'Total Amount: ',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                ),
-                Text('₹${messBill.totalAmount}',
-                    style: const TextStyle(fontSize: 16)),
-              ],
-            ),
+            _buildInfoRow('Total Amount: ', '₹${messBill.totalAmount}'),
             const SizedBox(height: 10),
-            Row(
-              children: [
-                const Expanded(
-                  child: Text(
-                    'Total Diets: ',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                ),
-                Text('${messBill.totalDiets}',
-                    style: const TextStyle(fontSize: 16)),
-              ],
-            ),
+            _buildInfoRow('Total Diets: ', '${messBill.totalDiets}'),
             const SizedBox(height: 10),
-            Row(
-              children: [
-                const Expanded(
-                  child: Text(
-                    'Total Extra: ',
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                  ),
-                ),
-                Text('₹${messBill.totalExtra}',
-                    style: const TextStyle(fontSize: 16)),
-              ],
-            ),
+            _buildInfoRow('Total Extra: ', '₹${messBill.totalExtra}'),
             const SizedBox(height: 10),
-            if (messBill.extraList.isNotEmpty)
-              DataTable(
-                dataRowMaxHeight: 100,
-                columns: const [
-                DataColumn(label: Text('Date')),
-                DataColumn(label: Text('Particulars')),
-                DataColumn(label: Text('Amount')),
-              ], rows: [
-                for (var extra in messBill.extraList)
-                  for (var item in extra['items'])
-                    DataRow(cells: [
-                      DataCell(Text('At ${DateFormat.jm().format(timestamp.toDate())} on ${DateFormat.yMMMd().format(timestamp.toDate())}')),
-                      DataCell(Text(item['item'])),
-                      DataCell(Text('₹${item['amount']}')),
-                    ]),
-              ])
-
-            // Add necessary logic to fetch mess bill details and other functionalities
+            if (messBill.extraList.isNotEmpty && timestamp != null)
+              _buildExtraItemsTable(timestamp),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            label,
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+          ),
+        ),
+        Text(value, style: const TextStyle(fontSize: 16)),
+      ],
+    );
+  }
+
+  Widget _buildExtraItemsTable(Timestamp timestamp) {
+    return DataTable(
+      dataRowMaxHeight: 100,
+      columns: const [
+        DataColumn(label: Text('Date')),
+        DataColumn(label: Text('Particulars')),
+        DataColumn(label: Text('Amount')),
+      ],
+      rows: [
+        for (var extra in messBill.extraList)
+          for (var item in extra['items'])
+            DataRow(cells: [
+              DataCell(Text('At ${DateFormat.jm().format(timestamp.toDate())} on ${DateFormat.yMMMd().format(timestamp.toDate())}')),
+              DataCell(Text(item['item'])),
+              DataCell(Text('₹${item['amount']}')),
+            ]),
+      ],
     );
   }
 }

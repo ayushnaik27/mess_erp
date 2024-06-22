@@ -4,7 +4,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-// import 'package:mess_erp/api_keys.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:mailer/mailer.dart';
@@ -69,14 +68,15 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
     }
 
     print(now.difference(lastUpdated).inDays + 1 >= 7 &&
-        widget.grievance.status == 'pending' ||
+            widget.grievance.status == 'pending' ||
         widget.grievance.status == 'in process');
 
     print(receipentEmail);
 
     return now.difference(lastUpdated).inDays + 1 >= 7 &&
-            widget.grievance.status == 'pending' || widget.grievance.status == 'in process';
-        // widget.grievance.status == 'in process';
+            widget.grievance.status == 'pending' ||
+        widget.grievance.status == 'in process';
+    // widget.grievance.status == 'in process';
   }
 
   // bool _shouldShowRemainderButton() {

@@ -19,16 +19,15 @@ class FileGrievanceScreen extends StatefulWidget {
 
 class _FileGrievanceScreenState extends State<FileGrievanceScreen> {
   final TextEditingController titleController = TextEditingController();
-
   final TextEditingController descController = TextEditingController();
   String? _filePath = '';
 
-
   @override
   Widget build(BuildContext context) {
+    ThemeData theme = Theme.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('File Grievance'),
+        title: Text('File Grievance', style: theme.textTheme.titleLarge),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -36,49 +35,63 @@ class _FileGrievanceScreenState extends State<FileGrievanceScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
-              decoration: const InputDecoration(labelText: 'Grievance Title'),
+              decoration: InputDecoration(
+                labelText: 'Grievance Title',
+                labelStyle: theme.textTheme.bodyMedium,
+              ),
               controller: titleController,
             ),
             const SizedBox(height: 16.0),
             TextField(
-              decoration: const InputDecoration(labelText: 'Grievance Description'),
+              decoration: InputDecoration(
+                labelText: 'Grievance Description',
+                labelStyle: theme.textTheme.bodyMedium,
+              ),
               maxLines: 3,
               controller: descController,
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () async {
-                // Implement file upload functionality
-                FilePickerResult? result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['pdf']);
+                FilePickerResult? result = await FilePicker.platform.pickFiles(
+                  type: FileType.custom,
+                  allowedExtensions: ['pdf'],
+                );
                 if (result != null) {
                   setState(() {
                     _filePath = result.files.single.path;
                   });
                 }
-
               },
-              child: const Column(
+              style: ElevatedButton.styleFrom(
+                primary: theme.colorScheme.secondary,
+                textStyle: theme.textTheme.bodySmall,
+              ),
+              child: Column(
                 children: [
-                  Text('Upload Supporting Document (if any)'),
-                  Text('PDF only', style: TextStyle(fontSize: 8)),
+                  Text('Upload Supporting Document (if any)', style: theme.textTheme.bodyMedium),
+                  Text('PDF only', style: TextStyle(fontSize: 8, color: theme.colorScheme.tertiary)),
                 ],
               ),
             ),
             const SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                if(titleController.text.isEmpty || descController.text.isEmpty){
+                if (titleController.text.isEmpty || descController.text.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please fill all the fields'),
+                    SnackBar(
+                      content: Text('Please fill all the fields', style: theme.textTheme.bodyMedium),
                     ),
                   );
                   return;
                 }
-                // Implement grievance submission functionality
                 submitGrievance(context);
               },
-              child: const Text('Submit'),
+              style: ElevatedButton.styleFrom(
+                primary: theme.colorScheme.primary,
+                textStyle: theme.textTheme.bodyMedium,
+              ),
+              child: Text('Submit', style: theme.textTheme.bodyMedium),
             ),
           ],
         ),
@@ -87,21 +100,14 @@ class _FileGrievanceScreenState extends State<FileGrievanceScreen> {
   }
 
   void submitGrievance(BuildContext context) async {
-    // Generate unique grievance ID
     String grievanceId = generateGrievanceId();
-
-    // Get current timestamp
     DateTime timestamp = DateTime.now();
-
-    // Get student details from provider
     MyUser user = await Provider.of<UserProvider>(context, listen: false).getUser();
     String rollNumber = user.username;
     String name = user.name;
     String fileUrl = '';
 
-    if(_filePath == ''){
-      print('No file uploaded');
-    }else{
+    if (_filePath != '') {
       Reference ref = FirebaseStorage.instance.ref().child('grievances').child(grievanceId);
       await ref.putFile(File(_filePath!));
       fileUrl = await ref.getDownloadURL();
@@ -110,12 +116,12 @@ class _FileGrievanceScreenState extends State<FileGrievanceScreen> {
 
     Grievance grievance = Grievance(
       grievanceId: grievanceId,
-      studentRollNo: rollNumber, // Get from login
-      name: name, // Get from login
+      studentRollNo: rollNumber,
+      name: name,
       dateOfFiling: timestamp,
-      grievanceTitle: titleController.text, // Get from text field
-      grievanceDesc: descController.text, // Get from text field
-      fileUpload: fileUrl, // Implement file upload and get URL
+      grievanceTitle: titleController.text,
+      grievanceDesc: descController.text,
+      fileUpload: fileUrl,
       status: 'pending',
       assignedTo: 'committee',
       history: [
@@ -129,22 +135,17 @@ class _FileGrievanceScreenState extends State<FileGrievanceScreen> {
       reminderCount: 0,
     );
 
-    print(grievance.toMap());
+    Provider.of<GrievanceProvider>(context, listen: false).fileGrievance(grievance);
 
-    Provider.of<GrievanceProvider>(context,listen: false).fileGrievance(grievance); // Add your provider here
-
-    // Show success message or navigate back
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Grievance filed successfully'),
+      SnackBar(
+        content: Text('Grievance filed successfully', style: Theme.of(context).textTheme.bodyMedium),
       ),
     );
     Navigator.of(context).pop();
   }
 
   String generateGrievanceId() {
-    // Implement your logic to generate a unique grievance ID
-    // Example: Combine current timestamp with a random number
     return DateTime.now().millisecondsSinceEpoch.toString() +
         '_' +
         (DateTime.now().microsecondsSinceEpoch % 10000).toString();

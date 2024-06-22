@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -11,6 +12,7 @@ class ApplyLeaveScreen extends StatefulWidget {
   static const routeName = '/applyLeave';
 
   const ApplyLeaveScreen({super.key});
+
   @override
   _ApplyLeaveScreenState createState() => _ApplyLeaveScreenState();
 }
@@ -20,17 +22,16 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
       DateTime.now().add(const Duration(days: 1)); // Starting from tomorrow
   String selectedFromMeal = '';
   DateTime selectedToDate = DateTime.now().add(const Duration(days: 2));
-
   String selectedToMeal = '';
   List<String> fromMealOptions = ['Breakfast', 'Lunch', 'Dinner'];
   List<String> toMealOptions = ['Breakfast', 'Lunch', 'Dinner'];
 
   void showFromMealOptions() {
     List<String> options = [];
-    DateTime tommorrow = DateTime.now().add(const Duration(days: 1));
-    if (selectedFromDate.day == tommorrow.day) {
-      print('I am here');
-      int currentSystemTime = DateTime.now().hour;
+    DateTime tomorrow = DateTime.now().add(const Duration(days: 1));
+    int currentSystemTime = DateTime.now().hour;
+
+    if (selectedFromDate.day == tomorrow.day) {
       if (currentSystemTime < 11) {
         setState(() {
           options = ['Breakfast', 'Lunch', 'Dinner'];
@@ -60,16 +61,17 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
             content: const Text('You cannot apply for leave after 10pm'),
             actions: [
               TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: const Text('OK'))
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              )
             ],
           ),
         );
+        return;
       }
     } else {
-      print('I am here 2');
       setState(() {
         options = ['Breakfast', 'Lunch', 'Dinner'];
         selectedFromMeal = options[0];
@@ -79,24 +81,25 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
     }
 
     showAdaptiveDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: const Text('Select Meal'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: options
-                    .map((e) => ListTile(
-                          title: Text(e),
-                          onTap: () {
-                            setState(() {
-                              selectedFromMeal = e;
-                            });
-                            Navigator.of(context).pop();
-                          },
-                        ))
-                    .toList(),
-              ),
-            ));
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Meal'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: options
+              .map((e) => ListTile(
+                    title: Text(e),
+                    onTap: () {
+                      setState(() {
+                        selectedFromMeal = e;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  ))
+              .toList(),
+        ),
+      ),
+    );
   }
 
   void showToMealOptions() {
@@ -109,14 +112,11 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
     } else if (selectedToDate.day == selectedFromDate.day + 1 ||
         selectedToDate.month == selectedFromDate.month + 1 ||
         selectedToDate.year == selectedFromDate.year + 1) {
-      print("I guuess i am here");
       setState(() {
-        if (selectedFromMeal == 'Breakfast') {
-          options = ['Breakfast', 'Lunch', 'Dinner'];
-        } else if (selectedFromMeal == 'Lunch') {
-          options = ['Breakfast', 'Lunch', 'Dinner'];
-        } else {
+        if (selectedFromMeal == 'Breakfast' || selectedFromMeal == 'Lunch') {
           options = ['Lunch', 'Dinner'];
+        } else {
+          options = ['Dinner'];
         }
         selectedToMeal = options[0];
       });
@@ -128,31 +128,36 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
     }
 
     showAdaptiveDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-              title: const Text('Select Meal'),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: options
-                    .map((e) => ListTile(
-                          title: Text(e),
-                          onTap: () {
-                            setState(() {
-                              selectedToMeal = e;
-                            });
-                            Navigator.of(context).pop();
-                          },
-                        ))
-                    .toList(),
-              ),
-            ));
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Select Meal'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: options
+              .map((e) => ListTile(
+                    title: Text(e),
+                    onTap: () {
+                      setState(() {
+                        selectedToMeal = e;
+                      });
+                      Navigator.of(context).pop();
+                    },
+                  ))
+              .toList(),
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Apply for Leave'),
+        title: const Text(
+          'Apply for Leave',
+          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.secondary,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -161,48 +166,70 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
           children: [
             Row(
               children: [
-                const Text('From Date: '),
+                const Text(
+                  'From Date: ',
+                  style: TextStyle(fontSize: 18),
+                ),
                 Expanded(
-                  child:
-                      Text(DateFormat('dd-MM-yyyy').format(selectedFromDate)),
+                  child: Text(
+                    DateFormat('dd-MM-yyyy').format(selectedFromDate),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ),
                 IconButton(
-                    icon: const Icon(Icons.calendar_today),
-                    onPressed: () {
-                      showDatePicker(
-                        context: context,
-                        initialDate: selectedFromDate,
-                        firstDate:
-                            DateTime.now().subtract(const Duration(days: 5)),
-                        lastDate: DateTime.now().add(const Duration(days: 30)),
-                      ).then((value) {
-                        if (value != null) {
-                          setState(() {
-                            selectedFromDate = value;
-                            selectedFromMeal = '';
-                            selectedToMeal = '';
-                            selectedToDate = selectedFromDate;
-                          });
-                        }
-                      });
-                    }),
+                  icon: const Icon(Icons.calendar_today),
+                  onPressed: () {
+                    showDatePicker(
+                      context: context,
+                      initialDate: selectedFromDate,
+                      firstDate:
+                          DateTime.now().subtract(const Duration(days: 5)),
+                      lastDate: DateTime.now().add(const Duration(days: 30)),
+                    ).then((value) {
+                      if (value != null) {
+                        setState(() {
+                          selectedFromDate = value;
+                          selectedFromMeal = '';
+                          selectedToMeal = '';
+                          selectedToDate = selectedFromDate;
+                        });
+                      }
+                    });
+                  },
+                ),
               ],
             ),
             const Divider(),
             Row(
               children: [
-                const Text('From Meal: '),
-                Expanded(child: Text(selectedFromMeal)),
-                IconButton(
-                    onPressed: showFromMealOptions, icon: Icon(Icons.edit))
-              ],
-            ),
-            const Divider(),
-            Row(
-              children: [
-                const Text('To Date: '),
+                const Text(
+                  'From Meal: ',
+                  style: TextStyle(fontSize: 18),
+                ),
                 Expanded(
-                  child: Text(DateFormat('dd-MM-yyyy').format(selectedToDate)),
+                  child: Text(
+                    selectedFromMeal,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
+                IconButton(
+                  onPressed: showFromMealOptions,
+                  icon: const Icon(Icons.edit),
+                )
+              ],
+            ),
+            const Divider(),
+            Row(
+              children: [
+                const Text(
+                  'To Date: ',
+                  style: TextStyle(fontSize: 18),
+                ),
+                Expanded(
+                  child: Text(
+                    DateFormat('dd-MM-yyyy').format(selectedToDate),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ),
                 IconButton(
                   icon: const Icon(Icons.calendar_today),
@@ -229,8 +256,16 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
             const Divider(),
             Row(
               children: [
-                const Text('To Meal: '),
-                Expanded(child: Text(selectedToMeal)),
+                const Text(
+                  'To Meal: ',
+                  style: TextStyle(fontSize: 18),
+                ),
+                Expanded(
+                  child: Text(
+                    selectedToMeal,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                ),
                 IconButton(
                   icon: const Icon(Icons.edit),
                   onPressed: showToMealOptions,
@@ -242,32 +277,47 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
             ElevatedButton(
               onPressed: () {
                 _submitLeaveRequest(
-                        Provider.of<UserProvider>(context, listen: false)
-                            .user
-                            .username)
-                    .then((value) {
-                  return value
-                      ? Navigator.of(context).pop()
-                      : showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('Invalid Selection'),
-                              content: const Text(
-                                  'You cannot apply for leave before your last leave date. Please select some other date.'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            );
-                          });
+                  Provider.of<UserProvider>(context, listen: false)
+                      .user
+                      .username,
+                ).then((value) {
+                  if (!value) {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Invalid Selection'),
+                          content: const Text(
+                            'You cannot apply for leave before your last leave date. Please select another date.',
+                          ),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('OK'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Leave request submitted successfully!'),
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                  }
                 });
               },
-              child: const Text('Submit Leave Request'),
+              style: ElevatedButton.styleFrom(
+                primary: Theme.of(context).colorScheme.primary,
+              ),
+              child: Text(
+                'Submit Leave Request',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
             ),
           ],
         ),
@@ -276,88 +326,100 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
   }
 
   Future<bool> _submitLeaveRequest(String rollNumber) async {
-    QuerySnapshot<Map<String, dynamic>> leaveDetailSnapshot =
-        await FirebaseFirestore.instance
-            .collection('loginCredentials')
-            .doc('roles')
-            .collection('student')
-            .doc(rollNumber)
-            .collection('leaveDetails')
-            .get();
-
-    if (leaveDetailSnapshot.docs.isNotEmpty) {
-      print('Hello');
-      QueryDocumentSnapshot<Map<String, dynamic>> lastLeaveDetailSnapshot =
-          leaveDetailSnapshot.docs.last;
-
-      DateTime lastLeaveDate = DateTime(
-        lastLeaveDetailSnapshot['year'],
-        lastLeaveDetailSnapshot['month'],
-        lastLeaveDetailSnapshot['day'],
-      );
-
-      if (selectedFromDate.isBefore(lastLeaveDate)) {
-        return false;
-      }
-    }
-
-    for (DateTime date = selectedFromDate;
-        date.isBefore(selectedToDate.add(const Duration(days: 1)));
-        date = date.add(const Duration(days: 1))) {
-      int i = 0;
-      final String year = date.year.toString();
-      final String month = date.month.toString();
-      final String day = date.day.toString();
-      final String docId = (leaveDetailSnapshot.docs.length + 1).toString();
-
-      List<String> onLeaveMeals = date == selectedFromDate
-          ? fromMealOptions.sublist(fromMealOptions.indexOf(selectedFromMeal))
-          : date == selectedToDate
-              ? toMealOptions.sublist(
-                  0, toMealOptions.indexOf(selectedToMeal) + 1)
-              : toMealOptions;
-      log('Date: $date');
-      log('On Leave Meals: $onLeaveMeals');
-
-      String leaveDate = DateFormat('dd-MM-yyyy').format(date);
-
-      await FirebaseFirestore.instance
-          .collection('loginCredentials')
-          .doc('roles')
-          .collection('student')
-          .doc(rollNumber)
-          .collection('newLeaveDetails')
-          .doc(leaveDate)
-          .set({
-        'date': leaveDate,
-        'onLeaveMeals': onLeaveMeals,
-        'timestamp': date,
-        'fromDate': DateFormat('dd-MM-yyyy').format(selectedFromDate),
-        'toDate': DateFormat('dd-MM-yyyy').format(selectedToDate),
-      }, SetOptions(merge: true));
-
-      await FirebaseFirestore.instance
+    try {
+      QuerySnapshot leaveDetailSnapshot = await FirebaseFirestore.instance
           .collection('loginCredentials')
           .doc('roles')
           .collection('student')
           .doc(rollNumber)
           .collection('leaveDetails')
-          .doc(docId)
-          .set({
-        'day': date.day,
-        'month': date.month,
-        'year': date.year,
-        'onLeave': true,
-        'leaveCount': FieldValue.increment(1),
-      }, SetOptions(merge: true));
+          .get();
 
-      // Show success message or navigate to another screen
+      if (leaveDetailSnapshot.docs.isNotEmpty) {
+        QueryDocumentSnapshot lastLeaveDetailSnapshot =
+            leaveDetailSnapshot.docs.last;
+
+        DateTime lastLeaveDate = DateTime(
+          lastLeaveDetailSnapshot['year'],
+          lastLeaveDetailSnapshot['month'],
+          lastLeaveDetailSnapshot['day'],
+        );
+
+        if (selectedFromDate.isBefore(lastLeaveDate)) {
+          return false;
+        }
+      }
+
+      List<DateTime> datesToApply = [];
+
+      for (DateTime date = selectedFromDate;
+          date.isBefore(selectedToDate.add(const Duration(days: 1)));
+          date = date.add(const Duration(days: 1))) {
+        datesToApply.add(date);
+      }
+
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+
+      for (DateTime date in datesToApply) {
+        List<String> onLeaveMeals = [];
+        if (date == selectedFromDate) {
+          onLeaveMeals.addAll(fromMealOptions
+              .sublist(fromMealOptions.indexOf(selectedFromMeal)));
+        } else if (date == selectedToDate) {
+          onLeaveMeals.addAll(toMealOptions.sublist(
+              0, toMealOptions.indexOf(selectedToMeal) + 1));
+        } else {
+          onLeaveMeals.addAll(toMealOptions);
+        }
+
+        String leaveDate = DateFormat('dd-MM-yyyy').format(date);
+
+        DocumentReference newLeaveDocRef = FirebaseFirestore.instance
+            .collection('loginCredentials')
+            .doc('roles')
+            .collection('student')
+            .doc(rollNumber)
+            .collection('newLeaveDetails')
+            .doc(leaveDate);
+
+        batch.set(
+          newLeaveDocRef,
+          {
+            'date': leaveDate,
+            'onLeaveMeals': onLeaveMeals,
+            'timestamp': date,
+            'fromDate': DateFormat('dd-MM-yyyy').format(selectedFromDate),
+            'toDate': DateFormat('dd-MM-yyyy').format(selectedToDate),
+          },
+          SetOptions(merge: true),
+        );
+
+        DocumentReference leaveDetailDocRef = FirebaseFirestore.instance
+            .collection('loginCredentials')
+            .doc('roles')
+            .collection('student')
+            .doc(rollNumber)
+            .collection('leaveDetails')
+            .doc();
+
+        batch.set(
+          leaveDetailDocRef,
+          {
+            'day': date.day,
+            'month': date.month,
+            'year': date.year,
+            'onLeave': true,
+            'leaveCount': FieldValue.increment(1),
+          },
+          SetOptions(merge: true),
+        );
+      }
+
+      await batch.commit();
+      return true;
+    } catch (e, stackTrace) {
+      log('Error submitting leave request: $e', stackTrace: stackTrace);
+      return false;
     }
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Leave request submitted successfully!'),
-      ),
-    );
-    return true;
   }
 }

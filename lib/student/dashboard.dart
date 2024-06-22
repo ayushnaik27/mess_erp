@@ -238,7 +238,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 child: Text(
                   'Announcements',
-                  style: Theme.of(context).textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
               Container(

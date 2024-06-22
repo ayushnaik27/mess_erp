@@ -23,51 +23,59 @@ class _TrackComplaintScreenState extends State<TrackComplaintScreen> {
 
   // Function to fetch complaints data
   Future<void> fetchComplaints() async {
-    // Implement data retrieval logic here
-    MyUser user =
-        await Provider.of<UserProvider>(context, listen: false).getUser();
+    MyUser user = await Provider.of<UserProvider>(context, listen: false).getUser();
     await Provider.of<GrievanceProvider>(context, listen: false)
         .fetchGrievancesForStudents(user.username);
   }
 
   @override
   Widget build(BuildContext context) {
+    final grievances = Provider.of<GrievanceProvider>(context).grievances;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Track Complaints'),
       ),
       body: ListView.builder(
-        itemCount: Provider.of<GrievanceProvider>(context).grievances.length,
+        itemCount: grievances.length,
         itemBuilder: (context, index) {
-          final complaint =
-              Provider.of<GrievanceProvider>(context).grievances[index];
+          final complaint = grievances[index];
           return ListTile(
-            title: Text('ID: ${complaint.grievanceId}'),
+            title: Text(
+              'ID: ${complaint.grievanceId}',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
             subtitle: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                    'Date: ${DateFormat.yMMMMd().format(complaint.dateOfFiling)} at ${DateFormat.jm().format(complaint.dateOfFiling)}'),
-                Text('Title: ${complaint.grievanceTitle}'),
-                Text('Status: ${complaint.status}'),
+                  'Date: ${DateFormat.yMMMMd().format(complaint.dateOfFiling)} at ${DateFormat.jm().format(complaint.dateOfFiling)}',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                Text(
+                  'Title: ${complaint.grievanceTitle}',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+                Text(
+                  'Status: ${complaint.status}',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
               ],
             ),
             trailing: ElevatedButton(
               onPressed: () {
-                // Navigate to complaint details screen
-                // Pass complaint details to the details screen
                 Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => GrievanceDetailScreen(
-                        grievance: complaint, isStudent: true),
+                      grievance: complaint,
+                      isStudent: true,
+                    ),
                   ),
                 );
               },
-              style: ButtonStyle(
-                backgroundColor: MaterialStateProperty.all<Color>(
-                  _getStatusColor(complaint.status),
-                ),
+              style: ElevatedButton.styleFrom(
+                primary: _getStatusColor(complaint.status),
               ),
               child: const Text(
                 'View Details',

@@ -63,7 +63,6 @@ class _TrackLeavesScreenState extends State<TrackLeavesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Track Leaves'),
@@ -73,6 +72,8 @@ class _TrackLeavesScreenState extends State<TrackLeavesScreen> {
           : Column(
               children: [
                 TableCalendar(
+                  daysOfWeekHeight: 40,
+
                   availableCalendarFormats: const {
                     CalendarFormat.month: 'Month',
                   },
@@ -125,7 +126,7 @@ class _TrackLeavesScreenState extends State<TrackLeavesScreen> {
                 const Divider(),
                 Expanded(
                   child: selectedDay == null
-                      ? const Center(child: Text('Select a day to see details'))
+                      ? Center(child: Text('Select a day to see details',style: Theme.of(context).textTheme.bodyMedium))
                       : buildDayDetails(selectedDay!),
                 ),
               ],
@@ -142,10 +143,10 @@ class _TrackLeavesScreenState extends State<TrackLeavesScreen> {
     return ListView(
       children: [
         ListTile(
-          title: Text(DateFormat('dd-MM-yyyy').format(day)),
+          title: Text(DateFormat('dd-MM-yyyy').format(day),style: Theme.of(context).textTheme.titleSmall),
           subtitle: onLeaveMeals.isNotEmpty
-              ? Text('On leave for meals: ${onLeaveMeals.join(', ')}')
-              : const Text('Not on leave'),
+              ? Text('On leave for meals: ${onLeaveMeals.join(', ')}',style: Theme.of(context).textTheme.bodySmall)
+              : Text('Not on leave',style: Theme.of(context).textTheme.bodySmall),
         ),
       ],
     );

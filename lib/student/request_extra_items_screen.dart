@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:mess_erp/providers/user_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -44,7 +43,8 @@ class _RequestExtraItemsScreenState extends State<RequestExtraItemsScreen> {
                     rollNumber = snapshot.data!.username;
                     return Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Text(snapshot.data!.username));
+                        child: Text(snapshot.data!.username,
+                            style: Theme.of(context).textTheme.bodyMedium));
                   }),
               FutureBuilder(
                 future: Provider.of<ExtraItemsProvider>(context, listen: false)
@@ -144,7 +144,6 @@ class _RequestExtraItemsScreenState extends State<RequestExtraItemsScreen> {
                     setState(() {
                       quantity = int.tryParse(quantityController.text) ?? 0;
                     });
-                    print('Selected Item: $selectedItem, Quantity: $quantity');
                     if (selectedItem.name.isEmpty || quantity == 0) {
                       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                           content: Text(
@@ -156,8 +155,6 @@ class _RequestExtraItemsScreenState extends State<RequestExtraItemsScreen> {
                             .extraItems
                             .firstWhere(
                                 (element) => element.name == selectedItem.name);
-                    print(ourItem.name);
-                    print(ourItem.price);
                     Provider.of<ExtraItemsProvider>(context, listen: false)
                         .addExtraItemRequest(
                             rollNumber: rollNumber,
