@@ -58,12 +58,12 @@ class _AllGrievancesScreenState extends State<AllGrievancesScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        GrievanceDetailScreen(grievance: grievance, isStudent: false),
+                    builder: (context) => GrievanceDetailScreen(
+                        grievance: grievance, isStudent: false),
                   ),
                 );
               },
-              style: ElevatedButton.styleFrom(primary: statusColor),
+              style: ElevatedButton.styleFrom(backgroundColor: statusColor),
               child: const Text(
                 'View Details',
                 style: TextStyle(color: Colors.white),
