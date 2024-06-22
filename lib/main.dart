@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:mess_erp/auth/login_screen.dart';
 import 'package:mess_erp/clerk/dashboard.dart';
@@ -68,7 +70,66 @@ class MyApp extends StatelessWidget {
             tertiary: Color(0xFF987070),
             brightness: Brightness.light,
           ),
+          textTheme: const TextTheme(
+            titleLarge: TextStyle(
+              fontSize: 26,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+            titleMedium: TextStyle(
+              fontSize: 22,
+              color: Colors.black,
+            ),
+            bodyLarge: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+            bodyMedium: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
+            bodySmall: TextStyle(
+              fontSize: 14,
+              color: Colors.black,
+            ),
+            labelSmall: TextStyle(
+              fontSize: 12,
+              color: Colors.black54,
+            ),
+            displayLarge: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.w700,
+              color: Color.fromARGB(255, 54, 40, 40),
+            ),
+            displayMedium: TextStyle(
+              fontSize: 18,
+              color: Color.fromARGB(255, 54, 40, 40),
+              fontWeight: FontWeight.w700,
+            ),
+            displaySmall: TextStyle(
+              fontSize: 14,
+              color: Color.fromARGB(255, 54, 40, 40),
+            ),
+          ),
           useMaterial3: true,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Color(0xFFDBB5B5),
+            titleTextStyle: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          snackBarTheme: const SnackBarThemeData(
+            backgroundColor: Colors.red,
+            contentTextStyle: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 16,
+            ),
+          ),
         ),
         routes: {
           StudentDashboardScreen.routeName: (context) =>

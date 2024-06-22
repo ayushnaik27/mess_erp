@@ -83,8 +83,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     children: [
                       Text(
                         capitalize(user.name),
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.bodyLarge,
                       ),
                       Text(
                         user.username,
@@ -96,7 +95,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               ),
             ),
             ListTile(
-              title: const Text('Track Leaves'),
+              title: Text(
+                'Track Leaves',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               onTap: () {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) {
@@ -105,25 +107,37 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               },
             ),
             ListTile(
-              title: const Text('Track Complaints'),
+              title: Text(
+                'Track Complaints',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               onTap: () {
                 Navigator.of(context).pushNamed('/trackComplaints');
               },
             ),
             ListTile(
-              title: const Text('File Grievance'),
+              title: Text(
+                'File Grievance',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               onTap: () {
                 Navigator.of(context).pushNamed('/fileGrievance');
               },
             ),
             ListTile(
-              title: const Text('View Mess Menu'),
+              title: Text(
+                'View Mess Menu',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               onTap: () {
                 MessMenuHelper.viewMessMenu();
               },
             ),
             ListTile(
-              title: const Text('View Mess Bill'),
+              title: Text(
+                'View Mess Bill',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               onTap: () {
                 Navigator.of(context)
                     .push(MaterialPageRoute(builder: (context) {
@@ -132,14 +146,20 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               },
             ),
             ListTile(
-              title: const Text('Apply for Leave'),
+              title: Text(
+                'Apply for Leave',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               onTap: () {
                 Navigator.of(context).pushNamed(ApplyLeaveScreen.routeName,
                     arguments: user.username);
               },
             ),
             ListTile(
-              title: const Text('Request Extra Items'),
+              title: Text(
+                'Request Extra Items',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               onTap: () {
                 Navigator.of(context).pushNamed(
                     RequestExtraItemsScreen.routeName,
@@ -147,14 +167,20 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               },
             ),
             ListTile(
-              title: const Text('Mess Bill'),
+              title: Text(
+                'Mess Bill',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               onTap: () {
                 Navigator.of(context).pushNamed(MessBillScreen.routeName,
                     arguments: user.username);
               },
             ),
             ListTile(
-              title: const Text('Change Password'),
+              title: Text(
+                'Change Password',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               onTap: () {
                 showAdaptiveDialog(
                   context: context,
@@ -168,7 +194,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               },
             ),
             ListTile(
-              title: const Text('Log Out'),
+              title: Text(
+                'Log Out',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               onTap: () {},
             )
           ],
@@ -176,7 +205,10 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       ),
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.secondary,
-        title: const Text('Student Dashboard'),
+        title: Text(
+          'Student Dashboard',
+          style: Theme.of(context).textTheme.bodyLarge,
+        ),
         actions: [
           isMealLive
               ? IconButton(
@@ -199,13 +231,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   padding: const EdgeInsets.only(top: 16.0, left: 16.0),
                   child: Text(
                     'Welcome ${capitalize(Provider.of<UserProvider>(context).user.name)}',
-                    style: const TextStyle(
-                        fontSize: 30, fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.titleLarge,
                   )),
-              const SizedBox(height: 8.0),
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text('Announcements'),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Text(
+                  'Announcements',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
               ),
               Container(
                 height: 250,
@@ -213,6 +247,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(8.0),
+                  color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                 ),
                 child: Scrollbar(
                     child: StreamBuilder<List<Announcement>>(
@@ -235,14 +270,22 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                         itemCount: announcements.length,
                         itemBuilder: (context, index) {
                           return ListTile(
-                            title: Text(announcements[index].title),
+                            title: Text(
+                              announcements[index].title,
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
                             subtitle: Column(
                               children: [
                                 Align(
                                   alignment: Alignment.centerLeft,
-                                  child: Text(announcements[index].description,
-                                      overflow: TextOverflow.ellipsis,
-                                      maxLines: 2),
+                                  child: Text(
+                                    announcements[index].description,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .displaySmall,
+                                  ),
                                 ),
                                 Align(
                                   alignment: Alignment.centerLeft,
@@ -251,8 +294,8 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                                         announcements[index]
                                             .timestamp!
                                             .toDate()),
-                                    style: const TextStyle(
-                                        fontSize: 10, color: Colors.grey),
+                                    style:
+                                        Theme.of(context).textTheme.labelSmall,
                                   ),
                                 ),
                                 const Divider()
@@ -298,12 +341,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       },
                       child: Card(
                         color: Theme.of(context).colorScheme.primary,
-                        child: const Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.food_bank),
-                            SizedBox(height: 16.0),
-                            Text('Request Extra Items'),
+                            const Icon(Icons.food_bank),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Request Extra Items',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
                           ],
                         ),
                       ),
@@ -316,12 +362,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       },
                       child: Card(
                         color: Theme.of(context).colorScheme.primary,
-                        child: const Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.calendar_month),
-                            SizedBox(height: 16.0),
-                            Text('Apply for Leave'),
+                            const Icon(Icons.calendar_month),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Apply for Leave',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
                           ],
                         ),
                       ),
@@ -335,12 +384,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       },
                       child: Card(
                         color: Theme.of(context).colorScheme.primary,
-                        child: const Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.pageview),
-                            SizedBox(height: 16.0),
-                            Text('View Mess Bill'),
+                            const Icon(Icons.pageview),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'View Mess Bill',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
                           ],
                         ),
                       ),
@@ -351,12 +403,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       },
                       child: Card(
                         color: Theme.of(context).colorScheme.primary,
-                        child: const Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.food_bank),
-                            SizedBox(height: 16.0),
-                            Text('View Mess Menu'),
+                            const Icon(Icons.food_bank),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'View Mess Menu',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
                           ],
                         ),
                       ),
@@ -367,12 +422,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       },
                       child: Card(
                         color: Theme.of(context).colorScheme.primary,
-                        child: const Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.error),
-                            SizedBox(height: 16.0),
-                            Text('File Grievance'),
+                            const Icon(Icons.error),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'File Grievance',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
                           ],
                         ),
                       ),
@@ -383,12 +441,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       },
                       child: Card(
                         color: Theme.of(context).colorScheme.primary,
-                        child: const Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.track_changes_outlined),
-                            SizedBox(height: 16.0),
-                            Text('Track Complaints'),
+                            const Icon(Icons.track_changes_outlined),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Track Complaints',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
                           ],
                         ),
                       ),
@@ -403,12 +464,15 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                       },
                       child: Card(
                         color: Theme.of(context).colorScheme.primary,
-                        child: const Column(
+                        child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Icon(Icons.food_bank),
-                            SizedBox(height: 16.0),
-                            Text('Track Leaves'),
+                            const Icon(Icons.food_bank),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Track Leaves',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
                           ],
                         ),
                       ),
