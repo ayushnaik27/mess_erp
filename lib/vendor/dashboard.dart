@@ -46,28 +46,29 @@ class _VendorDashboardScreenState extends State<VendorDashboardScreen> {
                 return ListTile(
                   title: Text(
                     tender.title,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         'Deadline: ${DateFormat('dd-MM-yyyy').format(tender.deadline)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.labelLarge,
                       ),
                       Text(
                         'Opening Date: ${DateFormat('dd-MM-yyyy').format(tender.openingDate)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.labelLarge,
                       ),
-                      const Text(
+                      Text(
                         'Items Required:',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: Theme.of(context).textTheme.labelLarge,
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: tender.tenderItems.map((item) {
                           return Text(
                             '- ${item.itemName}: ${item.quantity} ${item.units}',
+                            style: Theme.of(context).textTheme.labelMedium,
                           );
                         }).toList(),
                       ),

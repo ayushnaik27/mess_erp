@@ -31,7 +31,7 @@ class ManagerDashboardScreen extends StatelessWidget {
                   CircleAvatar(
                     backgroundColor: Theme.of(context).colorScheme.tertiary,
                     radius: 30,
-                    child: Text(user.name[0].toUpperCase()),
+                    child: const Text('P'),
                     // child: Text("H"),
                   ),
                   const SizedBox(width: 16),

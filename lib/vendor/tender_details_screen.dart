@@ -79,7 +79,12 @@ class TenderDetailsScreen extends StatelessWidget {
 
                     OpenFilex.open(tempDocumentPath);
                   },
-                  child: const Text('Download Tender'),
+                  style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).primaryColor,
+                  ),
+                  child: Text('Download Tender',
+                      style: TextStyle(
+                          color: Theme.of(context).colorScheme.tertiary)),
                 ),
                 if (isVendorBidSubmitted)
                   const ElevatedButton(
@@ -93,7 +98,12 @@ class TenderDetailsScreen extends StatelessWidget {
                         return FileBidScreen(tender);
                       }));
                     },
-                    child: const Text('File a Bid'),
+                    style: ElevatedButton.styleFrom(
+                      primary: Theme.of(context).primaryColor,
+                    ),
+                    child: Text('File a Bid',
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary)),
                   ),
               ],
             ),

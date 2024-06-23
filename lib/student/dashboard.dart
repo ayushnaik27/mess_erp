@@ -73,7 +73,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   CircleAvatar(
                     backgroundColor: Theme.of(context).colorScheme.tertiary,
                     radius: 30,
-                    child: Text(user.name[0].toUpperCase()),
+                    child: const Text('A'),
                     // child: Text("H"),
                   ),
                   const SizedBox(width: 16),
