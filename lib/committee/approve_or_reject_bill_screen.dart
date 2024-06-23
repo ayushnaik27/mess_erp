@@ -18,6 +18,7 @@ class ApproveOrRejectBillScreen extends StatefulWidget {
 
 class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
   TextEditingController remarksController = TextEditingController();
+  bool _isChecked = false;
   bool viewing = false;
   @override
   Widget build(BuildContext context) {
@@ -117,86 +118,91 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                         color: Colors.green,
                       ),
                     )
-                  : isRejected ? const Text(
-                      'Bill Rejected',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.red,
-                      ),
-                    ): Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {
-                            // Navigate to the screen where the committee can provide remarks
-                            showAdaptiveDialog(
-                                context: context,
-                                builder: ((context) {
-                                  return AlertDialog(
-                                    title: Text(
-                                        'Do you want to reject bill number ${widget.billDetails['billNumber']}?'),
-                                    content: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        const Text('Please provide remarks:'),
-                                        TextField(
-                                          controller: remarksController,
-                                          decoration: const InputDecoration(
-                                            labelText: 'Enter Remarks',
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                        child: const Text('Cancel'),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () async {
-                                          // Call a function to update the approval status in Firestore
-                                          await Provider.of<BillsOfPurchaseProvider>(
-                                                  context,
-                                                  listen: false)
-                                              .rejectBill(
-                                            widget.billDetails['billNumber'],
-                                            remarksController.text,
-                                          );
-                                          Navigator.of(context).pop();
-                                          Navigator.of(context).pop();
-                                          Navigator.of(context).pop();
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                              content: Text(
-                                                  'Bill rejected successfully'),
+                  : isRejected
+                      ? const Text(
+                          'Bill Rejected',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Navigate to the screen where the committee can provide remarks
+                                showAdaptiveDialog(
+                                    context: context,
+                                    builder: ((context) {
+                                      return AlertDialog(
+                                        title: Text(
+                                            'Do you want to reject bill number ${widget.billDetails['billNumber']}?'),
+                                        content: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const Text(
+                                                'Please provide remarks:'),
+                                            TextField(
+                                              controller: remarksController,
+                                              decoration: const InputDecoration(
+                                                labelText: 'Enter Remarks',
+                                              ),
                                             ),
-                                          );
-                                        },
-                                        child: const Text('Reject'),
-                                      ),
-                                    ],
-                                  );
-                                }));
-                          },
-                          child: const Text('Reject'),
+                                          ],
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigator.of(context).pop();
+                                            },
+                                            child: const Text('Cancel'),
+                                          ),
+                                          ElevatedButton(
+                                            onPressed: () async {
+                                              // Call a function to update the approval status in Firestore
+                                              await Provider.of<
+                                                          BillsOfPurchaseProvider>(
+                                                      context,
+                                                      listen: false)
+                                                  .rejectBill(
+                                                widget
+                                                    .billDetails['billNumber'],
+                                                remarksController.text,
+                                              );
+                                              Navigator.of(context).pop();
+                                              Navigator.of(context).pop();
+                                              Navigator.of(context).pop();
+                                              ScaffoldMessenger.of(context)
+                                                  .showSnackBar(
+                                                const SnackBar(
+                                                  content: Text(
+                                                      'Bill rejected successfully'),
+                                                ),
+                                              );
+                                            },
+                                            child: const Text('Reject'),
+                                          ),
+                                        ],
+                                      );
+                                    }));
+                              },
+                              child: const Text('Reject'),
+                            ),
+                            const SizedBox(width: 16.0),
+                            ElevatedButton(
+                              onPressed: () async {
+                                await _showApprovalDialog(
+                                    widget.billDetails['billNumber']);
+                                Navigator.pop(context);
+                              },
+                              child: const Text('Approve'),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 16.0),
-                        ElevatedButton(
-                          onPressed: () async {
-                            await _showApprovalDialog(
-                                widget.billDetails['billNumber']);
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Approve'),
-                        ),
-                      ],
-                    ),
             ],
           ),
         ),
@@ -208,46 +214,78 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
     return showDialog(
       context: context,
       builder: (context) {
-        return AlertDialog(
-          title: const Text('Approve Bill'),
-          content: Text('Do you want to approve Bill No. $billNo?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('No'),
+        return StatefulBuilder(builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Approve Bill'),
+            // content: Text('Do you want to approve Bill No. $billNo?'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('Do you want to approve Bill No. $billNo?'),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _isChecked,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _isChecked = value ?? false;
+                        });
+                      },
+                    ),
+                    const Expanded(
+                      child: Text(
+                        'I declare that I have verified this bill correctly and all these items have been received in the mess. All the items are of best quality.',
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            ElevatedButton(
-              onPressed: () async {
-                // Call a function to update the approval status in Firestore
-                bool done = await Provider.of<BillsOfPurchaseProvider>(context,
-                        listen: false)
-                    .approveBill(widget.billDetails['billNumber'], context);
-                if (done) {
-                  widget.billDetails['receivedItems'].forEach((element) {
-                    Provider.of<StockProvider>(context, listen: false).addStock(
-                      itemName: element['itemName'],
-                      transactionDate: DateTime.now(),
-                      vendor: widget.billDetails['vendorName'],
-                      receivedQuantity: element['quantityReceived'],
-                      issuedQuantity: 0,
-                      balance:
-                          element['quantityReceived'] * element['ratePerUnit'],
-                    );
-                  });
-                }
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Bill approved successfully'),
-                  ),
-                );
-                Navigator.of(context).pop();
-              },
-              child: const Text('Yes'),
-            ),
-          ],
-        );
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('No'),
+              ),
+              ElevatedButton(
+                onPressed: _isChecked
+                    ? () async {
+                        // Call a function to update the approval status in Firestore
+                        bool done = await Provider.of<BillsOfPurchaseProvider>(
+                                context,
+                                listen: false)
+                            .approveBill(
+                                widget.billDetails['billNumber'], context);
+                        if (done) {
+                          widget.billDetails['receivedItems']
+                              .forEach((element) {
+                            Provider.of<StockProvider>(context, listen: false)
+                                .addStock(
+                              itemName: element['itemName'],
+                              transactionDate: DateTime.now(),
+                              vendor: widget.billDetails['vendorName'],
+                              receivedQuantity: element['quantityReceived'],
+                              issuedQuantity: 0,
+                              balance: element['quantityReceived'] *
+                                  element['ratePerUnit'],
+                            );
+                          });
+                        }
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Bill approved successfully'),
+                          ),
+                        );
+                        Navigator.of(context).pop();
+                      }
+                    : null,
+                child: const Text('Yes'),
+              ),
+            ],
+          );
+        });
       },
     );
   }

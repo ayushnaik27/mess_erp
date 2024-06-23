@@ -37,7 +37,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
           options = ['Breakfast', 'Lunch', 'Dinner'];
           selectedFromMeal = options[0];
           selectedToMeal = '';
-          selectedToDate = selectedFromDate;
+          selectedToDate = selectedFromDate.add(const Duration(days: 1));
         });
       } else if (currentSystemTime < 15) {
         setState(() {
@@ -102,31 +102,89 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
     );
   }
 
+  // void showToMealOptions() {
+  //   List<String> options = [];
+  //   if (selectedFromDate.day == selectedToDate.day) {
+  //     setState(() {
+  //       options = ['Dinner'];
+  //       selectedToMeal = options[0];
+  //     });
+  //   } else if (selectedToDate.day == selectedFromDate.day + 1 ||
+  //       selectedToDate.month == selectedFromDate.month + 1 ||
+  //       selectedToDate.year == selectedFromDate.year + 1) {
+  //     setState(() {
+  //       if (selectedFromMeal == 'Breakfast' || selectedFromMeal == 'Lunch') {
+  //         options = ['Lunch', 'Dinner'];
+  //       } else {
+  //         options = ['Dinner'];
+  //       }
+  //       selectedToMeal = options[0];
+  //     });
+  //   } else {
+  //     setState(() {
+  //       options = ['Breakfast'];
+  //       selectedToMeal = options[0];
+  //     });
+  //   }
+
+  //   showAdaptiveDialog(
+  //     context: context,
+  //     builder: (context) => AlertDialog(
+  //       title: const Text('Select Meal'),
+  //       content: Column(
+  //         mainAxisSize: MainAxisSize.min,
+  //         children: options
+  //             .map((e) => ListTile(
+  //                   title: Text(e),
+  //                   onTap: () {
+  //                     setState(() {
+  //                       selectedToMeal = e;
+  //                     });
+  //                     Navigator.of(context).pop();
+  //                   },
+  //                 ))
+  //             .toList(),
+  //       ),
+  //     ),
+  //   );
+  // }
+
   void showToMealOptions() {
+    List<String> allMeals = ['Breakfast', 'Lunch', 'Dinner'];
     List<String> options = [];
-    if (selectedFromDate.day == selectedToDate.day) {
-      setState(() {
+
+    // Determine the index of the selectedFromMeal in allMeals
+    int fromMealIndex = allMeals.indexOf(selectedFromMeal);
+
+    // Handle case when selectedToDate is the same as selectedFromDate
+    if (selectedFromDate.day == selectedToDate.day &&
+        selectedFromDate.month == selectedToDate.month &&
+        selectedFromDate.year == selectedToDate.year) {
+      options = ['Dinner'];
+    }
+    // Handle case when selectedToDate is the day immediately following selectedFromDate
+    else if (selectedToDate.isAfter(selectedFromDate) &&
+        selectedToDate
+            .isBefore(selectedFromDate.add(const Duration(days: 2)))) {
+      if (selectedFromMeal == 'Breakfast') {
+        options = allMeals;
+      } else if (selectedFromMeal == 'Lunch') {
+        options = ['Breakfast', 'Lunch', 'Dinner'];
+      } else {
         options = ['Dinner'];
-        selectedToMeal = options[0];
-      });
-    } else if (selectedToDate.day == selectedFromDate.day + 1 ||
-        selectedToDate.month == selectedFromDate.month + 1 ||
-        selectedToDate.year == selectedFromDate.year + 1) {
-      setState(() {
-        if (selectedFromMeal == 'Breakfast' || selectedFromMeal == 'Lunch') {
-          options = ['Lunch', 'Dinner'];
-        } else {
-          options = ['Dinner'];
-        }
-        selectedToMeal = options[0];
-      });
-    } else {
-      setState(() {
-        options = ['Breakfast'];
-        selectedToMeal = options[0];
-      });
+      }
+    }
+    // Handle case when selectedToDate spans multiple days
+    else {
+      options = allMeals;
     }
 
+    // Set the default selectedToMeal to the first option
+    setState(() {
+      selectedToMeal = options[0];
+    });
+
+    // Show the meal options dialog
     showAdaptiveDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -182,8 +240,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                     showDatePicker(
                       context: context,
                       initialDate: selectedFromDate,
-                      firstDate:
-                          DateTime.now().add(const Duration(days: 1)),
+                      firstDate: DateTime.now().add(const Duration(days: 1)),
                       lastDate: DateTime.now().add(const Duration(days: 30)),
                     ).then((value) {
                       if (value != null) {
