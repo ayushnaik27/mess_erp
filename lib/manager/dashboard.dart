@@ -312,55 +312,55 @@ class ManagerDashboardScreen extends StatelessWidget {
                     ),
                   ],
                 )),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed('/receiveStock');
-              },
-              child: const Text('Receive Stock'),
-            ),
-            const SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed('/issueStock');
-              },
-              child: const Text('Issue Stock'),
-            ),
-            const SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed('/generateVoucher');
-              },
-              child: const Text('Generate Voucher'),
-            ),
-            const SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed('/previousVouchers');
-              },
-              child: const Text('Previous Vouchers'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                print('Hii');
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return const AssignedGrievancesScreen(userType: 'manager');
-                }));
-              },
-              child: const Text('View Assigned Grievances'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pushNamed('/viewAllGrievances');
-              },
-              child: const Text('View All Grievances'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => TrackBillsScreen()));
-              },
-              child: const Text('Track Bills'),
-            ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.of(context).pushNamed('/receiveStock');
+            //   },
+            //   child: const Text('Receive Stock'),
+            // ),
+            // const SizedBox(height: 20.0),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.of(context).pushNamed('/issueStock');
+            //   },
+            //   child: const Text('Issue Stock'),
+            // ),
+            // const SizedBox(height: 20.0),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.of(context).pushNamed('/generateVoucher');
+            //   },
+            //   child: const Text('Generate Voucher'),
+            // ),
+            // const SizedBox(height: 20.0),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.of(context).pushNamed('/previousVouchers');
+            //   },
+            //   child: const Text('Previous Vouchers'),
+            // ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     print('Hii');
+            //     Navigator.push(context, MaterialPageRoute(builder: (context) {
+            //       return const AssignedGrievancesScreen(userType: 'manager');
+            //     }));
+            //   },
+            //   child: const Text('View Assigned Grievances'),
+            // ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.of(context).pushNamed('/viewAllGrievances');
+            //   },
+            //   child: const Text('View All Grievances'),
+            // ),
+            // ElevatedButton(
+            //   onPressed: () {
+            //     Navigator.of(context).push(MaterialPageRoute(
+            //         builder: (context) => TrackBillsScreen()));
+            //   },
+            //   child: const Text('Track Bills'),
+            // ),
           ],
         ),
       ),

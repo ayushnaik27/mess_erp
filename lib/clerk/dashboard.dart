@@ -33,11 +33,11 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   CircleAvatar(
-                    backgroundColor: Theme.of(context).colorScheme.tertiary,
-                    radius: 30,
-                    child: const Text("A")
-                    // child: Text("H"),
-                  ),
+                      backgroundColor: Theme.of(context).colorScheme.tertiary,
+                      radius: 30,
+                      child: const Text("A")
+                      // child: Text("H"),
+                      ),
                   const SizedBox(width: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,15 +90,14 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
               },
             ),
             ListTile(
-              title: Text(
-                'Log Out',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              onTap: (){
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              }
-            ),
+                title: Text(
+                  'Log Out',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                onTap: () {
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                }),
           ],
         ),
       ),
@@ -249,6 +248,28 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                         ),
                       ),
                     ),
+                    // GestureDetector(
+                    //   onTap: () => showAdaptiveDialog(
+                    //     context: context,
+                    //     builder: (context) {
+                    //       return AddVendorDialog();
+                    //     },
+                    //   ),
+                    //   child: Card(
+                    //     color: Theme.of(context).colorScheme.primary,
+                    //     child: Column(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       children: [
+                    //         const Icon(Icons.person_add),
+                    //         const SizedBox(height: 16.0),
+                    //         Text(
+                    //           'Add Vendor',
+                    //           style: Theme.of(context).textTheme.displayMedium,
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -321,83 +342,83 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                   ],
                 ),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/monthlyReportScreen');
-                },
-                child: const Text('Generate Monthly Report'),
-              ),
-              ElevatedButton(
-                onPressed: () => showAdaptiveDialog(
-                  context: context,
-                  builder: (context) {
-                    return AddStudentDialog();
-                  },
-                ),
-                child: const Text('Add Student'),
-              ),
-              ElevatedButton(
-                onPressed: () => showAdaptiveDialog(
-                  context: context,
-                  builder: (context) {
-                    return ImposeFineDialog();
-                  },
-                ),
-                child: const Text('Impose Fine on Student'),
-              ),
-              ElevatedButton(
-                onPressed: () => showAdaptiveDialog(
-                    context: context,
-                    builder: (context) {
-                      return AddManagerDialog();
-                    }),
-                child: const Text('Add Manager'),
-              ),
-              ElevatedButton(
-                onPressed: () => showAdaptiveDialog(
-                    context: context,
-                    builder: (context) {
-                      return AddMuneemDialog();
-                    }),
-                child: const Text('Add Muneem'),
-              ),
-              ElevatedButton(
-                onPressed: () => showAdaptiveDialog(
-                    context: context,
-                    builder: (context) {
-                      return AddCommitteeDialog();
-                    }),
-                child: const Text('Add Committee Member'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            const AssignedGrievancesScreen(userType: 'clerk'),
-                      ));
-                },
-                child: const Text('View Assigned Grievances'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => OpenTenderScreen()));
-                },
-                child: const Text('Open Tender'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => AllTendersScreen()));
-                },
-                child: const Text('View All Tenders'),
-              ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.of(context).pushNamed('/monthlyReportScreen');
+              //   },
+              //   child: const Text('Generate Monthly Report'),
+              // ),
+              // ElevatedButton(
+              //   onPressed: () => showAdaptiveDialog(
+              //     context: context,
+              //     builder: (context) {
+              //       return AddStudentDialog();
+              //     },
+              //   ),
+              //   child: const Text('Add Student'),
+              // ),
+              // ElevatedButton(
+              //   onPressed: () => showAdaptiveDialog(
+              //     context: context,
+              //     builder: (context) {
+              //       return ImposeFineDialog();
+              //     },
+              //   ),
+              //   child: const Text('Impose Fine on Student'),
+              // ),
+              // ElevatedButton(
+              //   onPressed: () => showAdaptiveDialog(
+              //       context: context,
+              //       builder: (context) {
+              //         return AddManagerDialog();
+              //       }),
+              //   child: const Text('Add Manager'),
+              // ),
+              // ElevatedButton(
+              //   onPressed: () => showAdaptiveDialog(
+              //       context: context,
+              //       builder: (context) {
+              //         return AddMuneemDialog();
+              //       }),
+              //   child: const Text('Add Muneem'),
+              // ),
+              // ElevatedButton(
+              //   onPressed: () => showAdaptiveDialog(
+              //       context: context,
+              //       builder: (context) {
+              //         return AddCommitteeDialog();
+              //       }),
+              //   child: const Text('Add Committee Member'),
+              // ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.push(
+              //         context,
+              //         MaterialPageRoute(
+              //           builder: (context) =>
+              //               const AssignedGrievancesScreen(userType: 'clerk'),
+              //         ));
+              //   },
+              //   child: const Text('View Assigned Grievances'),
+              // ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.push(
+              //         context,
+              //         MaterialPageRoute(
+              //             builder: (context) => OpenTenderScreen()));
+              //   },
+              //   child: const Text('Open Tender'),
+              // ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.push(
+              //         context,
+              //         MaterialPageRoute(
+              //             builder: (context) => AllTendersScreen()));
+              //   },
+              //   child: const Text('View All Tenders'),
+              // ),
             ],
           ),
         ),
@@ -405,6 +426,71 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
     );
   }
 }
+
+// class AddVendorDialog extends StatelessWidget {
+//   AddVendorDialog({super.key});
+
+//   final TextEditingController nameController = TextEditingController();
+//   final TextEditingController emailController = TextEditingController();
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return AlertDialog(
+//       title: Text(
+//         'Add Vendor',
+//         style: Theme.of(context).textTheme.titleMedium,
+//       ),
+//       content: Column(
+//         mainAxisSize: MainAxisSize.min,
+//         children: [
+//           TextField(
+//             controller: nameController,
+//             decoration: InputDecoration(
+//                 labelText: 'Name',
+//                 labelStyle: Theme.of(context).textTheme.bodyMedium),
+//           ),
+//           TextField(
+//             controller: emailController,
+//             decoration: InputDecoration(
+//                 labelText: 'Email',
+//                 labelStyle: Theme.of(context).textTheme.bodyMedium),
+//           ),
+//         ],
+//       ),
+//       actions: [
+//         ElevatedButton(
+//           onPressed: () => Navigator.pop(context),
+//           style:
+//               ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+//           child: Text('Cancel',
+//               style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
+//         ),
+//         ElevatedButton(
+//           onPressed: () {
+//             String password = HashHelper.encode('12345678');
+//             FirebaseFirestore.instance
+//                 .collection('loginCredentials')
+//                 .doc('roles')
+//                 .collection('vendor')
+//                 .doc(emailController.text)
+//                 .set({
+//                   'name': nameController.text,
+//                   'email': emailController.text,
+//                   'role': 'vendor',
+//                   'password': password
+//                 })
+//                 .then((value) => Navigator.pop(context))
+//                 .catchError((error) => print('Failed to add vendor: $error'));
+//           },
+//           style:
+//               ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+//           child: Text('Add',
+//               style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
+//         ),
+//       ],
+//     );
+//   }
+// }
 
 class AddStudentDialog extends StatelessWidget {
   AddStudentDialog({super.key});
