@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mess_erp/muneem/netx_three_meals_screen.dart';
+import 'package:mess_erp/muneem/students_on_leave.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/extra_item_provider.dart';
@@ -118,6 +119,28 @@ class MuneemDashboardScreen extends StatelessWidget {
                         ),
                       ),
                     ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context)
+                            .push(MaterialPageRoute(builder: (context) {
+                          return StudentsOnLeaveScreen();
+                        }));
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.food_bank),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Students on Leave',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -140,36 +163,36 @@ class MuneemDashboardScreen extends StatelessWidget {
                       );
                     }),
               ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/approveExtraItems');
-                },
-                child: const Text('Approve Extra Items'),
-              ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                onPressed: () {
-                  showAdaptiveDialog(
-                      context: context,
-                      builder: (context) => ImposeExtraDialog());
-                },
-                child: const Text('Impose Extra Amount'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(MaterialPageRoute(builder: (context) {
-                    return ShowQRScreen();
-                  }));
-                },
-                child: const Text('Show QR'),
-              ),
-              ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (context) => NextThreeMealsScreen()));
-                  },
-                  child: const Text('Next Three Meals'))
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.of(context).pushNamed('/approveExtraItems');
+              //   },
+              //   child: const Text('Approve Extra Items'),
+              // ),
+              // const SizedBox(height: 16.0),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     showAdaptiveDialog(
+              //         context: context,
+              //         builder: (context) => ImposeExtraDialog());
+              //   },
+              //   child: const Text('Impose Extra Amount'),
+              // ),
+              // ElevatedButton(
+              //   onPressed: () {
+              //     Navigator.of(context)
+              //         .push(MaterialPageRoute(builder: (context) {
+              //       return ShowQRScreen();
+              //     }));
+              //   },
+              //   child: const Text('Show QR'),
+              // ),
+              // ElevatedButton(
+              //     onPressed: () {
+              //       Navigator.of(context).push(MaterialPageRoute(
+              //           builder: (context) => NextThreeMealsScreen()));
+              //     },
+              //     child: const Text('Next Three Meals'))
             ],
           ),
         ),
@@ -216,7 +239,8 @@ class _ImposeExtraDialogState extends State<ImposeExtraDialog> {
             Navigator.of(context)
                 .pop(); // Close the dialog without imposing extra amount
           },
-          child: const Text('Cancel'),
+          child: Text('Cancel',
+              style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
         ),
         ElevatedButton(
           onPressed: () {
@@ -230,7 +254,12 @@ class _ImposeExtraDialogState extends State<ImposeExtraDialog> {
                 const SnackBar(content: Text('Extra amount imposed')));
             Navigator.of(context).pop();
           },
-          child: const Text('Impose Extra'),
+          style:
+              ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+          child: Text(
+            'Impose',
+            style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+          ),
         ),
       ],
     );

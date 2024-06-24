@@ -11,7 +11,7 @@ class ShowQRScreen extends StatefulWidget {
 class _ShowQRScreenState extends State<ShowQRScreen> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
   late QRViewController controller;
-  bool? isMealLive;
+  bool? isMealLive = false;
   bool loading = false;
 
   @override
@@ -79,10 +79,24 @@ class _ShowQRScreenState extends State<ShowQRScreen> {
                               'time': DateTime.now(),
                             });
                           },
-                          child: const Text('Start Meal'),
+                          style: ElevatedButton.styleFrom(
+                              primary: Theme.of(context).primaryColor),
+                          child: Text(
+                            'Start Meal',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.tertiary),
+                          ),
                         )
-                      : const ElevatedButton(
-                          onPressed: null, child: Text('Start Meal')),
+                      : ElevatedButton(
+                          onPressed: null,
+                          style: ElevatedButton.styleFrom(
+                              primary: Theme.of(context).primaryColor),
+                          child: Text(
+                            'Start Meal',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                        ),
                   isMealLive!
                       ? ElevatedButton(
                           onPressed: () async {
@@ -109,10 +123,24 @@ class _ShowQRScreenState extends State<ShowQRScreen> {
                                   .delete();
                             }
                           },
-                          child: const Text('End Meal'),
+                          style: ElevatedButton.styleFrom(
+                              primary: Theme.of(context).primaryColor),
+                          child: Text(
+                            'End Meal',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.tertiary),
+                          ),
                         )
-                      : const ElevatedButton(
-                          onPressed: null, child: Text('End Meal'))
+                      : ElevatedButton(
+                          onPressed: null,
+                          style: ElevatedButton.styleFrom(
+                              primary: Theme.of(context).primaryColor),
+                          child: Text(
+                            'End Meal',
+                            style: TextStyle(
+                                color: Theme.of(context).colorScheme.secondary),
+                          ),
+                        )
                 ],
               ),
             ),

@@ -67,10 +67,13 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                               viewing = false;
                             });
                           },
-                    icon: const Icon(Icons.remove_red_eye_outlined),
+                    icon: Icon(Icons.remove_red_eye_outlined,
+                        color: Theme.of(context).colorScheme.tertiary),
                     label: Text(
                       viewing ? 'Viewing' : 'View Bill',
-                      style: const TextStyle(fontSize: 12),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).colorScheme.tertiary),
                     ),
                   ),
                 ],
@@ -159,7 +162,11 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                                             onPressed: () {
                                               Navigator.of(context).pop();
                                             },
-                                            child: const Text('Cancel'),
+                                            child: Text('Cancel',
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .colorScheme
+                                                        .tertiary)),
                                           ),
                                           ElevatedButton(
                                             onPressed: () async {
@@ -176,6 +183,7 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                                               Navigator.of(context).pop();
                                               Navigator.of(context).pop();
                                               Navigator.of(context).pop();
+
                                               ScaffoldMessenger.of(context)
                                                   .showSnackBar(
                                                 const SnackBar(
@@ -184,13 +192,29 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                                                 ),
                                               );
                                             },
-                                            child: const Text('Reject'),
+                                            style: ElevatedButton.styleFrom(
+                                                primary: Theme.of(context)
+                                                    .primaryColor),
+                                            child: Text(
+                                              'Reject',
+                                              style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .colorScheme
+                                                      .tertiary),
+                                            ),
                                           ),
                                         ],
                                       );
                                     }));
                               },
-                              child: const Text('Reject'),
+                              style: ElevatedButton.styleFrom(
+                                  primary: Theme.of(context).primaryColor),
+                              child: Text(
+                                'Reject',
+                                style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary),
+                              ),
                             ),
                             const SizedBox(width: 16.0),
                             ElevatedButton(
@@ -199,7 +223,14 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                                     widget.billDetails['billNumber']);
                                 Navigator.pop(context);
                               },
-                              child: const Text('Approve'),
+                              style: ElevatedButton.styleFrom(
+                                  primary: Theme.of(context).primaryColor),
+                              child: Text(
+                                'Approve',
+                                style: TextStyle(
+                                    color:
+                                        Theme.of(context).colorScheme.tertiary),
+                              ),
                             ),
                           ],
                         ),
@@ -247,7 +278,9 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('No'),
+                child: Text('No',
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.tertiary)),
               ),
               ElevatedButton(
                 onPressed: _isChecked
@@ -281,7 +314,13 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                         Navigator.of(context).pop();
                       }
                     : null,
-                child: const Text('Yes'),
+                style: ElevatedButton.styleFrom(
+                    primary: Theme.of(context).primaryColor),
+                child: Text(
+                  'Yes',
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.tertiary),
+                ),
               ),
             ],
           );

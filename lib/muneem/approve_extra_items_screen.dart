@@ -100,7 +100,13 @@ class _ApproveExtraItemsScreenState extends State<ApproveExtraItemsScreen> {
                                   requestId: request.id,
                                   amount: request.amount);
                         },
-                        child: const Text('Approve'),
+                        style: ElevatedButton.styleFrom(
+                            primary: Theme.of(context).primaryColor),
+                        child: Text(
+                          'Approve',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.tertiary),
+                        ),
                       ),
                     );
                   },

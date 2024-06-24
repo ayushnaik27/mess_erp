@@ -59,12 +59,12 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => TenderProvider()),
       ],
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: 'Mess ERP',
         theme: ThemeData(
           colorScheme: const ColorScheme.light(
             primary: Color.fromRGBO(249, 214, 137, 1),
-            secondary: Color.fromRGBO(224, 167, 94,1),
-            tertiary: Color.fromRGBO(151, 49, 49,1),
+            secondary: Color.fromRGBO(224, 167, 94, 1),
+            tertiary: Color.fromRGBO(151, 49, 49, 1),
             brightness: Brightness.light,
           ),
           textTheme: const TextTheme(
@@ -119,7 +119,6 @@ class MyApp extends StatelessWidget {
               color: Colors.black,
             ),
           ),
-          
           snackBarTheme: const SnackBarThemeData(
             backgroundColor: Colors.red,
             contentTextStyle: TextStyle(
