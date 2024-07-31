@@ -4,11 +4,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:mess_erp/providers/user_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
 import 'package:pdf/widgets.dart' as pdf;
+import 'package:provider/provider.dart';
 
 import '../providers/grievance_provider.dart';
 
@@ -29,6 +31,8 @@ class GrievanceDetailScreen extends StatefulWidget {
 class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
   late bool showReminderButton;
   String receipentEmail = '';
+  String levelOneMail = 'naikayush68@gmail.com';
+  String levelTwoMail = 'naveenk.it.20@nitj.ac.in';
 
   @override
   void initState() {
@@ -52,21 +56,21 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
     if (lastAction == 'Reminder Sent' &&
         now.difference(lastUpdated).inDays + 1 >= 7) {
       setState(() {
-        receipentEmail = 'rakeshkumar@nitj.ac.in';
+        receipentEmail = levelTwoMail;
       });
       return true;
     }
 
     if (now.difference(lastUpdated).inDays + 1 >= 7) {
       setState(() {
-        receipentEmail = 'ayushsn.it.22@nitj.ac.in';
+        receipentEmail = levelOneMail;
       });
     }
 
     if (now.difference(lastUpdated).inDays + 1 >= 14 &&
         widget.grievance.reminderCount == 1) {
       setState(() {
-        receipentEmail = 'rakeshkumar@nitj.ac.in';
+        receipentEmail = levelTwoMail;
       });
     }
 
@@ -190,8 +194,11 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
     print('Sending email to $receipentEmail');
 
     try {
-      String username = 'naveenk.it.20@nitj.ac.in';
-      String password = 'eklf grtp dwlk qivf';
+      String? userEmail =
+          Provider.of<UserProvider>(context, listen: false).user.email;
+      String username = 'erpmess@nitj.ac.in';
+      String password = 'zlvx jxxn foiu hpxa';
+      
 
       final smtpServer = gmail(username, password);
       String studentName = widget.grievance
@@ -200,12 +207,13 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
       File file = await generateHistoryPDF();
 
       final message1 = Message()
-        ..from = Address(username)
+        ..from = Address(username,'ERP MESS')
+        ..ccRecipients.add(userEmail)
         ..recipients.add(receipentEmail)
         ..subject =
             'Reminder! No action on complaint ${widget.grievance.grievanceId} for last $x days'
         ..text =
-            'Dear MBH F \n\nThis is a gentle reminder sent by ${capitalize(studentName)} that no action has been taken by you on his complaint ${widget.grievance.grievanceId} for last $x days.\nPlease look into it on urgent basis.\n\nRegardsMess \nERP Notifications Team';
+            'Dear MBH-Mess \n\nThis is a gentle reminder sent by ${capitalize(studentName)} that no action has been taken by you on his complaint ${widget.grievance.grievanceId} for last $x days.\nPlease look into it on urgent basis.\n\nRegards\nMess ERP Team';
 
       // final message2 = Message()
       //   ..from = Address(username)
@@ -219,18 +227,19 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
       final message2 = Message()
         ..from = Address(username)
         ..recipients.add(receipentEmail)
+        ..ccRecipients.add(userEmail)
         ..attachments.add(FileAttachment(file))
         ..subject =
-            'MBH F not taking any action on complaint ${widget.grievance.grievanceId} of $studentName for last $x days'
+            'MBH-Mess not taking any action on complaint ${widget.grievance.grievanceId} of $studentName for last $x days'
         ..html = '''
       <p>Dear Sir,</p>
-      <p>This is a gentle reminder sent by ${capitalize(studentName)} that his complaint no. ${widget.grievance.grievanceId} is pending with Hostel MBH F, and no action has been taken by the said hostel for the last $x days.</p>
+      <p>This is a gentle reminder sent by ${capitalize(studentName)} that his complaint no. ${widget.grievance.grievanceId} is pending with Hostel, and no action has been taken by the said hostel for the last $x days.</p>
       <p>Please look into it on an urgent basis.</p>
       <p>More details regarding the complaint are attached herewith.</p>
-      <p>Regards,<br>Mess ERP Notifications Team</p>
+      <p>Regards,<br>Mess ERP Team</p>
   ''';
 
-      if (receipentEmail == 'ayushsn.it.22@nitj.ac.in') {
+      if (receipentEmail == levelOneMail) {
         final sendReport = await send(message1, smtpServer);
         print('Message sent: $sendReport');
       } else {

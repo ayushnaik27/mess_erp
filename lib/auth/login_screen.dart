@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../providers/user_provider.dart';
 import '../student/dashboard.dart';
 import '../vendor/vendor_login_screen.dart';
+import 'student_register.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -231,7 +232,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             .collection('student')
                             .doc(usernameController.text)
                             .get()
-                            .then((value) {
+                            .then((value) async {
                           if (value.exists) {
                             print('value exists ${value.data()}');
                             if (value.data()!['password'] ==
@@ -284,19 +285,48 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: const Text('Login'),
                   ),
                   TextButton(
-                      onPressed: () {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content:
-                              Text('Please contact Clerk to reset password'),
-                          duration: Duration(seconds: 2),
-                        ));
-                      },
-                      style: ElevatedButton.styleFrom(
-                        foregroundColor: Theme.of(context).colorScheme.tertiary,
-                        shadowColor: Theme.of(context).colorScheme.secondary,
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                        content: Text('Please contact Clerk to reset password'),
+                        duration: Duration(seconds: 2),
+                      ));
+                    },
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Theme.of(context).colorScheme.tertiary,
+                      shadowColor: Theme.of(context).colorScheme.secondary,
+                    ),
+                    child: const Text('Forgot Password?'),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "New student?",
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.tertiary,
+                            fontSize: Theme.of(context)
+                                .textTheme
+                                .bodySmall!
+                                .fontSize),
                       ),
-                      child: const Text('Forgot Password?'))
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(context,
+                              MaterialPageRoute(builder: (context) {
+                            return const StudentRegisterScreen();
+                          }));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          foregroundColor:
+                              Theme.of(context).colorScheme.tertiary,
+                          shadowColor: Theme.of(context).colorScheme.secondary,
+                        ),
+                        child: const Text('Register here',
+                            style: TextStyle(
+                                color: Color.fromARGB(255, 1, 95, 172))),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),

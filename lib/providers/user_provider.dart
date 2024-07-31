@@ -6,15 +6,16 @@ class MyUser {
   String username;
   String password;
   String role;
+  String? email;
   MyUser(
       {required this.name,
       required this.username,
       required this.password,
-      required this.role});
+      required this.role, this.email});
 }
 
 class UserProvider with ChangeNotifier {
-  final MyUser _user = MyUser(name: '', username: '', password: '', role: '');
+  final MyUser _user = MyUser(name: '', username: '', password: '', role: '', email: '');
 
   MyUser get user {
     return _user;
@@ -38,6 +39,7 @@ class UserProvider with ChangeNotifier {
       _user.username = userDetails['email'];
       _user.password = userDetails['password'];
       _user.role = userDetails['role'];
+      _user.email = userDetails['email'];
       notifyListeners();
       print(_user.name);
       return _user;
@@ -53,6 +55,7 @@ class UserProvider with ChangeNotifier {
       _user.username = userDetails['rollNumber'];
       _user.password = userDetails['password'];
       _user.role = userDetails['role'];
+      _user.email = userDetails['email'];
       notifyListeners();
       return _user;
     }

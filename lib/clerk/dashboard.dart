@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:mess_erp/clerk/all_tender_screen.dart';
+import 'package:mess_erp/clerk/enrollment_request_screen.dart';
 import 'package:mess_erp/clerk/open_tender_screen.dart';
 import 'package:mess_erp/committee/assigned_grievances_screen.dart';
 import 'package:mess_erp/providers/hash_helper.dart';
@@ -132,6 +133,7 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                             const SizedBox(height: 16.0),
                             Text(
                               'Generate Monthly Report',
+                              textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.displayMedium,
                             ),
                           ],
@@ -154,6 +156,7 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                             const SizedBox(height: 16.0),
                             Text(
                               'Add Student',
+                              textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.displayMedium,
                             ),
                           ],
@@ -176,6 +179,7 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                             const SizedBox(height: 16.0),
                             Text(
                               'Impose Fine on Student',
+                              textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.displayMedium,
                             ),
                           ],
@@ -198,6 +202,7 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                             const SizedBox(height: 16.0),
                             Text(
                               'Add Manager',
+                              textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.displayMedium,
                             ),
                           ],
@@ -220,6 +225,7 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                             const SizedBox(height: 16.0),
                             Text(
                               'Add Muneem',
+                              textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.displayMedium,
                             ),
                           ],
@@ -242,6 +248,7 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                             const SizedBox(height: 16.0),
                             Text(
                               'Add Committee Member',
+                              textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.displayMedium,
                             ),
                           ],
@@ -289,6 +296,7 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                             const SizedBox(height: 16.0),
                             Text(
                               'View Assigned Grievances',
+                              textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.displayMedium,
                             ),
                           ],
@@ -311,6 +319,7 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                             const SizedBox(height: 16.0),
                             Text(
                               'Open Tender',
+                              textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.displayMedium,
                             ),
                           ],
@@ -333,12 +342,37 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                             const SizedBox(height: 16.0),
                             Text(
                               'View All Tenders',
+                              textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.displayMedium,
                             ),
                           ],
                         ),
                       ),
                     ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => EnrollmentRequestScreen()));
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.info_outline_rounded),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Enrollment   Requests',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
                   ],
                 ),
               ),
