@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mess_erp/providers/user_provider.dart';
@@ -23,7 +25,8 @@ class _TrackComplaintScreenState extends State<TrackComplaintScreen> {
 
   // Function to fetch complaints data
   Future<void> fetchComplaints() async {
-    MyUser user = await Provider.of<UserProvider>(context, listen: false).getUser();
+    MyUser user =
+        await Provider.of<UserProvider>(context, listen: false).getUser();
     await Provider.of<GrievanceProvider>(context, listen: false)
         .fetchGrievancesForStudents(user.username);
   }
@@ -36,55 +39,60 @@ class _TrackComplaintScreenState extends State<TrackComplaintScreen> {
       appBar: AppBar(
         title: const Text('Track Complaints'),
       ),
-      body: ListView.builder(
-        itemCount: grievances.length,
-        itemBuilder: (context, index) {
-          final complaint = grievances[index];
-          return ListTile(
-            title: Text(
-              'ID: ${complaint.grievanceId}',
-              style: Theme.of(context).textTheme.titleSmall,
-            ),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Date: ${DateFormat.yMMMMd().format(complaint.dateOfFiling)} at ${DateFormat.jm().format(complaint.dateOfFiling)}',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                Text(
-                  'Title: ${complaint.grievanceTitle}',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-                Text(
-                  'Status: ${complaint.status}',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ],
-            ),
-            trailing: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => GrievanceDetailScreen(
-                      grievance: complaint,
-                      isStudent: true,
+      body: grievances.isEmpty
+          ? const Center(
+              child: Text("No Grievances Filed"),
+            )
+          : ListView.builder(
+              itemCount: grievances.length,
+              itemBuilder: (context, index) {
+                final complaint = grievances[index];
+                log(grievances.length.toString());
+                return ListTile(
+                  title: Text(
+                    'ID: ${complaint.grievanceId}',
+                    style: Theme.of(context).textTheme.titleSmall,
+                  ),
+                  subtitle: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Date: ${DateFormat.yMMMMd().format(complaint.dateOfFiling)} at ${DateFormat.jm().format(complaint.dateOfFiling)}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      Text(
+                        'Title: ${complaint.grievanceTitle}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      Text(
+                        'Status: ${complaint.status}',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ],
+                  ),
+                  trailing: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GrievanceDetailScreen(
+                            grievance: complaint,
+                            isStudent: true,
+                          ),
+                        ),
+                      );
+                    },
+                    style: ElevatedButton.styleFrom(
+                      primary: _getStatusColor(complaint.status),
+                    ),
+                    child: const Text(
+                      'View Details',
+                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 );
               },
-              style: ElevatedButton.styleFrom(
-                primary: _getStatusColor(complaint.status),
-              ),
-              child: const Text(
-                'View Details',
-                style: TextStyle(color: Colors.white),
-              ),
             ),
-          );
-        },
-      ),
     );
   }
 
