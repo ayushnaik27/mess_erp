@@ -3,7 +3,6 @@
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
     show defaultTargetPlatform, kIsWeb, TargetPlatform;
-import 'package:mess_erp/api_keys.dart';
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -45,7 +44,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: webApiKey,
+    apiKey: 'AIzaSyBcrwTiYeOTQClPUyAD4NtxaITM5uILi_U',
     appId: '1:932574768473:web:98a66b7723ef3ed479b048',
     messagingSenderId: '932574768473',
     projectId: 'messerp-26027',
@@ -54,15 +53,15 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: androidApiKey,
-    appId: '1:932574768473:android:5f0b30ed7a26707879b048',
+    apiKey: 'AIzaSyC4G3aS7ylfG764KhaXKifHA_cCK24xbxQ',
+    appId: '1:932574768473:android:7e26adae471cfa1e79b048',
     messagingSenderId: '932574768473',
     projectId: 'messerp-26027',
     storageBucket: 'messerp-26027.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: iosApiKey,
+    apiKey: 'AIzaSyBgA_UtRTLnd8Ut1VdERrU7ZxdZuEE9jZo',
     appId: '1:932574768473:ios:b1dd4e76e19ecb1779b048',
     messagingSenderId: '932574768473',
     projectId: 'messerp-26027',
@@ -71,7 +70,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: macosApiKey,
+    apiKey: 'AIzaSyBgA_UtRTLnd8Ut1VdERrU7ZxdZuEE9jZo',
     appId: '1:932574768473:ios:a751f641ba7496ce79b048',
     messagingSenderId: '932574768473',
     projectId: 'messerp-26027',

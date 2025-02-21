@@ -38,7 +38,7 @@ class MonthlyReportProvider with ChangeNotifier {
   double get profit => _profit;
 
   Future<double> getTotalExpenditure() async {
-    print('calculateTotalExpenditure');
+    log('calculateTotalExpenditure');
     DateTime now = DateTime.now();
     DateTime firstDayOfCurrentMonth = DateTime(now.year, now.month, 1);
     DateTime lastDayOfPreviousMonth =
@@ -48,7 +48,7 @@ class MonthlyReportProvider with ChangeNotifier {
 
     double totalMonthlyExpenditure = 0;
 
-    print(firstDayOfPreviousMonth.year.toString());
+    log(firstDayOfPreviousMonth.year.toString());
 
     QuerySnapshot<Map<String, dynamic>> voucherSnapshot =
         await FirebaseFirestore.instance
@@ -65,25 +65,47 @@ class MonthlyReportProvider with ChangeNotifier {
     return totalMonthlyExpenditure;
   }
 
-  Future<double> getPreviousMonthStockBalance() async {
-    print('getpreviousMonthStockBalance');
-    DateTime now = DateTime.now();
+  // Future<double> getPreviousMonthStockBalance() async {
+  //   print('getpreviousMonthStockBalance');
+  //   DateTime now = DateTime.now();
 
-    int currentMonth = now.month;
-    int currentYear = now.year;
+  //   int currentMonth = now.month;
+  //   int currentYear = now.year;
+
+  //   int previousMonth = currentMonth == 1 ? 12 : currentMonth - 1;
+  //   int previousYear = currentMonth == 1 ? currentYear - 1 : currentYear;
+
+  //   QuerySnapshot<Map<String, dynamic>> balanceSnapshot =
+  //       await FirebaseFirestore.instance.collection('stock').get();
+
+  //   QueryDocumentSnapshot<Map<String, dynamic>> requiredSnapshot =
+  //       balanceSnapshot.docs.firstWhere((element) =>
+  //           element['date']['month'] == previousMonth &&
+  //           element['date']['year'] == previousYear);
+
+  //   _previousMonthStockBalance = double.parse(requiredSnapshot['balance'].toString());
+  //   notifyListeners();
+  //   return double.parse(requiredSnapshot['balance'].toString());
+  // }
+
+  Future<double> getPreviousMonthStockBalance() async {
+    log('getPreviousMonthStockBalance');
+    int currentMonth = DateTime.now().month;
+    int currentYear = DateTime.now().year;
 
     int previousMonth = currentMonth == 1 ? 12 : currentMonth - 1;
     int previousYear = currentMonth == 1 ? currentYear - 1 : currentYear;
 
     QuerySnapshot<Map<String, dynamic>> balanceSnapshot =
-        await FirebaseFirestore.instance.collection('stock').get();
+        await FirebaseFirestore.instance.collection('stock').orderBy('transactionDate',descending: true).get();
 
-    QueryDocumentSnapshot<Map<String, dynamic>> requiredSnapshot =
-        balanceSnapshot.docs.firstWhere((element) =>
-            element['date']['month'] == previousMonth &&
-            element['date']['year'] == previousYear);
+    QueryDocumentSnapshot<Map<String, dynamic>> requiredSnapshot = balanceSnapshot.docs.lastWhere((element) {
+      return element['date']['month'] == previousMonth &&
+          element['date']['year'] == previousYear;
+    });
 
     _previousMonthStockBalance = double.parse(requiredSnapshot['balance'].toString());
+
     notifyListeners();
     return double.parse(requiredSnapshot['balance'].toString());
   }
@@ -94,9 +116,9 @@ class MonthlyReportProvider with ChangeNotifier {
 
     QueryDocumentSnapshot<Map<String, dynamic>> requiredSnapshot =
         balanceSnapshot.docs.last;
-    _nextMonthStockBalance = requiredSnapshot['balance'];
+    _nextMonthStockBalance = double.parse(requiredSnapshot['balance'].toString());
     notifyListeners();
-    return requiredSnapshot['balance'];
+    return double.parse(requiredSnapshot['balance'].toString());
   }
 
   Future<double> getAssetsConsumedThisMonth() async {
@@ -169,7 +191,6 @@ class MonthlyReportProvider with ChangeNotifier {
     print('getTotalDiets');
     int previousMonth =
         DateTime.now().month == 1 ? 12 : DateTime.now().month - 1;
-    int currentMonth = DateTime.now().month;
     Map<int, int> monthAndDays = {
       1: 31,
       2: 28,

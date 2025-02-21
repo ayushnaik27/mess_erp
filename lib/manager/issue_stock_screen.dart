@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:mess_erp/providers/stock_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/itemListProvider.dart';
+
 class IssueStockScreen extends StatefulWidget {
   static const routeName = '/issueStock';
 
@@ -16,20 +18,20 @@ class _IssueStockScreenState extends State<IssueStockScreen> {
   int itemQuantity = 0; // Quantity of the selected item
 
   // Map of items and their rates
-  Map<String, double> items = {
-    'Atta': 40,
-    'Rice': 50,
-    'Oil': 100,
-    'Butter': 20,
-    'Milk': 30,
-    'Curd': 20,
-    'Pulses': 60,
-    'Grams': 50,
-    'Cereals': 40,
-    'Tea': 30,
-    'Cornflakes': 40,
-    'Maggie': 20,
-  };
+  // Map<String, double> items = {
+  //   'Atta': 40,
+  //   'Rice': 50,
+  //   'Oil': 100,
+  //   'Butter': 20,
+  //   'Milk': 30,
+  //   'Curd': 20,
+  //   'Pulses': 60,
+  //   'Grams': 50,
+  //   'Cereals': 40,
+  //   'Tea': 30,
+  //   'Cornflakes': 40,
+  //   'Maggie': 20,
+  // };
   // List<String> items = ['x1', 'y1', 'z1', 'Other'];
 
   @override
@@ -37,6 +39,12 @@ class _IssueStockScreenState extends State<IssueStockScreen> {
     super.initState();
     getBalance();
     selectedItem = 'Atta'; // Default to 'Atta'
+    fetchItemsWithRate();
+  }
+
+  void fetchItemsWithRate() async {
+    await Provider.of<ItemListProvider>(context, listen: false)
+        .fetchItemsWithRate();
   }
 
   void getBalance() async {
@@ -51,6 +59,9 @@ class _IssueStockScreenState extends State<IssueStockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    List<Map<String, dynamic>> itemsWithRate =
+        Provider.of<ItemListProvider>(context).itemsWithRate;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Issue Stock'),
@@ -68,10 +79,10 @@ class _IssueStockScreenState extends State<IssueStockScreen> {
                   });
                 },
                 items: [
-                  ...items.keys.map((item) {
-                    return DropdownMenuItem(
-                      value: item,
-                      child: Text(item),
+                  ...itemsWithRate.map((item) {
+                    return DropdownMenuItem<String>(
+                      value: item['name'] as String,
+                      child: Text(item['name'] as String),
                     );
                   }).toList(),
                 ]),
@@ -91,7 +102,9 @@ class _IssueStockScreenState extends State<IssueStockScreen> {
             ElevatedButton(
               onPressed: () async {
                 // Perform the stock issuing logic here
-                final double amount = items[selectedItem]! * quantityToIssue;
+                final double ratePerUnit = itemsWithRate.firstWhere((element) =>
+                    element['name'] == selectedItem)['ratePerUnit'] as double;
+                final double amount = ratePerUnit * quantityToIssue;
                 await Provider.of<StockProvider>(context, listen: false)
                     .issueStock(selectedItem, quantityToIssue, amount);
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -121,7 +134,17 @@ class _IssueStockScreenState extends State<IssueStockScreen> {
                 return Text('Item Quantity: $itemQuantity');
               },
             ),
-            Text("Current Balance: $currentBalance"),
+            FutureBuilder(
+                future: Future.delayed(const Duration(seconds: 1)),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+                  return Text(
+                      'Current Balance: ${itemsWithRate.firstWhere((element) => element['name'] == selectedItem)['ratePerUnit'] * itemQuantity}');
+                }),
+            // Text(
+            //     "Current Balance: ${itemsWithRate.firstWhere((element) => element['name'] == selectedItem)['ratePerUnit'] * itemQuantity}"),
           ],
         ),
       ),

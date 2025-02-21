@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:qr_code_scanner/qr_code_scanner.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class ShowQRScreen extends StatefulWidget {
@@ -10,43 +9,30 @@ class ShowQRScreen extends StatefulWidget {
 
 class _ShowQRScreenState extends State<ShowQRScreen> {
   final GlobalKey qrKey = GlobalKey(debugLabel: 'QR');
-  late QRViewController controller;
-  bool? isMealLive = false;
+
+  bool isMealLive = false;
   bool loading = false;
 
   @override
   void initState() {
-    super.initState();
-    setState(() {
-      loading = true;
-    });
-    someFunction().then((value) {
-      setState(() {
-        loading = false;
-      });
-    });
-  }
-
-  Future<void> someFunction() async {
-    await setIsMealAlive();
-  }
-
-  Future<void> setIsMealAlive() async {
+    // Implement the logic to check if the meal is live
     FirebaseFirestore.instance
         .collection('meal')
         .doc('meal')
         .snapshots()
         .listen((event) {
-      if (event.data() == null) {
+      if (event.data() == null) return;
+      if (event.data()!['status'] == 'started') {
         setState(() {
-          isMealLive = false;
+          isMealLive = true;
         });
       } else {
         setState(() {
-          isMealLive = event.data()!['status'] == 'started';
+          isMealLive = false;
         });
       }
     });
+    super.initState();
   }
 
   @override
@@ -67,7 +53,7 @@ class _ShowQRScreenState extends State<ShowQRScreen> {
                     size: 200.0,
                   ),
                   const SizedBox(height: 20),
-                  !isMealLive!
+                  !isMealLive
                       ? ElevatedButton(
                           onPressed: () async {
                             // Implement refresh functionality if needed
@@ -77,10 +63,10 @@ class _ShowQRScreenState extends State<ShowQRScreen> {
                                 .set({
                               'status': 'started',
                               'time': DateTime.now(),
-                            });
+                            }, SetOptions(merge: true));
                           },
                           style: ElevatedButton.styleFrom(
-                              primary: Theme.of(context).primaryColor),
+                              backgroundColor: Theme.of(context).primaryColor),
                           child: Text(
                             'Start Meal',
                             style: TextStyle(
@@ -90,14 +76,14 @@ class _ShowQRScreenState extends State<ShowQRScreen> {
                       : ElevatedButton(
                           onPressed: null,
                           style: ElevatedButton.styleFrom(
-                              primary: Theme.of(context).primaryColor),
+                              backgroundColor: Theme.of(context).primaryColor),
                           child: Text(
                             'Start Meal',
                             style: TextStyle(
                                 color: Theme.of(context).colorScheme.secondary),
                           ),
                         ),
-                  isMealLive!
+                  isMealLive
                       ? ElevatedButton(
                           onPressed: () async {
                             // Implement refresh functionality if needed
@@ -107,7 +93,7 @@ class _ShowQRScreenState extends State<ShowQRScreen> {
                                 .set({
                               'status': 'ended',
                               'time': DateTime.now(),
-                            });
+                            }, SetOptions(merge: true));
                             CollectionReference collectionReference =
                                 FirebaseFirestore.instance
                                     .collection('livePlates');
@@ -124,7 +110,7 @@ class _ShowQRScreenState extends State<ShowQRScreen> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                              primary: Theme.of(context).primaryColor),
+                              backgroundColor: Theme.of(context).primaryColor),
                           child: Text(
                             'End Meal',
                             style: TextStyle(
@@ -134,7 +120,7 @@ class _ShowQRScreenState extends State<ShowQRScreen> {
                       : ElevatedButton(
                           onPressed: null,
                           style: ElevatedButton.styleFrom(
-                              primary: Theme.of(context).primaryColor),
+                              backgroundColor: Theme.of(context).primaryColor),
                           child: Text(
                             'End Meal',
                             style: TextStyle(

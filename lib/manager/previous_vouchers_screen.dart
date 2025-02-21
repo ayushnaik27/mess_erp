@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mess_erp/providers/voucher_provider.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/vendor_provider.dart';
+import '../providers/vendor_name_provider.dart';
 
 class PreviousVouchersScreen extends StatefulWidget {
   static const routeName = '/previousVouchers';
@@ -24,8 +24,8 @@ class _PreviousVouchersScreenState extends State<PreviousVouchersScreen> {
   }
 
   void fetchVendors() async {
-    await Provider.of<VendorProvider>(context, listen: false)
-        .fetchAndSetVendors();
+    await Provider.of<VendorNameProvider>(context, listen: false)
+        .fetchAndSetVendorNames();
   }
 
   List<String> months = [
@@ -45,7 +45,7 @@ class _PreviousVouchersScreenState extends State<PreviousVouchersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final VendorProvider vendorProvider = Provider.of<VendorProvider>(context);
+    final VendorNameProvider vendorProvider = Provider.of<VendorNameProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -158,7 +158,7 @@ class _PreviousVouchersScreenState extends State<PreviousVouchersScreen> {
                 });
               },
               style: ElevatedButton.styleFrom(
-                primary: Theme.of(context).primaryColor,
+                backgroundColor: Theme.of(context).primaryColor,
               ),
               child: Text(
                 'Submit',

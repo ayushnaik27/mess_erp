@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mess_erp/providers/itemListProvider.dart';
+import 'package:provider/provider.dart';
 
 // Model class for an item entry
 class ItemEntry {
@@ -24,20 +26,35 @@ class AddItemScreen extends StatefulWidget {
 
 class _AddItemScreenState extends State<AddItemScreen> {
   late String itemName;
-  late double ratePerUnit;
-  late int quantityReceived;
+  late double ratePerUnit = 0.0;
+  late int quantityReceived = 0;
   late bool isOtherItem;
+  late String otherItemName;
   TextEditingController otherItemController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    itemName = 'Atta'; // Default to 'Atta'
     isOtherItem = false;
+    fetchItems();
+  }
+
+  void fetchItems() async {
+    await Provider.of<ItemListProvider>(context, listen: false)
+        .fetchAndSetItems();
+    setState(() {
+      itemName = Provider.of<ItemListProvider>(context, listen: false)
+              .items
+              .contains('Atta')
+          ? 'Atta'
+          : Provider.of<ItemListProvider>(context, listen: false).items.first;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    List<String> items = Provider.of<ItemListProvider>(context).items;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Add Item'),
@@ -48,41 +65,40 @@ class _AddItemScreenState extends State<AddItemScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              DropdownButton<String>(
-                value: itemName,
-                onChanged: (value) {
-                  setState(() {
-                    itemName = value!;
-                    isOtherItem = itemName == 'Other';
-                  });
-                },
-                items: [
-                  'Rice',
-                  'Atta',
-                  'Oil',
-                  'Butter',
-                  'Milk',
-                  'Curd',
-                  'Pulses',
-                  'Grams',
-                  'Cereals'
-                      'Tea',
-                  'Cornflakes',
-                  'Maggie',
-                  'Other',
-                ]
-                    .map((name) =>
-                        DropdownMenuItem(value: name, child: Text(name)))
-                    .toList(),
-              ),
+              if (items.isNotEmpty)
+                DropdownButton<String>(
+                  value: itemName,
+                  onChanged: (value) {
+                    setState(() {
+                      itemName = value!;
+                      isOtherItem = itemName == '';
+                    });
+                  },
+                  items: [
+                    ...items.map((String item) {
+                      return DropdownMenuItem<String>(
+                        value: item,
+                        child: Text(item),
+                      );
+                    }).toList(),
+                    const DropdownMenuItem<String>(
+                      value: '',
+                      child: Text('Other'),
+                    ),
+                  ],
+                ),
               if (isOtherItem)
                 TextField(
                   controller: otherItemController,
                   onChanged: (value) {
-                    itemName = value;
+                    setState(() {
+                      otherItemName = value;
+                    });
                   },
-                  decoration:
-                      const InputDecoration(labelText: 'Enter Item Name'),
+                  decoration: InputDecoration(
+                    labelText: 'Enter Item Name',
+                    labelStyle: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ),
               const SizedBox(height: 16.0),
               TextField(
@@ -108,14 +124,61 @@ class _AddItemScreenState extends State<AddItemScreen> {
               ),
               const SizedBox(height: 16.0),
               ElevatedButton(
-                onPressed: () {
-                  if (isOtherItem && itemName.isEmpty) {
-                    // Handle the case where Other is selected, but the item name is not entered
+                onPressed: () async {
+                  if (ratePerUnit <= 0 || quantityReceived <= 0) {
+                    // Handle the case where rate per unit or quantity received is not entered
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Error'),
+                            content: const Text(
+                                'Please enter the rate per unit and quantity received'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
+                        });
                     return;
                   }
+                  if (isOtherItem && otherItemName.isEmpty) {
+                    // Handle the case where Other is selected, but the item name is not entered
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Error'),
+                            content: const Text('Please enter the item name'),
+                            actions: [
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: const Text('OK'),
+                              ),
+                            ],
+                          );
+                        });
+                    return;
+                  }
+                  // await Provider.of<ItemListProvider>(context, listen: false)
+                  //     .addItem(isOtherItem ? otherItemName : itemName, ratePerUnit);
+
+                  isOtherItem
+                      ? await Provider.of<ItemListProvider>(context,
+                              listen: false)
+                          .addItem(otherItemName, ratePerUnit)
+                      : await Provider.of<ItemListProvider>(context,
+                              listen: false)
+                          .editItem(itemName, ratePerUnit);
                   widget.onAddItem(
                     ItemEntry(
-                      itemName: itemName,
+                      itemName: isOtherItem ? otherItemName : itemName,
                       ratePerUnit: ratePerUnit,
                       quantityReceived: quantityReceived,
                     ),

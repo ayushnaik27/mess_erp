@@ -55,7 +55,7 @@ class UserProvider with ChangeNotifier {
       _user.username = userDetails['rollNumber'];
       _user.password = userDetails['password'];
       _user.role = userDetails['role'];
-      _user.email = userDetails['email'];
+      // _user.email = userDetails['email'];
       notifyListeners();
       return _user;
     }

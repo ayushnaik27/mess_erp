@@ -1,4 +1,3 @@
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:mess_erp/auth/login_screen.dart';
@@ -21,10 +20,10 @@ import 'package:mess_erp/muneem/approve_extra_items_screen.dart';
 import 'package:mess_erp/muneem/dashboard.dart';
 import 'package:mess_erp/providers/bills_of_purchase_provider.dart';
 import 'package:mess_erp/providers/extra_item_provider.dart';
+import 'package:mess_erp/providers/itemListProvider.dart';
 import 'package:mess_erp/providers/stock_provider.dart';
 import 'package:mess_erp/providers/tender_provider.dart';
 import 'package:mess_erp/providers/user_provider.dart';
-import 'package:mess_erp/providers/vendor_provider.dart';
 import 'package:mess_erp/providers/voucher_provider.dart';
 import 'package:mess_erp/student/apply_leave_screen.dart';
 import 'package:mess_erp/student/dashboard.dart';
@@ -33,6 +32,7 @@ import 'package:mess_erp/student/track_complaints_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/grievance_provider.dart';
+import 'providers/vendor_name_provider.dart';
 import 'student/file_grievance_screen.dart';
 
 void main() async {
@@ -49,14 +49,12 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-
-  
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => ExtraItemsProvider()),
-        ChangeNotifierProvider(create: (_) => VendorProvider()),
+        ChangeNotifierProvider(create: (_) => VendorNameProvider()),
         ChangeNotifierProvider(create: (_) => BillsOfPurchaseProvider()),
         ChangeNotifierProvider(create: (_) => StockProvider()),
         ChangeNotifierProvider(create: (_) => PaymentVoucherProvider()),
@@ -65,6 +63,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => MessBillProvider()),
         ChangeNotifierProvider(create: (_) => GrievanceProvider()),
         ChangeNotifierProvider(create: (_) => TenderProvider()),
+        ChangeNotifierProvider(create: (_) => ItemListProvider()),
       ],
       child: MaterialApp(
         title: 'Mess ERP',

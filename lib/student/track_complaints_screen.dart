@@ -83,7 +83,7 @@ class _TrackComplaintScreenState extends State<TrackComplaintScreen> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: _getStatusColor(complaint.status),
+                      backgroundColor: _getStatusColor(complaint.status),
                     ),
                     child: const Text(
                       'View Details',

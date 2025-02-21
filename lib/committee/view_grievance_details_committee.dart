@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -25,6 +26,13 @@ class GrievanceDetailsForCommitteeScreen extends StatefulWidget {
 
 class _GrievanceDetailsForCommitteeScreenState
     extends State<GrievanceDetailsForCommitteeScreen> {
+  List<String> commonRemarks = [
+    'Okay, we will look into this.',
+    'We will get back to you soon.',
+    'Your issue has been resolved.',
+    'Forwarded to the committee for further action.',
+  ];
+
   String remarks = '';
   @override
   Widget build(BuildContext context) {
@@ -128,7 +136,7 @@ class _GrievanceDetailsForCommitteeScreenState
                           _showResolveDialog();
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).primaryColor,
+                          backgroundColor: Theme.of(context).primaryColor,
                         ),
                         child: Text(
                           'Resolve',
@@ -141,7 +149,7 @@ class _GrievanceDetailsForCommitteeScreenState
                           _showForwardDialog();
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).primaryColor,
+                          backgroundColor: Theme.of(context).primaryColor,
                         ),
                         child: Text(
                           'Forward',
@@ -154,7 +162,7 @@ class _GrievanceDetailsForCommitteeScreenState
                           _showMarkInProgressDialog();
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).primaryColor,
+                          backgroundColor: Theme.of(context).primaryColor,
                         ),
                         child: Text(
                           'Mark In Process',
@@ -178,23 +186,75 @@ class _GrievanceDetailsForCommitteeScreenState
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Resolve Grievance'),
-          content: TextField(
-            onChanged: (value) {
-              setState(() {
-                remarks = value;
-              });
-            },
-            decoration: const InputDecoration(labelText: 'Enter Remarks'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              widget.userType == 'committee'
+                  ? TextField(
+                      onChanged: (value) {
+                        remarks = value;
+                      },
+                      maxLines: 3,
+                      decoration: const InputDecoration(
+                        labelText: 'Enter Remarks',
+                      ),
+                    )
+                  : Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
+                        child: DropdownButtonFormField<String>(
+                          isExpanded: true,
+                          value: '',
+                          onChanged: (newValue) {
+                            remarks = newValue!;
+                          },
+                          items: [
+                            const DropdownMenuItem(
+                              value: '',
+                              child: Text('Select remarks'),
+                            ),
+                            for (String str in commonRemarks)
+                              DropdownMenuItem(
+                                  value: str,
+                                  child: Text(
+                                    str,
+                                    style: const TextStyle(fontSize: 14),
+                                  )),
+                            if (widget.userType == 'manager')
+                              const DropdownMenuItem(
+                                value:
+                                    'Forwarded to the clerk for further action.',
+                                child: Text(
+                                    'Forwarded to the clerk for further action.'),
+                              ),
+                            if (widget.userType == 'clerk')
+                              const DropdownMenuItem(
+                                value:
+                                    'Forwarded to the manager for further action.',
+                                child: Text(
+                                    'Forwarded to the manager for further action.'),
+                              )
+                          ],
+                          decoration: const InputDecoration(
+                              labelText: 'Remarks',
+                              labelStyle: TextStyle(fontSize: 16)),
+                        ),
+                      ),
+                    ),
+            ],
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancel'),
+              child: Text(
+                'Cancel',
+                style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+              ),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (remarks.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -203,7 +263,7 @@ class _GrievanceDetailsForCommitteeScreenState
                   );
                   return;
                 } else {
-                  Provider.of<GrievanceProvider>(context, listen: false)
+                  await Provider.of<GrievanceProvider>(context, listen: false)
                       .resolveGrievanceWithRemarks(widget.grievance.grievanceId,
                           remarks, widget.userType);
                   // Implement resolve action here
@@ -215,6 +275,8 @@ class _GrievanceDetailsForCommitteeScreenState
                   Navigator.of(context).pop();
                 }
               },
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.tertiary),
               child: const Text('Resolve'),
             ),
           ],
@@ -225,7 +287,7 @@ class _GrievanceDetailsForCommitteeScreenState
 
   // Implement similar methods for Forward and Mark in Process actions
   void _showForwardDialog() {
-    print('User Type: ${widget.userType}');
+    log('User Type: ${widget.userType}');
     // Implement forward dialog
     String? selectedForwardTo = widget.userType == 'manager'
         ? 'Clerk'
@@ -241,19 +303,71 @@ class _GrievanceDetailsForCommitteeScreenState
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              TextField(
-                onChanged: (value) {
-                  remarks = value;
-                },
-                maxLines: 3,
-                decoration: const InputDecoration(
-                  labelText: 'Enter Remarks',
-                ),
-              ),
+              // TextField(
+              //   onChanged: (value) {
+              //     remarks = value;
+              //   },
+              //   maxLines: 3,
+              //   decoration: const InputDecoration(
+              //     labelText: 'Enter Remarks',
+              //   ),
+              // ),
+              widget.userType == 'committee'
+                  ? TextField(
+                      onChanged: (value) {
+                        remarks = value;
+                      },
+                      maxLines: 3,
+                      decoration: const InputDecoration(
+                        labelText: 'Enter Remarks',
+                      ),
+                    )
+                  : Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
+                        child: DropdownButtonFormField<String>(
+                          isExpanded: true,
+                          value: '',
+                          onChanged: (newValue) {
+                            remarks = newValue!;
+                          },
+                          items: [
+                            const DropdownMenuItem(
+                              value: '',
+                              child: Text('Select remarks'),
+                            ),
+                            for (String str in commonRemarks)
+                              DropdownMenuItem(
+                                  value: str,
+                                  child: Text(
+                                    str,
+                                    style: const TextStyle(fontSize: 14),
+                                  )),
+                            if (widget.userType == 'manager')
+                              const DropdownMenuItem(
+                                value:
+                                    'Forwarded to the clerk for further action.',
+                                child: Text(
+                                    'Forwarded to the clerk for further action.'),
+                              ),
+                            if (widget.userType == 'clerk')
+                              const DropdownMenuItem(
+                                value:
+                                    'Forwarded to the manager for further action.',
+                                child: Text(
+                                    'Forwarded to the manager for further action.'),
+                              )
+                          ],
+                          decoration: const InputDecoration(
+                              labelText: 'Remarks',
+                              labelStyle: TextStyle(fontSize: 16)),
+                        ),
+                      ),
+                    ),
+              const SizedBox(height: 10),
               Align(
                 alignment: Alignment.centerLeft,
                 child: SizedBox(
-                  width: 150,
                   child: DropdownButtonFormField<String>(
                     isExpanded: true,
                     value: '',
@@ -270,22 +384,24 @@ class _GrievanceDetailsForCommitteeScreenState
                       if (widget.userType != 'manager')
                         const DropdownMenuItem(
                           value: 'Manager',
-                          child: Text('Manager'),
+                          child:
+                              Text('Manager', style: TextStyle(fontSize: 14)),
                         ),
                       if (widget.userType != 'clerk')
                         const DropdownMenuItem(
                           value: 'Clerk',
-                          child: Text('Clerk'),
+                          child: Text('Clerk', style: TextStyle(fontSize: 14)),
                         ),
                       if (widget.userType != 'committee')
                         const DropdownMenuItem(
                           value: 'Committee',
-                          child: Text('Committee'),
+                          child:
+                              Text('Committee', style: TextStyle(fontSize: 14)),
                         ),
                     ],
                     decoration: const InputDecoration(
-                      labelText: 'Forward To',
-                    ),
+                        labelText: 'Forward To',
+                        labelStyle: TextStyle(fontSize: 16)),
                   ),
                 ),
               ),
@@ -296,10 +412,12 @@ class _GrievanceDetailsForCommitteeScreenState
               onPressed: () {
                 Navigator.of(context).pop();
               },
+              style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.tertiary),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 if (selectedForwardTo == '') {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
@@ -318,7 +436,7 @@ class _GrievanceDetailsForCommitteeScreenState
                   return;
                 } else {
                   // Forward grievance logic goes here
-                  Provider.of<GrievanceProvider>(context, listen: false)
+                  await Provider.of<GrievanceProvider>(context, listen: false)
                       .forwardGrievanceWithRemarks(widget.grievance.grievanceId,
                           remarks, selectedForwardTo!, widget.userType);
                   Navigator.of(context).pop();
@@ -326,6 +444,8 @@ class _GrievanceDetailsForCommitteeScreenState
                   Navigator.of(context).pop();
                 }
               },
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.tertiary),
               child: const Text('Forward'),
             ),
           ],
@@ -341,19 +461,70 @@ class _GrievanceDetailsForCommitteeScreenState
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Mark in Process'),
-          content: TextField(
-            onChanged: (value) {
-              setState(() {
-                remarks = value;
-              });
-            },
-            decoration: const InputDecoration(labelText: 'Enter Remarks'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              widget.userType == 'committee'
+                  ? TextField(
+                      onChanged: (value) {
+                        remarks = value;
+                      },
+                      maxLines: 3,
+                      decoration: const InputDecoration(
+                        labelText: 'Enter Remarks',
+                      ),
+                    )
+                  : Align(
+                      alignment: Alignment.centerLeft,
+                      child: SizedBox(
+                        child: DropdownButtonFormField<String>(
+                          isExpanded: true,
+                          value: '',
+                          onChanged: (newValue) {
+                            remarks = newValue!;
+                          },
+                          items: [
+                            const DropdownMenuItem(
+                              value: '',
+                              child: Text('Select remarks'),
+                            ),
+                            for (String str in commonRemarks)
+                              DropdownMenuItem(
+                                  value: str,
+                                  child: Text(
+                                    str,
+                                    style: const TextStyle(fontSize: 14),
+                                  )),
+                            if (widget.userType == 'manager')
+                              const DropdownMenuItem(
+                                value:
+                                    'Forwarded to the clerk for further action.',
+                                child: Text(
+                                    'Forwarded to the clerk for further action.'),
+                              ),
+                            if (widget.userType == 'clerk')
+                              const DropdownMenuItem(
+                                value:
+                                    'Forwarded to the manager for further action.',
+                                child: Text(
+                                    'Forwarded to the manager for further action.'),
+                              )
+                          ],
+                          decoration: const InputDecoration(
+                              labelText: 'Remarks',
+                              labelStyle: TextStyle(fontSize: 16)),
+                        ),
+                      ),
+                    ),
+            ],
           ),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
+              style: TextButton.styleFrom(
+                  foregroundColor: Theme.of(context).colorScheme.tertiary),
               child: const Text('Cancel'),
             ),
             ElevatedButton(
@@ -377,6 +548,8 @@ class _GrievanceDetailsForCommitteeScreenState
                   Navigator.of(context).pop();
                 }
               },
+              style: ElevatedButton.styleFrom(
+                  backgroundColor: Theme.of(context).colorScheme.tertiary),
               child: const Text('Mark in Process'),
             ),
           ],

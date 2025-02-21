@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mess_erp/providers/bills_of_purchase_provider.dart';
-import 'package:mess_erp/providers/vendor_provider.dart';
 import 'package:mess_erp/providers/voucher_provider.dart';
 import 'package:provider/provider.dart';
 
+import '../providers/vendor_name_provider.dart';
+
 class GenerateVoucherScreen extends StatefulWidget {
+  const GenerateVoucherScreen({Key? key}) : super(key: key);
   static const routeName = '/generateVoucher';
 
   @override
@@ -39,7 +41,7 @@ class _GenerateVoucherScreenState extends State<GenerateVoucherScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final vendorProvider = Provider.of<VendorProvider>(context);
+    final vendorProvider = Provider.of<VendorNameProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Generate Voucher'),
@@ -167,9 +169,10 @@ class _GenerateVoucherScreenState extends State<GenerateVoucherScreen> {
                       content: Text('Please select all fields!')));
                   return;
                 }
-                if(bills.isEmpty){
+                if (bills.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('There are no bills to generate voucher for!')));
+                      content:
+                          Text('There are no bills to generate voucher for!')));
                   return;
                 }
                 // Perform logic to fetch bills and generate vouchers
@@ -180,7 +183,7 @@ class _GenerateVoucherScreenState extends State<GenerateVoucherScreen> {
                 Navigator.pop(context);
               },
               style: ElevatedButton.styleFrom(
-                primary: Theme.of(context).primaryColor,
+                backgroundColor: Theme.of(context).primaryColor,
               ),
               child: Text(
                 'Generate Voucher',
