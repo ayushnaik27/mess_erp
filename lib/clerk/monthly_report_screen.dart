@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:http/http.dart';
 import 'package:mess_erp/clerk/mess_bill_provider.dart';
 import 'package:mess_erp/clerk/monthly_report_provider.dart';
 import 'package:provider/provider.dart';
@@ -346,7 +345,7 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
                         decoration: InputDecoration(
                             labelText: 'Enter the amount',
                             labelStyle: Theme.of(context).textTheme.labelLarge,
-                            border: OutlineInputBorder(
+                            border: const OutlineInputBorder(
                                 borderSide: BorderSide(width: 0.1))),
                       ),
                     )
@@ -382,7 +381,7 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
                   onPressed: generating
                       ? null
                       : () async {
-                          print("generate bill pressed");
+                          log("generate bill pressed");
 
                           setState(() {
                             generating = true;
@@ -397,7 +396,7 @@ class _MonthlyReportScreenState extends State<MonthlyReportScreen> {
                           });
                         },
                   style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).primaryColor),
+                      backgroundColor: Theme.of(context).primaryColor),
                   child: generating
                       ? Text('Generating',
                           style: TextStyle(

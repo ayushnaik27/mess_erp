@@ -1,15 +1,13 @@
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:provider/provider.dart';
 
 import '../manager/add_items_screen.dart';
-import 'stock_provider.dart';
 
 class BillsOfPurchaseProvider extends ChangeNotifier {
   final CollectionReference _billsCollection =

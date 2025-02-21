@@ -1,9 +1,13 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mess_erp/muneem/netx_three_meals_screen.dart';
 import 'package:mess_erp/muneem/students_on_leave.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/extra_item_provider.dart';
+import '../providers/hash_helper.dart';
 import '../providers/user_provider.dart';
 import 'show_qr_screen.dart';
 
@@ -12,15 +16,119 @@ class MuneemDashboardScreen extends StatelessWidget {
 
   const MuneemDashboardScreen({super.key});
 
+  void changePassword(String newPassword) async {
+    String hashedPassword = HashHelper.encode(newPassword);
+    await FirebaseFirestore.instance
+        .collection('loginCredentials')
+        .doc('roles')
+        .collection('muneem')
+        .doc('muneem@gmail.com')
+        .update({
+      'password': hashedPassword,
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    MyUser user = Provider.of<UserProvider>(context).user;
     final Map<String, String> arguments =
         ModalRoute.of(context)?.settings.arguments as Map<String, String>;
-    print(arguments.keys);
-    print(arguments['email']);
+    log(arguments.keys.toString());
+    log(arguments['email'].toString());
     return Scaffold(
       appBar: AppBar(
         title: const Text('Muneem Dashboard'),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            // DrawerHeader(
+            //   child: Column(
+            //     crossAxisAlignment: CrossAxisAlignment.start,
+            //     children: [
+            //       Text(
+            //         'Muneem',
+            //         style: Theme.of(context).textTheme.bodyMedium,
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            DrawerHeader(
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    backgroundColor: Theme.of(context).colorScheme.tertiary,
+                    radius: 30,
+                    child: const Text('A'),
+                  ),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      
+                      Text(
+                        user.username,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+
+            
+            ListTile(
+              title: Text(
+                'Approve Extra Items',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              onTap: () {
+                Navigator.of(context).pushNamed('/approveExtraItems');
+              },
+            ),
+            ListTile(
+              title: Text(
+                'Impose Extra Amount',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              onTap: () {
+                showAdaptiveDialog(
+                    context: context,
+                    builder: (context) {
+                      return const ImposeExtraDialog();
+                    });
+              },
+            ),
+
+            ListTile(
+              title: Text(
+                'Next Three Meals',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              onTap: () {
+                Navigator.of(context)
+                    .push(MaterialPageRoute(builder: (context) {
+                  return NextThreeMealsScreen();
+                }));
+              },
+            ),
+            ListTile(
+              title: Text(
+                'Log Out',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              onTap: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        ),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -60,7 +168,7 @@ class MuneemDashboardScreen extends StatelessWidget {
                       onTap: () {
                         showAdaptiveDialog(
                             context: context,
-                            builder: (context) => ImposeExtraDialog());
+                            builder: (context) => const ImposeExtraDialog());
                       },
                       child: Card(
                         color: Theme.of(context).colorScheme.primary,
@@ -202,6 +310,7 @@ class MuneemDashboardScreen extends StatelessWidget {
 }
 
 class ImposeExtraDialog extends StatefulWidget {
+  const ImposeExtraDialog({Key? key}) : super(key: key);
   @override
   _ImposeExtraDialogState createState() => _ImposeExtraDialogState();
 }
@@ -255,7 +364,7 @@ class _ImposeExtraDialogState extends State<ImposeExtraDialog> {
             Navigator.of(context).pop();
           },
           style:
-              ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+              ElevatedButton.styleFrom(backgroundColor: Theme.of(context).primaryColor),
           child: Text(
             'Impose',
             style: TextStyle(color: Theme.of(context).colorScheme.tertiary),

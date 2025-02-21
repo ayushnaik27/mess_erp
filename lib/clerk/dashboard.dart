@@ -6,6 +6,7 @@ import 'package:mess_erp/clerk/open_tender_screen.dart';
 import 'package:mess_erp/committee/assigned_grievances_screen.dart';
 import 'package:mess_erp/providers/hash_helper.dart';
 import 'package:mess_erp/providers/user_provider.dart';
+import 'package:mess_erp/widgets/change_password_dialog.dart';
 import 'package:provider/provider.dart';
 
 class ClerkDashboardScreen extends StatefulWidget {
@@ -17,6 +18,19 @@ class ClerkDashboardScreen extends StatefulWidget {
 }
 
 class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
+
+  void changePassword(String newPassword) async {
+    String hashedPassword = HashHelper.encode(newPassword);
+    await FirebaseFirestore.instance
+        .collection('loginCredentials')
+        .doc('roles')
+        .collection('clerk')
+        .doc('admin')
+        .update({
+      'password': hashedPassword,
+    });
+  }
+
   String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
   @override
@@ -44,10 +58,10 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        capitalize(user.name),
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
+                      // Text(
+                      //   capitalize(user.name),
+                      //   style: Theme.of(context).textTheme.bodyLarge,
+                      // ),
                       Text(
                         user.username,
                         style: const TextStyle(fontSize: 16),
@@ -88,6 +102,17 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => const AllTendersScreen()));
+              },
+            ),
+            ListTile(
+              title: Text(
+                'Change Password',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              onTap: () {
+                showAdaptiveDialog(context: context, builder: (context) {
+                  return ChangePasswordDialog(changePassword: changePassword);
+                });
               },
             ),
             ListTile(
@@ -156,6 +181,29 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                             const SizedBox(height: 16.0),
                             Text(
                               'Add Student',
+                              textAlign: TextAlign.center,
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => showAdaptiveDialog(
+                        context: context,
+                        builder: (context) {
+                          return AddVendorDialog();
+                        },
+                      ),
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.person_add),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Add Vendor',
                               textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.displayMedium,
                             ),
@@ -354,7 +402,8 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => EnrollmentRequestScreen()));
+                                builder: (context) =>
+                                    EnrollmentRequestScreen()));
                       },
                       child: Card(
                         color: Theme.of(context).colorScheme.primary,
@@ -372,7 +421,6 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
                         ),
                       ),
                     ),
-
                   ],
                 ),
               ),
@@ -526,6 +574,64 @@ class _ClerkDashboardScreenState extends State<ClerkDashboardScreen> {
 //   }
 // }
 
+class AddVendorDialog extends StatelessWidget {
+  AddVendorDialog({super.key});
+
+  final TextEditingController nameController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(
+        'Add Vendor',
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          TextField(
+            controller: nameController,
+            decoration: InputDecoration(
+                labelText: 'Name',
+                labelStyle: Theme.of(context).textTheme.bodyMedium),
+          ),
+        ],
+      ),
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor),
+          child: Text(
+            'Cancel',
+            style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () async {
+            await FirebaseFirestore.instance
+                .collection('vendorList')
+                .doc(nameController.text)
+                .set({
+                  'name': nameController.text,
+                })
+                .then((value) => Navigator.pop(context))
+                .catchError((error) => print('Failed to add vendor: $error'));
+          },
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor),
+          child: Text(
+            'Add',
+            style: TextStyle(color: Theme.of(context).colorScheme.tertiary),
+          ),
+        )
+      ],
+    );
+  }
+}
+
 class AddStudentDialog extends StatelessWidget {
   AddStudentDialog({super.key});
 
@@ -559,8 +665,8 @@ class AddStudentDialog extends StatelessWidget {
       actions: [
         ElevatedButton(
           onPressed: () => Navigator.pop(context),
-          style:
-              ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor),
           child: Text('Cancel',
               style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
         ),
@@ -581,8 +687,8 @@ class AddStudentDialog extends StatelessWidget {
                 .then((value) => Navigator.pop(context))
                 .catchError((error) => print('Failed to add student: $error'));
           },
-          style:
-              ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor),
           child: Text('Add',
               style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
         ),
@@ -625,8 +731,8 @@ class ImposeFineDialog extends StatelessWidget {
       actions: [
         ElevatedButton(
           onPressed: () => Navigator.pop(context),
-          style:
-              ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor),
           child: Text('Cancel',
               style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
         ),
@@ -645,8 +751,8 @@ class ImposeFineDialog extends StatelessWidget {
               }, SetOptions(merge: true))
               .then((value) => Navigator.pop(context))
               .catchError((error) => print('Failed to add student: $error')),
-          style:
-              ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor),
           child: Text('Add',
               style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
         ),
@@ -686,8 +792,8 @@ class AddManagerDialog extends StatelessWidget {
       actions: [
         ElevatedButton(
           onPressed: () => Navigator.pop(context),
-          style:
-              ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor),
           child: Text('Cancel',
               style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
         ),
@@ -708,8 +814,8 @@ class AddManagerDialog extends StatelessWidget {
                 .then((value) => Navigator.pop(context))
                 .catchError((error) => print('Failed to add manager: $error'));
           },
-          style:
-              ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor),
           child: Text('Add',
               style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
         ),
@@ -749,8 +855,8 @@ class AddCommitteeDialog extends StatelessWidget {
       actions: [
         ElevatedButton(
           onPressed: () => Navigator.pop(context),
-          style:
-              ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor),
           child: Text('Cancel',
               style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
         ),
@@ -772,8 +878,8 @@ class AddCommitteeDialog extends StatelessWidget {
                 .catchError(
                     (error) => print('Failed to add committee member: $error'));
           },
-          style:
-              ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor),
           child: Text('Add',
               style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
         ),
@@ -815,8 +921,8 @@ class AddMuneemDialog extends StatelessWidget {
       actions: [
         ElevatedButton(
           onPressed: () => Navigator.pop(context),
-          style:
-              ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor),
           child: Text('Cancel',
               style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
         ),
@@ -837,8 +943,8 @@ class AddMuneemDialog extends StatelessWidget {
                 .then((value) => Navigator.pop(context))
                 .catchError((error) => print('Failed to add muneem: $error'));
           },
-          style:
-              ElevatedButton.styleFrom(primary: Theme.of(context).primaryColor),
+          style: ElevatedButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor),
           child: Text('Add',
               style: TextStyle(color: Theme.of(context).colorScheme.tertiary)),
         ),

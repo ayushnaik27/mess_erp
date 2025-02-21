@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mess_erp/committee/assigned_grievances_screen.dart';
@@ -6,7 +7,9 @@ import 'package:mess_erp/providers/announcement_provider.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/mess_menu_helper.dart';
+import '../providers/hash_helper.dart';
 import '../providers/user_provider.dart';
+import '../widgets/change_password_dialog.dart';
 
 class CommitteeDashboardScreen extends StatefulWidget {
   static const routeName = '/committeeDashboard';
@@ -23,6 +26,18 @@ class _CommitteeDashboardScreenState extends State<CommitteeDashboardScreen> {
   void initState() {
     super.initState();
     AnnouncementServices().deleteOldAnnouncements();
+  }
+
+  void changePassword(String newPassword) async {
+    String hashedPassword = HashHelper.encode(newPassword);
+    await FirebaseFirestore.instance
+        .collection('loginCredentials')
+        .doc('roles')
+        .collection('committee')
+        .doc('committee@gmail.com')
+        .update({
+      'password': hashedPassword,
+    });
   }
 
   String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
@@ -52,10 +67,10 @@ class _CommitteeDashboardScreenState extends State<CommitteeDashboardScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        capitalize(user.name),
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
+                      // Text(
+                      //   capitalize(user.name),
+                      //   style: Theme.of(context).textTheme.bodyLarge,
+                      // ),
                       Text(
                         user.username,
                         style: const TextStyle(fontSize: 16),
@@ -90,6 +105,21 @@ class _CommitteeDashboardScreenState extends State<CommitteeDashboardScreen> {
               ),
               onTap: () {
                 Navigator.of(context).pushNamed(BillsScreen.routeName);
+              },
+            ),
+            ListTile(
+              title: Text(
+                'Change Password',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              onTap: () {
+                showAdaptiveDialog(
+                    context: context,
+                    builder: (context) {
+                      return ChangePasswordDialog(
+                        changePassword: changePassword,
+                      );
+                    });
               },
             ),
             ListTile(

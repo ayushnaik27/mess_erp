@@ -84,10 +84,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        capitalize(user.name),
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                      Text(
                         user.username,
                         style: const TextStyle(fontSize: 16),
                       ),
@@ -338,6 +334,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   ),
                   shrinkWrap: true,
                   children: [
+                    
                     GestureDetector(
                       onTap: () {
                         Navigator.of(context).pushNamed(

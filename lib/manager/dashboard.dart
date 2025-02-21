@@ -1,21 +1,36 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:mess_erp/committee/assigned_grievances_screen.dart';
 import 'package:mess_erp/manager/track_bills_screen.dart';
+import 'package:mess_erp/widgets/change_password_dialog.dart';
 import 'package:provider/provider.dart';
 
+import '../muneem/netx_three_meals_screen.dart';
+import '../providers/hash_helper.dart';
 import '../providers/user_provider.dart';
 
 class ManagerDashboardScreen extends StatelessWidget {
   static const routeName = '/managerDashboard';
 
   const ManagerDashboardScreen({Key? key}) : super(key: key);
+
+  void changePassword(String newPassword) async {
+    String hashedPassword = HashHelper.encode(newPassword);
+    await FirebaseFirestore.instance
+        .collection('loginCredentials')
+        .doc('roles')
+        .collection('manager')
+        .doc('manager@gmail.com')
+        .update({
+      'password': hashedPassword,
+    });
+  }
+
   String capitalize(String s) => s[0].toUpperCase() + s.substring(1);
 
   @override
   Widget build(BuildContext context) {
     MyUser user = Provider.of<UserProvider>(context, listen: false).user;
-
-    final arguments = ModalRoute.of(context)?.settings.arguments;
 
     return Scaffold(
       drawer: Drawer(
@@ -39,10 +54,10 @@ class ManagerDashboardScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
-                        capitalize(user.name),
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
+                      // Text(
+                      //   capitalize(user.name),
+                      //   style: Theme.of(context).textTheme.bodyLarge,
+                      // ),
                       Text(
                         user.username,
                         style: const TextStyle(fontSize: 16),
@@ -94,8 +109,7 @@ class ManagerDashboardScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
               onTap: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
                   return const AssignedGrievancesScreen(userType: 'manager');
                 }));
               },
@@ -121,6 +135,21 @@ class ManagerDashboardScreen extends StatelessWidget {
             ),
             ListTile(
               title: Text(
+                'Change Password',
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+              onTap: () {
+                showAdaptiveDialog(
+                    context: context,
+                    builder: (context) {
+                      return ChangePasswordDialog(
+                        changePassword: changePassword,
+                      );
+                    });
+              },
+            ),
+            ListTile(
+              title: Text(
                 'Logout',
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
@@ -129,7 +158,6 @@ class ManagerDashboardScreen extends StatelessWidget {
                 Navigator.of(context).pop();
               },
             ),
-
           ],
         ),
       ),
@@ -265,6 +293,7 @@ class ManagerDashboardScreen extends StatelessWidget {
                             const SizedBox(height: 16.0),
                             Text(
                               'View Assigned Grievances',
+                              textAlign: TextAlign.center,
                               style: Theme.of(context).textTheme.displayMedium,
                             ),
                           ],
@@ -304,6 +333,26 @@ class ManagerDashboardScreen extends StatelessWidget {
                             const SizedBox(height: 16.0),
                             Text(
                               'Track Bills',
+                              style: Theme.of(context).textTheme.displayMedium,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (context) => NextThreeMealsScreen()));
+                      },
+                      child: Card(
+                        color: Theme.of(context).colorScheme.primary,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Icon(Icons.food_bank),
+                            const SizedBox(height: 16.0),
+                            Text(
+                              'Next Three Meals',
                               style: Theme.of(context).textTheme.displayMedium,
                             ),
                           ],

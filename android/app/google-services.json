@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:932574768473:android:5f0b30ed7a26707879b048",
+        "mobilesdk_app_id": "1:932574768473:android:7e26adae471cfa1e79b048",
         "android_client_info": {
-          "package_name": "com.example.mess_erp"
+          "package_name": "com.messERP.mess_erp"
         }
       },
       "oauth_client": [],

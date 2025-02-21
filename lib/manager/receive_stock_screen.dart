@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
@@ -7,11 +8,9 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'package:mess_erp/manager/add_items_screen.dart';
 import 'package:mess_erp/providers/bills_of_purchase_provider.dart';
+import 'package:mess_erp/providers/vendor_name_provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
-
-import '../providers/vendor_provider.dart';
-
 class ReceiveStockScreen extends StatefulWidget {
   static const routeName = '/receiveStock';
   final String? billNumber;
@@ -87,13 +86,13 @@ class _ReceiveStockScreenState extends State<ReceiveStockScreen> {
   }
 
   void fetchVendors() async {
-    await Provider.of<VendorProvider>(context, listen: false)
-        .fetchAndSetVendors();
+    await Provider.of<VendorNameProvider>(context, listen: false)
+        .fetchAndSetVendorNames();
   }
 
   @override
   Widget build(BuildContext context) {
-    final vendorProvider = Provider.of<VendorProvider>(context);
+    final vendorProvider = Provider.of<VendorNameProvider>(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Receive Stock'),
@@ -224,7 +223,7 @@ class _ReceiveStockScreenState extends State<ReceiveStockScreen> {
                           }
                         },
                         style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).primaryColor,
+                          backgroundColor: Theme.of(context).primaryColor,
                         ),
                         icon: Icon(Icons.upload,
                             color: Theme.of(context).colorScheme.tertiary),
@@ -246,7 +245,7 @@ class _ReceiveStockScreenState extends State<ReceiveStockScreen> {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Theme.of(context).primaryColor,
+                      backgroundColor: Theme.of(context).primaryColor,
                     ),
                     child: Text('Add Items',
                         style: TextStyle(
@@ -292,7 +291,7 @@ class _ReceiveStockScreenState extends State<ReceiveStockScreen> {
                       });
                     },
               style: ElevatedButton.styleFrom(
-                primary: Theme.of(context).primaryColor,
+                backgroundColor: Theme.of(context).primaryColor,
               ),
               child: editing
                   ? Text(
@@ -339,7 +338,7 @@ class _ReceiveStockScreenState extends State<ReceiveStockScreen> {
       return;
     }
     if (selectedVendor.isEmpty || billNo.isEmpty || receivedItems.isEmpty) {
-      print('Please fill in all the required fields.');
+      log('Please fill in all the required fields.');
       showDialog(
         context: context,
         builder: (context) {
@@ -408,12 +407,12 @@ class _ReceiveStockScreenState extends State<ReceiveStockScreen> {
         SnackBar(
           content: editing
               ? const Text('Bill updated successfully')
-              : Text('Bill submitted successfully'),
+              : const Text('Bill submitted successfully'),
         ),
       );
       Navigator.pop(context);
     } catch (e) {
-      print('Error submitting received items: $e');
+      log('Error submitting received items: $e');
       showDialog(
           context: context,
           builder: (context) {
