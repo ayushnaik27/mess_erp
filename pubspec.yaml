@@ -59,6 +59,8 @@ dependencies:
   get:
   go_router:
   google_fonts:
+  logger: ^2.0.2+1
+  flutter_animate:
 
 flutter_launcher_icons:
     image_path: "assets/images/mess_erp.png"

@@ -1,56 +1,87 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'app_colors.dart';
 
 class AppTextStyles {
-  static TextStyle get _baseTextStyle => GoogleFonts.plusJakartaSans();
+  static final _baseTextStyle = GoogleFonts.plusJakartaSans(
+    color: AppColors.textPrimary,
+    fontWeight: FontWeight.normal,
+  );
 
-  static TextStyle get displayLarge => _baseTextStyle.copyWith(
-        fontSize: 24,
-        fontWeight: FontWeight.w700,
-        color: const Color(0xFF362828),
-      );
+  // Headings
+  static final displayLarge = _baseTextStyle.copyWith(
+    fontSize: 28,
+    fontWeight: FontWeight.bold,
+    letterSpacing: -0.5,
+  );
 
-  static TextStyle get displayMedium => _baseTextStyle.copyWith(
-        fontSize: 18,
-        fontWeight: FontWeight.w700,
-        color: const Color(0xFF362828),
-      );
+  static final displayMedium = _baseTextStyle.copyWith(
+    fontSize: 24,
+    fontWeight: FontWeight.bold,
+  );
 
-  static TextStyle get displaySmall => _baseTextStyle.copyWith(
-        fontSize: 14,
-        color: const Color(0xFF362828),
-      );
+  static final displaySmall = _baseTextStyle.copyWith(
+    fontSize: 20,
+    fontWeight: FontWeight.w600,
+  );
 
-  static TextStyle get titleLarge => _baseTextStyle.copyWith(
-        fontSize: 26,
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-      );
+  // Titles
+  static final titleLarge = _baseTextStyle.copyWith(
+    fontSize: 18,
+    fontWeight: FontWeight.w600,
+  );
 
-  static TextStyle get titleMedium => _baseTextStyle.copyWith(
-        fontSize: 22,
-        color: Colors.black,
-      );
+  static final titleMedium = _baseTextStyle.copyWith(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+  );
 
-  static TextStyle get bodyLarge => _baseTextStyle.copyWith(
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-        color: Colors.black,
-      );
+  // Body text
+  static final bodyLarge = _baseTextStyle.copyWith(
+    fontSize: 16,
+    height: 1.5,
+  );
 
-  static TextStyle get bodyMedium => _baseTextStyle.copyWith(
-        fontSize: 18,
-        fontWeight: FontWeight.w600,
-        color: Colors.black,
-      );
+  static final bodyMedium = _baseTextStyle.copyWith(
+    fontSize: 14,
+    height: 1.5,
+  );
 
-  static TextStyle get bodySmall => _baseTextStyle.copyWith(
-        fontSize: 14,
-        color: Colors.black,
-      );
+  static final bodySmall = _baseTextStyle.copyWith(
+    fontSize: 12,
+    height: 1.5,
+    color: AppColors.textSecondary,
+  );
 
-  static TextStyle get labelSmall => _baseTextStyle.copyWith(
-        fontSize: 12,
-        color: Colors.black54,
-      );
+  // Labels
+  static final labelSmall = _baseTextStyle.copyWith(
+    fontSize: 11,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.5,
+    color: AppColors.textSecondary,
+  );
+
+  // Financial/billing specific styles
+  static final amountLarge = _baseTextStyle.copyWith(
+    fontSize: 20,
+    fontWeight: FontWeight.bold,
+    fontFeatures: [FontFeature.tabularFigures()],
+  );
+
+  static final amountMedium = _baseTextStyle.copyWith(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    fontFeatures: [FontFeature.tabularFigures()],
+  );
+
+  static final tableHeader = _baseTextStyle.copyWith(
+    fontSize: 14,
+    fontWeight: FontWeight.w600,
+    color: AppColors.primary,
+  );
+
+  static final tableCell = _baseTextStyle.copyWith(
+    fontSize: 14,
+    fontFeatures: [FontFeature.tabularFigures()],
+  );
 }

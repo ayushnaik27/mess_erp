@@ -1,29 +1,34 @@
-import 'dart:developer' as developer;
+import 'package:logger/logger.dart';
 
-class Logger {
-  static final Logger _instance = Logger._internal();
-  factory Logger() => _instance;
-  Logger._internal();
+class AppLogger {
+  static final AppLogger _instance = AppLogger._internal();
+  factory AppLogger() => _instance;
+  AppLogger._internal();
 
-  static const String _tag = "MESS_ERP";
-  static bool enableLogs = true;
+  final logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 2,
+      errorMethodCount: 8,
+      lineLength: 120,
+      colors: true,
+      printEmojis: true,
+      printTime: true,
+    ),
+  );
 
   void d(String message) {
-    if (enableLogs) {
-      developer.log('[$_tag] $message', name: 'DEBUG');
-    }
-  }
-
-  void e(String message, {dynamic error, StackTrace? stackTrace}) {
-    if (enableLogs) {
-      developer.log('[$_tag] $message',
-          name: 'ERROR', error: error, stackTrace: stackTrace);
-    }
+    logger.d(message);
   }
 
   void i(String message) {
-    if (enableLogs) {
-      developer.log('[$_tag] $message', name: 'INFO');
-    }
+    logger.i(message);
+  }
+
+  void w(String message) {
+    logger.w(message);
+  }
+
+  void e(String message, {dynamic error, StackTrace? stackTrace}) {
+    logger.e(message, error: error, stackTrace: stackTrace);
   }
 }
