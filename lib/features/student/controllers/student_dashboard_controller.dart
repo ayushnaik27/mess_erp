@@ -1,13 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:mess_erp/core/constants/app_strings.dart';
 import 'package:mess_erp/core/constants/firestore_constants.dart';
 import 'package:mess_erp/core/router/app_router.dart';
 import 'package:mess_erp/core/utils/logger.dart';
-import 'package:mess_erp/student/apply_leave_screen.dart';
-import 'package:mess_erp/student/mess_bill_screen.dart';
-import 'package:mess_erp/student/qr_scanner_screen.dart';
-import 'package:mess_erp/student/request_extra_items_screen.dart';
-import 'package:mess_erp/student/track_leaves_screen.dart';
 
 class StudentDashboardController extends GetxController {
   final RxBool isMealLive = false.obs;
@@ -27,7 +23,6 @@ class StudentDashboardController extends GetxController {
 
   Future<void> refreshData() async {
     await checkMealStatus();
-    // Other refresh operations as needed
     _logger.i('Dashboard data refreshed');
   }
 
@@ -48,38 +43,45 @@ class StudentDashboardController extends GetxController {
   void navigateToQrScanner(String rollNumber) {
     if (!isMealLive.value) {
       Get.snackbar(
-        'Info',
-        'No active meal available for scanning',
+        AppStrings.info,
+        AppStrings.noActiveMeal,
         snackPosition: SnackPosition.BOTTOM,
       );
       return;
     }
 
-    Get.to(() => QRScannerScreen(rollNumber: rollNumber));
+    Get.toNamed(AppRoutes.qrScanner, arguments: {'rollNumber': rollNumber});
   }
 
   void navigateToMessBill(String studentId) {
-    Get.to(() => MessBillScreen(studentId: studentId));
+    Get.toNamed(AppRoutes.messBill, arguments: {'studentId': studentId});
   }
 
   void navigateToRequestExtraItems(String rollNumber) {
-    Get.toNamed(RequestExtraItemsScreen.routeName, arguments: rollNumber);
+    Get.toNamed(AppRoutes.requestExtraItems,
+        arguments: {'rollNumber': rollNumber});
   }
 
   void navigateToApplyLeave(String rollNumber) {
-    Get.toNamed(ApplyLeaveScreen.routeName, arguments: rollNumber);
+    Get.toNamed(AppRoutes.applyLeave, arguments: {'rollNumber': rollNumber});
   }
 
   void navigateToTrackLeaves(String rollNumber) {
-    Get.to(() => TrackLeavesScreen(studentRollNumber: rollNumber));
+    Get.toNamed(AppRoutes.trackLeaves, arguments: {'rollNumber': rollNumber});
   }
 
   void navigateToFileGrievance() {
-    Get.toNamed('/file-grievance');
+    // Pass the current user's roll number if needed
+    Get.toNamed(AppRoutes.fileGrievance,
+        arguments:
+            userRollNumber != null ? {'rollNumber': userRollNumber} : null);
   }
 
   void navigateToTrackComplaints() {
-    Get.toNamed('/track-complaints');
+    // Pass the current user's roll number if needed
+    Get.toNamed(AppRoutes.trackComplaints,
+        arguments:
+            userRollNumber != null ? {'rollNumber': userRollNumber} : null);
   }
 
   void logout() {

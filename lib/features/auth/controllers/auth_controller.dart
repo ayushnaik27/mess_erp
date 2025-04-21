@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mess_erp/core/constants/app_strings.dart';
+import 'package:mess_erp/core/constants/hostel_constants.dart';
 import 'package:mess_erp/core/router/app_router.dart';
 import 'package:mess_erp/core/utils/logger.dart';
+import 'package:mess_erp/features/auth/models/user_model.dart';
 import 'package:mess_erp/features/auth/services/auth_service.dart';
-import 'package:mess_erp/providers/itemListProvider.dart';
-import 'package:mess_erp/providers/user_provider.dart';
-import 'package:mess_erp/providers/vendor_name_provider.dart';
-import 'package:provider/provider.dart';
 
 class AuthController extends GetxController {
   final AuthService _authService = AuthService();
@@ -15,13 +14,42 @@ class AuthController extends GetxController {
   final RxBool _isLoading = false.obs;
   final RxString _errorMessage = RxString('');
   final RxBool _isAdmin = false.obs;
-  final RxString _selectedRole = 'Select Role'.obs;
+  final RxString _selectedRole = AppStrings.selectRole.obs;
+  final RxString _selectedHostel = RxString('');
+  final RxBool _isInitialized = false.obs;
 
   bool get isLoading => _isLoading.value;
   String? get errorMessage =>
       _errorMessage.value.isEmpty ? null : _errorMessage.value;
   bool get isAdmin => _isAdmin.value;
   String get selectedRole => _selectedRole.value;
+  String get selectedHostel => _selectedHostel.value;
+  List<String> get hostels => HostelConstants.allHostels;
+  bool get isInitialized => _isInitialized.value;
+
+  @override
+  void onInit() {
+    super.onInit();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    try {
+      await _authService.init();
+      _isInitialized.value = true;
+
+      // Now we can check auth state
+      final isLoggedIn = await _authService.isLoggedIn();
+      if (isLoggedIn) {
+        final user = await _authService.getCurrentUser();
+        if (user != null) {
+          _navigateBasedOnRole(user.role, user.id);
+        }
+      }
+    } catch (e) {
+      _logger.e('Failed to initialize AuthController', error: e);
+    }
+  }
 
   void setAdminMode(bool value) {
     _isAdmin.value = value;
@@ -30,6 +58,10 @@ class AuthController extends GetxController {
 
   void setSelectedRole(String role) {
     _selectedRole.value = role;
+  }
+
+  void setSelectedHostel(String hostel) {
+    _selectedHostel.value = hostel;
   }
 
   void resetError() {
@@ -41,18 +73,19 @@ class AuthController extends GetxController {
     String? username,
     required String password,
   }) async {
-    if (_isAdmin.value && _selectedRole.value == 'Select Role') {
-      _errorMessage.value = 'Please select a role';
+    // Validation
+    if (_isAdmin.value && _selectedRole.value == AppStrings.selectRole) {
+      _errorMessage.value = AppStrings.selectRoleError;
       return false;
     }
 
     if (password.isEmpty) {
-      _errorMessage.value = 'Please enter password';
+      _errorMessage.value = AppStrings.enterPasswordError;
       return false;
     }
 
     if (!_isAdmin.value && (username == null || username.isEmpty)) {
-      _errorMessage.value = 'Please enter username';
+      _errorMessage.value = AppStrings.enterUsernameError;
       return false;
     }
 
@@ -76,28 +109,8 @@ class AuthController extends GetxController {
       _isLoading.value = false;
 
       if (result['success']) {
-        if (_isAdmin.value) {
-          final adminUsername = result['data']['username'];
-          await _loadAdminData(context, adminUsername);
-
-          if (!context.mounted) return false;
-
-          Get.toNamed(
-            '/${_selectedRole.value.toLowerCase()}Dashboard',
-            arguments: {'email': adminUsername},
-          );
-        } else {
-          await Provider.of<UserProvider>(context, listen: false)
-              .fetchUserDetails(username!, role: 'student');
-
-          if (!context.mounted) return false;
-
-          Get.offAllNamed(
-            AppRoutes.studentDashboard,
-            arguments: {'rollNumber': username},
-          );
-        }
-
+        final user = result['data']['user'] as User;
+        _navigateBasedOnRole(user.role, user.id);
         return true;
       } else {
         _errorMessage.value = result['message'];
@@ -111,25 +124,45 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<void> _loadAdminData(
-      BuildContext context, String adminUsername) async {
-    // During transition, we still need to use Provider for some parts
-    await Provider.of<UserProvider>(context, listen: false).fetchUserDetails(
-        adminUsername,
-        admin: true,
-        role: _selectedRole.value);
-    await Provider.of<VendorNameProvider>(context, listen: false)
-        .fetchAndSetVendorNames();
-    await Provider.of<ItemListProvider>(context, listen: false)
-        .fetchAndSetItems();
-  }
-
-  Future<Map<String, dynamic>> register({
+  Future<bool> register({
     required String rollNumber,
     required String name,
     required String email,
     required String password,
+    required String confirmPassword,
+    String? phoneNumber,
   }) async {
+    // Validation
+    if (rollNumber.isEmpty) {
+      _errorMessage.value = 'Please enter roll number';
+      return false;
+    }
+
+    if (name.isEmpty) {
+      _errorMessage.value = 'Please enter your name';
+      return false;
+    }
+
+    if (email.isEmpty) {
+      _errorMessage.value = 'Please enter your email';
+      return false;
+    }
+
+    if (password.isEmpty) {
+      _errorMessage.value = 'Please enter a password';
+      return false;
+    }
+
+    if (password != confirmPassword) {
+      _errorMessage.value = 'Passwords do not match';
+      return false;
+    }
+
+    if (_selectedHostel.value.isEmpty) {
+      _errorMessage.value = 'Please select your hostel';
+      return false;
+    }
+
     _isLoading.value = true;
     _errorMessage.value = '';
 
@@ -139,18 +172,73 @@ class AuthController extends GetxController {
         name: name,
         email: email,
         password: password,
+        hostel: _selectedHostel.value,
+        phoneNumber: phoneNumber,
       );
 
       _isLoading.value = false;
-      if (!result['success']) {
+
+      if (result['success']) {
+        Get.snackbar(
+          'Success',
+          'Registration successful! Please wait for admin approval.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+        );
+
+        Get.offAllNamed(AppRoutes.login);
+        return true;
+      } else {
         _errorMessage.value = result['message'];
+        return false;
       }
-      return result;
     } catch (e, stack) {
       _logger.e('Register controller error', error: e, stackTrace: stack);
       _isLoading.value = false;
       _errorMessage.value = 'An unexpected error occurred';
-      return {'success': false, 'message': 'An unexpected error occurred'};
+      return false;
+    }
+  }
+
+  Future<bool> logout() async {
+    _isLoading.value = true;
+    try {
+      final success = await _authService.logout();
+      _isLoading.value = false;
+
+      if (success) {
+        Get.offAllNamed(AppRoutes.login);
+      }
+
+      return success;
+    } catch (e) {
+      _logger.e('Logout error', error: e);
+      _isLoading.value = false;
+      return false;
+    }
+  }
+
+  void _navigateBasedOnRole(String role, String userId) {
+    switch (role.toLowerCase()) {
+      case 'student':
+        Get.offAllNamed(
+          AppRoutes.studentDashboard,
+          arguments: {'rollNumber': userId},
+        );
+        break;
+      case 'clerk':
+      case 'manager':
+      case 'muneem':
+      case 'committee':
+        Get.offAllNamed(
+          '/${role.toLowerCase()}Dashboard',
+          arguments: {'username': userId},
+        );
+        break;
+      default:
+        _logger.w('Unknown role: $role');
+        Get.offAllNamed(AppRoutes.login);
     }
   }
 }

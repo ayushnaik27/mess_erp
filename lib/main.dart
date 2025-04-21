@@ -25,12 +25,13 @@ import 'providers/vendor_name_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final logger = AppLogger();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   await GoogleFonts.pendingFonts([
     GoogleFonts.plusJakartaSans(),
   ]);
   await DependencyInjection.init();
+  logger.i('Dependency injection initialized');
 
   AppLogger().i('App started');
 

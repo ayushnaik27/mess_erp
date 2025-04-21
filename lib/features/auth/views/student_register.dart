@@ -42,22 +42,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    final result = await authController.register(
+    if (authController.selectedHostel.isEmpty) {
+      _showSnackBar('Please select your hostel', false);
+      return;
+    }
+
+    final success = await authController.register(
       rollNumber: rollNumberController.text,
       name: nameController.text,
       email: emailController.text,
       password: passwordController.text,
+      confirmPassword: confirmPasswordController.text,
+      phoneNumber: null, // for later
     );
 
     if (!mounted) return;
 
-    if (result['success']) {
-      _showSnackBar(result['message'], true);
+    if (success) {
+      _showSnackBar(
+          'Registration successful! Please wait for admin approval.', true);
       Future.delayed(const Duration(seconds: 2), () {
         if (mounted) Get.back();
       });
     } else {
-      _showSnackBar(result['message'], false);
+      _showSnackBar(
+          authController.errorMessage ?? 'Registration failed', false);
     }
   }
 
@@ -322,6 +331,70 @@ class _RegisterScreenState extends State<RegisterScreen> {
             .fadeIn(delay: 850.ms, duration: 400.ms)
             .moveY(begin: 20, end: 0, delay: 850.ms, duration: 400.ms),
 
+        SizedBox(height: 20.h),
+
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Hostel',
+              style: TextStyle(
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w500,
+                color: AppColors.textPrimary,
+              ),
+            ),
+            SizedBox(height: 8.h),
+            Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.r),
+                border: Border.all(color: AppColors.divider),
+              ),
+              child: DropdownButtonHideUnderline(
+                child: DropdownButton<String>(
+                  value: authController.selectedHostel.isEmpty
+                      ? null
+                      : authController.selectedHostel,
+                  hint: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    child: Text(
+                      'Select your hostel',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ),
+                  isExpanded: true,
+                  padding: EdgeInsets.symmetric(horizontal: 16.w),
+                  borderRadius: BorderRadius.circular(8.r),
+                  items: authController.hostels.map((hostel) {
+                    return DropdownMenuItem<String>(
+                      value: hostel,
+                      child: Text(
+                        hostel,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      authController.setSelectedHostel(value);
+                    }
+                  },
+                ),
+              ),
+            ),
+          ],
+        )
+            .animate()
+            .fadeIn(delay: 900.ms, duration: 400.ms)
+            .moveY(begin: 20, end: 0, delay: 900.ms, duration: 400.ms),
+
         SizedBox(height: 40.h),
 
         // Register button
@@ -347,8 +420,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         )
             .animate()
-            .fadeIn(delay: 900.ms, duration: 400.ms)
-            .moveY(begin: 20, end: 0, delay: 900.ms, duration: 400.ms),
+            .fadeIn(delay: 950.ms, duration: 400.ms)
+            .moveY(begin: 20, end: 0, delay: 950.ms, duration: 400.ms),
 
         SizedBox(height: 24.h),
 
@@ -365,8 +438,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
               )
                   .animate()
-                  .fadeIn(delay: 950.ms, duration: 400.ms)
-                  .moveY(begin: 20, end: 0, delay: 950.ms, duration: 400.ms),
+                  .fadeIn(delay: 1000.ms, duration: 400.ms)
+                  .moveY(begin: 20, end: 0, delay: 1000.ms, duration: 400.ms),
               TextButton(
                 onPressed: () {
                   Get.back();
@@ -385,8 +458,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 )
                     .animate()
-                    .fadeIn(delay: 1000.ms, duration: 400.ms)
-                    .moveY(begin: 20, end: 0, delay: 1000.ms, duration: 400.ms),
+                    .fadeIn(delay: 1050.ms, duration: 400.ms)
+                    .moveY(begin: 20, end: 0, delay: 1050.ms, duration: 400.ms),
               ),
             ],
           ),

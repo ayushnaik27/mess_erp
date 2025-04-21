@@ -154,7 +154,6 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
     List<String> options = [];
 
     // Determine the index of the selectedFromMeal in allMeals
-    int fromMealIndex = allMeals.indexOf(selectedFromMeal);
 
     // Handle case when selectedToDate is the same as selectedFromDate
     if (selectedFromDate.day == selectedToDate.day &&
