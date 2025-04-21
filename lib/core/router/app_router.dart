@@ -3,13 +3,14 @@ import 'package:get/get.dart';
 import 'package:mess_erp/features/auth/bindings/auth_bindings.dart';
 import 'package:mess_erp/features/auth/views/login_screen.dart';
 import 'package:mess_erp/features/auth/views/student_register.dart';
+import 'package:mess_erp/features/student/bindings/extra_items_binding.dart';
 import 'package:mess_erp/features/student/bindings/student_dashboard_binding.dart';
+import 'package:mess_erp/features/student/views/request_extra_items_screen.dart';
 import 'package:mess_erp/features/student/views/student_dashboard.dart';
 import 'package:mess_erp/student/apply_leave_screen.dart';
 import 'package:mess_erp/student/file_grievance_screen.dart';
 import 'package:mess_erp/student/mess_bill_screen.dart';
 import 'package:mess_erp/student/qr_scanner_screen.dart';
-import 'package:mess_erp/student/request_extra_items_screen.dart';
 import 'package:mess_erp/student/track_leaves_screen.dart';
 
 class AppRoutes {
@@ -74,8 +75,12 @@ class AppRouter {
     ),
     GetPage(
       name: AppRoutes.requestExtraItems,
-      page: () => const RequestExtraItemsScreen(),
-      // binding: ExtraItemsBinding(),
+      page: () {
+        final args = Get.arguments;
+        final rollNumber = args?['rollNumber'] ?? '';
+        return RequestExtraItemsScreen(rollNumber: rollNumber);
+      },
+      binding: ExtraItemsBinding(),
       transition: Transition.rightToLeft,
     ),
     GetPage(

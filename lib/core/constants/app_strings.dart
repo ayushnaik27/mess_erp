@@ -91,4 +91,20 @@ class AppStrings {
   static const String pageNotFound = 'Page Not Found';
   static const String routeNotExist = 'The requested route does not exist';
   static const String goToLogin = 'Go to Login';
+
+  // Extra Items Screen
+  static const String extraItemsRequest = 'Extra Items Request';
+  static const String selectItemsSubtitle =
+      'Select items and quantity to add to your account';
+  static const String selectItem = 'Select Item';
+  static const String selectAnExtraItem = 'Select an extra item';
+  static const String quantityLabel = 'Quantity';
+  static const String enterQuantity = 'Enter quantity';
+  static const String pleaseEnterQuantity = 'Please enter quantity';
+  static const String enterValidQuantity = 'Please enter a valid quantity';
+  static const String totalAmount = 'Total Amount:';
+  static const String submitRequest = 'Submit Request';
+  static const String pleaseSelectItem = 'Please select an item';
+  static const String requestSubmitted =
+      'Extra item request submitted successfully';
 }

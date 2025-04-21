@@ -9,7 +9,7 @@ class FirestoreConstants {
   static const String stock = 'stock';
   static const String grievances = 'grievances';
   static const String tenders = 'tenders';
-  static const String extraItems = 'extraItems';
+  static const String extraItems = 'extra_items';
 
   // Documents
   static const String roles = 'roles';
@@ -30,6 +30,9 @@ class FirestoreConstants {
 
   static const String announcements = 'announcements';
   static const String meal = 'meal';
+
+  static const String extraItemRequests = 'extraItems_requests';
+  static const String extraItemAmount = 'extraItems_amount';
 
   // Role-specific usernames
   static const Map<String, String> adminUsernames = {

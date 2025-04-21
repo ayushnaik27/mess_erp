@@ -71,14 +71,12 @@ class StudentDashboardController extends GetxController {
   }
 
   void navigateToFileGrievance() {
-    // Pass the current user's roll number if needed
     Get.toNamed(AppRoutes.fileGrievance,
         arguments:
             userRollNumber != null ? {'rollNumber': userRollNumber} : null);
   }
 
   void navigateToTrackComplaints() {
-    // Pass the current user's roll number if needed
     Get.toNamed(AppRoutes.trackComplaints,
         arguments:
             userRollNumber != null ? {'rollNumber': userRollNumber} : null);
