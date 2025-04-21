@@ -3,13 +3,13 @@ import 'package:get/get.dart';
 import 'package:mess_erp/features/auth/bindings/auth_bindings.dart';
 import 'package:mess_erp/features/auth/views/login_screen.dart';
 import 'package:mess_erp/features/auth/views/student_register.dart';
+import 'package:mess_erp/features/student/bindings/student_dashboard_binding.dart';
+import 'package:mess_erp/features/student/views/student_dashboard.dart';
 
 class AppRoutes {
-  // Route names as constants for consistency
   static const login = '/login';
   static const studentRegistration = '/student-registration';
 
-  // Dashboard routes
   static const studentDashboard = '/student-dashboard';
   static const clerkDashboard = '/clerk-dashboard';
   static const managerDashboard = '/manager-dashboard';
@@ -19,27 +19,24 @@ class AppRoutes {
 
 class AppRouter {
   static final List<GetPage> routes = [
-    // Auth routes
     GetPage(
       name: AppRoutes.login,
       page: () => const LoginScreen(),
       binding: AuthBinding(),
       transition: Transition.fadeIn,
     ),
-
     GetPage(
       name: AppRoutes.studentRegistration,
       page: () => const RegisterScreen(),
       binding: AuthBinding(),
       transition: Transition.rightToLeft,
     ),
-
-    // GetPage(
-    //   name: AppRoutes.studentDashboard,
-    //   page: () => const StudentDashboardScreen(),
-    //   binding: DashboardBinding(),
-    //   transition: Transition.fadeIn,
-    // ),
+    GetPage(
+      name: AppRoutes.studentDashboard,
+      page: () => const StudentDashboardScreen(),
+      binding: StudentDashboardBinding(),
+      transition: Transition.fadeIn,
+    ),
   ];
 
   static void navigateToLogin() {

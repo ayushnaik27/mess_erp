@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:mess_erp/core/constants/firestore_constants.dart';
 import 'package:mess_erp/core/utils/logger.dart';
 import 'package:mess_erp/providers/hash_helper.dart';
 
@@ -12,27 +13,16 @@ class AuthService {
     required String password,
   }) async {
     try {
-      String adminUsername;
-      switch (role.toLowerCase()) {
-        case 'clerk':
-          adminUsername = 'admin';
-          break;
-        case 'manager':
-          adminUsername = 'manager@gmail.com';
-          break;
-        case 'muneem':
-          adminUsername = 'muneem@gmail.com';
-          break;
-        case 'committee':
-          adminUsername = 'committee@gmail.com';
-          break;
-        default:
-          return {'success': false, 'message': 'Invalid role selected'};
+      final String? adminUsername =
+          FirestoreConstants.adminUsernames[role.toLowerCase()];
+
+      if (adminUsername == null) {
+        return {'success': false, 'message': 'Invalid role selected'};
       }
 
       final docSnapshot = await _firestore
-          .collection('loginCredentials')
-          .doc('roles')
+          .collection(FirestoreConstants.loginCredentials)
+          .doc(FirestoreConstants.roles)
           .collection(role.toLowerCase())
           .doc(adminUsername)
           .get();
@@ -42,7 +32,8 @@ class AuthService {
         return {'success': false, 'message': 'Invalid credentials'};
       }
 
-      final String storedPassword = docSnapshot.data()?['password'] ?? '';
+      final String storedPassword =
+          docSnapshot.data()?[FirestoreConstants.password] ?? '';
       final String hashedPassword = HashHelper.encode(password);
 
       if (storedPassword != hashedPassword) {
@@ -64,16 +55,15 @@ class AuthService {
     }
   }
 
-  // Student login
   Future<Map<String, dynamic>> studentLogin({
     required String username,
     required String password,
   }) async {
     try {
       final docSnapshot = await _firestore
-          .collection('loginCredentials')
-          .doc('roles')
-          .collection('student')
+          .collection(FirestoreConstants.loginCredentials)
+          .doc(FirestoreConstants.roles)
+          .collection(FirestoreConstants.student)
           .doc(username)
           .get();
 
@@ -82,7 +72,8 @@ class AuthService {
         return {'success': false, 'message': 'Invalid credentials'};
       }
 
-      final String storedPassword = docSnapshot.data()?['password'] ?? '';
+      final String storedPassword =
+          docSnapshot.data()?[FirestoreConstants.password] ?? '';
       final String hashedPassword = HashHelper.encode(password);
 
       if (storedPassword != hashedPassword) {
@@ -95,7 +86,7 @@ class AuthService {
         'success': true,
         'data': {
           'username': username,
-          'role': 'student',
+          'role': FirestoreConstants.student,
         }
       };
     } catch (e, stack) {
@@ -104,7 +95,6 @@ class AuthService {
     }
   }
 
-  // Student registration
   Future<Map<String, dynamic>> registerStudent({
     required String rollNumber,
     required String name,
@@ -112,11 +102,10 @@ class AuthService {
     required String password,
   }) async {
     try {
-      // Check if roll number already exists
       DocumentSnapshot documentSnapshot = await _firestore
-          .collection('loginCredentials')
-          .doc('roles')
-          .collection('student')
+          .collection(FirestoreConstants.loginCredentials)
+          .doc(FirestoreConstants.roles)
+          .collection(FirestoreConstants.student)
           .doc(rollNumber)
           .get();
 
@@ -125,24 +114,27 @@ class AuthService {
         return {'success': false, 'message': 'Roll number already exists'};
       }
 
-      // Check if roll number is pending verification
-      DocumentSnapshot enrollmentSnapshot =
-          await _firestore.collection('enrollments').doc(rollNumber).get();
+      DocumentSnapshot enrollmentSnapshot = await _firestore
+          .collection(FirestoreConstants.enrollments)
+          .doc(rollNumber)
+          .get();
 
       if (enrollmentSnapshot.exists) {
         _logger.w('Registration failed: Verification pending');
         return {'success': false, 'message': 'Verification pending'};
       }
 
-      // All checks passed, register the student
       String hashedPassword = HashHelper.encode(password);
 
-      await _firestore.collection('enrollments').doc(rollNumber).set({
-        'name': name,
-        'password': hashedPassword,
-        'rollNumber': rollNumber,
-        'email': email,
-        'timestamp': FieldValue.serverTimestamp(),
+      await _firestore
+          .collection(FirestoreConstants.enrollments)
+          .doc(rollNumber)
+          .set({
+        FirestoreConstants.name: name,
+        FirestoreConstants.password: hashedPassword,
+        FirestoreConstants.rollNumber: rollNumber,
+        FirestoreConstants.email: email,
+        FirestoreConstants.timestamp: FieldValue.serverTimestamp(),
       });
 
       _logger.i('Student registered: $rollNumber');

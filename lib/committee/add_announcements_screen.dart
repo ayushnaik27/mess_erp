@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:mess_erp/providers/announcement_provider.dart';
+import 'package:mess_erp/features/student/models/announcement_model.dart';
+import 'package:mess_erp/features/student/services/announcement_service.dart';
 
 class AddAnnouncementScreen extends StatefulWidget {
   static const routeName = '/addAnnouncement';
@@ -73,7 +74,7 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
                       title: _titleController.text,
                       description: _descriptionController.text,
                     );
-                    AnnouncementServices()
+                    AnnouncementService()
                         .uploadAnnouncementWithoutFile(newAnnouncement);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -89,7 +90,7 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
                     description: _descriptionController.text,
                     file: File(_filePath!),
                   );
-                  AnnouncementServices().uploadAnnouncement(
+                  AnnouncementService().uploadAnnouncement(
                       newAnnouncement, newAnnouncement.file);
                   // Call the function to upload announcement
                   // You may want to use a service or repository for this

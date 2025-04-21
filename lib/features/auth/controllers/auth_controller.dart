@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mess_erp/core/router/app_router.dart';
 import 'package:mess_erp/core/utils/logger.dart';
 import 'package:mess_erp/features/auth/services/auth_service.dart';
 import 'package:mess_erp/providers/itemListProvider.dart';
 import 'package:mess_erp/providers/user_provider.dart';
 import 'package:mess_erp/providers/vendor_name_provider.dart';
-import 'package:mess_erp/student/dashboard.dart';
 import 'package:provider/provider.dart';
 
 class AuthController extends GetxController {
@@ -82,7 +82,6 @@ class AuthController extends GetxController {
 
           if (!context.mounted) return false;
 
-          // For now we're using Navigator, but will switch to GetX navigation
           Get.toNamed(
             '/${_selectedRole.value.toLowerCase()}Dashboard',
             arguments: {'email': adminUsername},
@@ -93,9 +92,10 @@ class AuthController extends GetxController {
 
           if (!context.mounted) return false;
 
-          Get.to(() => StudentDashboardScreen(
-                rollNumber: username,
-              ));
+          Get.offAllNamed(
+            AppRoutes.studentDashboard,
+            arguments: {'rollNumber': username},
+          );
         }
 
         return true;

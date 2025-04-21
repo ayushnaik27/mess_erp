@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:mess_erp/committee/assigned_grievances_screen.dart';
 import 'package:mess_erp/committee/bill_screen.dart';
-import 'package:mess_erp/providers/announcement_provider.dart';
+import 'package:mess_erp/features/student/models/announcement_model.dart';
+import 'package:mess_erp/features/student/services/announcement_service.dart';
 import 'package:provider/provider.dart';
 
 import '../helpers/mess_menu_helper.dart';
@@ -21,11 +22,11 @@ class CommitteeDashboardScreen extends StatefulWidget {
 }
 
 class _CommitteeDashboardScreenState extends State<CommitteeDashboardScreen> {
-  final AnnouncementServices announcementService = AnnouncementServices();
+  final AnnouncementService announcementService = AnnouncementService();
   @override
   void initState() {
     super.initState();
-    AnnouncementServices().deleteOldAnnouncements();
+    AnnouncementService().deleteOldAnnouncements();
   }
 
   void changePassword(String newPassword) async {
@@ -226,7 +227,7 @@ class _CommitteeDashboardScreenState extends State<CommitteeDashboardScreen> {
                               print(openBill);
                               announcements[index].file == null
                                   ? null
-                                  : AnnouncementServices().openAnnouncement(
+                                  : AnnouncementService().openAnnouncement(
                                       announcements[index].file!.path,
                                       openBill: openBill);
 
