@@ -56,6 +56,9 @@ dependencies:
   table_calendar:
   flutter_launcher_icons: 
   connectivity_plus:
+  get:
+  go_router:
+  google_fonts:
 
 flutter_launcher_icons:
     image_path: "assets/images/mess_erp.png"
