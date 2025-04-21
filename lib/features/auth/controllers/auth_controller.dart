@@ -38,7 +38,6 @@ class AuthController extends GetxController {
       await _authService.init();
       _isInitialized.value = true;
 
-      // Now we can check auth state
       final isLoggedIn = await _authService.isLoggedIn();
       if (isLoggedIn) {
         final user = await _authService.getCurrentUser();
@@ -73,7 +72,6 @@ class AuthController extends GetxController {
     String? username,
     required String password,
   }) async {
-    // Validation
     if (_isAdmin.value && _selectedRole.value == AppStrings.selectRole) {
       _errorMessage.value = AppStrings.selectRoleError;
       return false;
@@ -132,7 +130,6 @@ class AuthController extends GetxController {
     required String confirmPassword,
     String? phoneNumber,
   }) async {
-    // Validation
     if (rollNumber.isEmpty) {
       _errorMessage.value = 'Please enter roll number';
       return false;
@@ -228,11 +225,26 @@ class AuthController extends GetxController {
         );
         break;
       case 'clerk':
+        Get.offAllNamed(
+          AppRoutes.clerkDashboard,
+          arguments: {'username': userId},
+        );
+        break;
       case 'manager':
+        Get.offAllNamed(
+          AppRoutes.managerDashboard,
+          arguments: {'username': userId},
+        );
+        break;
       case 'muneem':
+        Get.offAllNamed(
+          AppRoutes.muneemDashboard,
+          arguments: {'username': userId},
+        );
+        break;
       case 'committee':
         Get.offAllNamed(
-          '/${role.toLowerCase()}Dashboard',
+          AppRoutes.committeeDashboard,
           arguments: {'username': userId},
         );
         break;

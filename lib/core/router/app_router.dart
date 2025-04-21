@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mess_erp/clerk/enrollment_request_screen.dart';
+import 'package:mess_erp/clerk/monthly_report_screen.dart';
+import 'package:mess_erp/committee/assigned_grievances_screen.dart';
 import 'package:mess_erp/features/auth/bindings/auth_bindings.dart';
 import 'package:mess_erp/features/auth/views/login_screen.dart';
 import 'package:mess_erp/features/auth/views/student_register.dart';
+import 'package:mess_erp/features/clerk/bindings/clerk_dashboard_binding.dart';
+import 'package:mess_erp/features/clerk/views/clerk_dashboard_screen.dart';
 import 'package:mess_erp/features/student/bindings/extra_items_binding.dart';
 import 'package:mess_erp/features/student/bindings/student_dashboard_binding.dart';
 import 'package:mess_erp/features/student/views/request_extra_items_screen.dart';
@@ -12,6 +17,9 @@ import 'package:mess_erp/student/file_grievance_screen.dart';
 import 'package:mess_erp/student/mess_bill_screen.dart';
 import 'package:mess_erp/student/qr_scanner_screen.dart';
 import 'package:mess_erp/student/track_leaves_screen.dart';
+
+import '../../clerk/all_tender_screen.dart';
+import '../../clerk/open_tender_screen.dart';
 
 class AppRoutes {
   static const login = '/login';
@@ -31,6 +39,13 @@ class AppRoutes {
   static const trackLeaves = '/student/track-leaves';
   static const fileGrievance = '/student/file-grievance';
   static const trackComplaints = '/student/track-complaints';
+
+  // Add new routes for clerk navigation
+  static const String monthlyReportScreen = '/monthly-report-screen';
+  static const String openTender = '/open-tender';
+  static const String allTenders = '/all-tenders';
+  static const String enrollmentRequests = '/enrollment-requests';
+  static const String assignedGrievances = '/assigned-grievances';
 }
 
 class AppRouter {
@@ -113,8 +128,47 @@ class AppRouter {
       transition: Transition.rightToLeft,
     ),
 
-    // Admin dashboard routes
-    // Add admin dashboard routes here
+    GetPage(
+      name: AppRoutes.clerkDashboard,
+      page: () => ClerkDashboardScreen(),
+      binding: ClerkDashboardBinding(),
+      transition: Transition.fadeIn,
+    ),
+
+    GetPage(
+      name: AppRoutes.monthlyReportScreen,
+      page: () => const MonthlyReportScreen(),
+      // binding: MonthlyReportBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.openTender,
+      page: () => OpenTenderScreen(),
+      // binding: OpenTenderBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.allTenders,
+      page: () => const AllTendersScreen(),
+      // binding: AllTendersBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.enrollmentRequests,
+      page: () => const EnrollmentRequestScreen(),
+      // binding: EnrollmentRequestsBinding(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.assignedGrievances,
+      page: () {
+        final args = Get.arguments;
+        final userType = args?['userType'] ?? 'clerk';
+        return AssignedGrievancesScreen(userType: userType);
+      },
+      // binding: AssignedGrievancesBinding(),
+      transition: Transition.rightToLeft,
+    ),
   ];
 
   static void navigateToLogin() {
@@ -123,33 +177,6 @@ class AppRouter {
 
   static void navigateToRegister() {
     Get.toNamed(AppRoutes.studentRegistration);
-  }
-
-  static void navigateToDashboard(String role, {String? username}) {
-    switch (role.toLowerCase()) {
-      case 'student':
-        Get.offAllNamed(AppRoutes.studentDashboard,
-            arguments: {'username': username});
-        break;
-      case 'clerk':
-        Get.offAllNamed(AppRoutes.clerkDashboard,
-            arguments: {'username': username});
-        break;
-      case 'manager':
-        Get.offAllNamed(AppRoutes.managerDashboard,
-            arguments: {'username': username});
-        break;
-      case 'muneem':
-        Get.offAllNamed(AppRoutes.muneemDashboard,
-            arguments: {'username': username});
-        break;
-      case 'committee':
-        Get.offAllNamed(AppRoutes.committeeDashboard,
-            arguments: {'username': username});
-        break;
-      default:
-        Get.offAllNamed(AppRoutes.login);
-    }
   }
 
   static void goBack() {

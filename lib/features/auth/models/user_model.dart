@@ -17,7 +17,7 @@ class User extends HiveObject {
   final String role;
 
   @HiveField(4)
-  final String hostel;
+  final String? hostel;
 
   @HiveField(5)
   final String rollNumber;

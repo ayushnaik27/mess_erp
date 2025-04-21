@@ -107,4 +107,44 @@ class AppStrings {
   static const String pleaseSelectItem = 'Please select an item';
   static const String requestSubmitted =
       'Extra item request submitted successfully';
+
+  // Clerk Dashboard
+  static const String clerkDashboard = 'Clerk Dashboard';
+  static const String generateMonthlyReport = 'Generate Monthly Report';
+  static const String addStudent = 'Add Student';
+  static const String addVendor = 'Add Vendor';
+  static const String imposeFine = 'Impose Fine';
+  static const String addManager = 'Add Manager';
+  static const String addMuneem = 'Add Muneem';
+  static const String addCommitteeMember = 'Add Committee Member';
+  static const String viewAssignedGrievances = 'View Assigned Grievances';
+  static const String openTender = 'Open Tender';
+  static const String viewAllTenders = 'View All Tenders';
+  static const String enrollmentRequests = 'Enrollment';
+  static const String logout = 'Log Out';
+
+  // Dialog titles
+  static const String add = 'Add';
+  static const String name = 'Name';
+  static const String email = 'Email';
+  static const String rollNumber = 'Roll Number';
+  static const String amount = 'Amount';
+
+  // Section headers
+  static const String quickActions = 'Quick Actions';
+  static const String userManagement = 'User Management';
+  static const String tenderAndEnrollment = 'Tender & Enrollment';
+
+  // Subtitles
+  static const String createStudentAccounts = 'Create new student accounts';
+  static const String createManagerAccounts = 'Create new manager accounts';
+  static const String createMuneemAccounts = 'Create new muneem accounts';
+  static const String createCommitteeAccounts =
+      'Create new committee member accounts';
+  static const String createVendorAccounts = 'Create new vendor accounts';
+  static const String generateReportsSubtitle =
+      'Create and view financial reports';
+
+  // Drawer items
+  static const String dashboard = 'Dashboard';
 }
