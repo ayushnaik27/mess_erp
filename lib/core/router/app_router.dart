@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:mess_erp/clerk/enrollment_request_screen.dart';
-import 'package:mess_erp/clerk/monthly_report_screen.dart';
+import 'package:mess_erp/features/clerk/bindings/all_tender_binding.dart';
+import 'package:mess_erp/features/clerk/bindings/enrollment_request_bindings.dart';
+import 'package:mess_erp/features/clerk/bindings/monthly_report_binding.dart';
+import 'package:mess_erp/features/clerk/bindings/open_tender_binding.dart';
+import 'package:mess_erp/features/clerk/views/enrollment_request_screen.dart';
 import 'package:mess_erp/committee/assigned_grievances_screen.dart';
 import 'package:mess_erp/features/auth/bindings/auth_bindings.dart';
 import 'package:mess_erp/features/auth/views/login_screen.dart';
 import 'package:mess_erp/features/auth/views/student_register.dart';
 import 'package:mess_erp/features/clerk/bindings/clerk_dashboard_binding.dart';
 import 'package:mess_erp/features/clerk/views/clerk_dashboard_screen.dart';
+import 'package:mess_erp/features/clerk/views/monthly_report_screen.dart';
 import 'package:mess_erp/features/student/bindings/extra_items_binding.dart';
 import 'package:mess_erp/features/student/bindings/student_dashboard_binding.dart';
 import 'package:mess_erp/features/student/views/request_extra_items_screen.dart';
@@ -18,8 +22,8 @@ import 'package:mess_erp/student/mess_bill_screen.dart';
 import 'package:mess_erp/student/qr_scanner_screen.dart';
 import 'package:mess_erp/student/track_leaves_screen.dart';
 
-import '../../clerk/all_tender_screen.dart';
-import '../../clerk/open_tender_screen.dart';
+import '../../features/clerk/views/all_tender_screen.dart';
+import '../../features/clerk/views/open_tender_screen.dart';
 
 class AppRoutes {
   static const login = '/login';
@@ -138,26 +142,24 @@ class AppRouter {
     GetPage(
       name: AppRoutes.monthlyReportScreen,
       page: () => const MonthlyReportScreen(),
-      // binding: MonthlyReportBinding(),
-      transition: Transition.rightToLeft,
+      binding: MonthlyReportBinding(),
     ),
     GetPage(
       name: AppRoutes.openTender,
       page: () => OpenTenderScreen(),
-      // binding: OpenTenderBinding(),
+      binding: OpenTenderBinding(),
       transition: Transition.rightToLeft,
     ),
     GetPage(
       name: AppRoutes.allTenders,
       page: () => const AllTendersScreen(),
-      // binding: AllTendersBinding(),
+      binding: AllTenderBinding(),
       transition: Transition.rightToLeft,
     ),
     GetPage(
       name: AppRoutes.enrollmentRequests,
       page: () => const EnrollmentRequestScreen(),
-      // binding: EnrollmentRequestsBinding(),
-      transition: Transition.rightToLeft,
+      binding: EnrollmentRequestBinding(),
     ),
     GetPage(
       name: AppRoutes.assignedGrievances,

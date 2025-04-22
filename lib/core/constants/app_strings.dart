@@ -147,4 +147,40 @@ class AppStrings {
 
   // Drawer items
   static const String dashboard = 'Dashboard';
+
+  // Monthy Report Clerk Section
+  static const String monthlyFinancialReport = 'Monthly Financial Report';
+  static const String refreshData = 'Refresh Data';
+  static const String monthlySummary = 'Monthly Summary';
+  static const String stockBalance = 'Stock Balance';
+  static const String dietCalculations = 'Diet Calculations';
+  static const String billGeneration = 'Bill Generation';
+  static const String preparingMonthlyReport = 'Preparing Monthly Report';
+  static const String thisWillTakeTime =
+      'This may take a moment as we retrieve and calculate financial data';
+  static const String fetchingExpenditures = 'Fetching monthly expenditures';
+  static const String fetchingPreviousStock = 'Fetching previous month';
+  static const String fetchingCurrentStock = 'Fetching current stock balance';
+  static const String calculatingConsumption = 'Calculating assets consumed';
+  static const String calculatingExtraItems =
+      'Calculating extra items consumed';
+  static const String calculatingTotalDiets = 'Calculating total diets';
+  static const String totalMonthlyExpenditure = 'Total Monthly Expenditure';
+  static const String assetsConsumedThisMonth = 'Assets Consumed This Month';
+  static const String totalExtraConsumed = 'Total Extra Consumed';
+  static const String previousMonthStockBalance =
+      'Previous Month Stock Balance';
+  static const String nextMonthStockBalance = 'Next Month Stock Balance';
+  static const String totalDiets = 'Total Diets';
+  static const String couponPrice = 'Coupon Price';
+  static const String enterPrice = 'Enter price';
+  static const String balance = 'Balance';
+  static const String perDietCostCalculated = 'Per Diet Cost (Calculated)';
+  static const String perDietCostRounded = 'Per Diet Cost (Rounded)';
+  static const String enterAmount = 'Enter amount';
+  static const String profit = 'Profit';
+  static const String generateMonthlyBills = 'Generate Monthly Bills';
+  static const String billGenerationWarning =
+      'This will generate bills for all students based on the rounded per diet cost. Previous bills and leave details will be deleted.';
+  static const String generatingBills = 'Generating Bills...';
 }

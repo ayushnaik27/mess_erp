@@ -50,4 +50,17 @@ class FirestoreConstants {
 
   static String getEnrollmentPath(String rollNumber) =>
       '$enrollments/$rollNumber';
+
+  static const String newLeaveDetails = 'newLeaveDetails';
+  static const String fineDetails = 'fineDetails';
+  static const String paymentVouchers = 'paymentVouchers';
+
+  static String getStudentBillsPath(String studentId) =>
+      '$loginCredentials/$roles/$student/$studentId/$bills';
+
+  static String getStudentLeavesPath(String studentId) =>
+      '$loginCredentials/$roles/$student/$studentId/$newLeaveDetails';
+
+  static String getStudentFinesPath(String studentId) =>
+      '$loginCredentials/$roles/$student/$studentId/$fineDetails';
 }

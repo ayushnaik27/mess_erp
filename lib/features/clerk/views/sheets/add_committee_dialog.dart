@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:mess_erp/core/constants/app_strings.dart';
 import 'package:mess_erp/core/extensions/size_extension.dart';
 import 'package:mess_erp/core/theme/app_colors.dart';
-import 'package:mess_erp/features/clerk/controllers/clerk_dialog_controller.dart';
+import 'package:mess_erp/features/clerk/controllers/clerk_sheet_controller.dart';
 
 class AddCommitteeSheet extends StatelessWidget {
   AddCommitteeSheet({super.key});
