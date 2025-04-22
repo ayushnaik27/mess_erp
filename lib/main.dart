@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:mess_erp/clerk/mess_bill_provider.dart';
-import 'package:mess_erp/clerk/monthly_report_provider.dart';
 import 'package:mess_erp/core/router/app_router.dart';
 import 'package:mess_erp/core/theme/app_theme.dart';
 import 'package:mess_erp/core/utils/dependency_injection.dart';
@@ -56,7 +55,6 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => StockProvider()),
         ChangeNotifierProvider(create: (_) => PaymentVoucherProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => MonthlyReportProvider()),
         ChangeNotifierProvider(create: (_) => MessBillProvider()),
         ChangeNotifierProvider(create: (_) => GrievanceProvider()),
         ChangeNotifierProvider(create: (_) => TenderProvider()),
