@@ -5,13 +5,13 @@ import 'package:mess_erp/core/constants/app_strings.dart';
 import 'package:mess_erp/core/extensions/size_extension.dart';
 import 'package:mess_erp/core/theme/app_colors.dart';
 import 'package:mess_erp/features/clerk/controllers/clerk_dashboard_controller.dart';
-import 'package:mess_erp/features/clerk/views/dialogs/add_committee_dialog.dart';
-import 'package:mess_erp/features/clerk/views/dialogs/add_manager_dialog.dart';
-import 'package:mess_erp/features/clerk/views/dialogs/add_muneem_dialog.dart';
-import 'package:mess_erp/features/clerk/views/dialogs/add_student_dialog.dart';
-import 'package:mess_erp/features/clerk/views/dialogs/add_vendor_dialog.dart';
-import 'package:mess_erp/features/clerk/views/dialogs/change_password_dialog.dart';
-import 'package:mess_erp/features/clerk/views/dialogs/impose_fine_dialog.dart';
+import 'package:mess_erp/features/clerk/views/sheets/add_committee_dialog.dart';
+import 'package:mess_erp/features/clerk/views/sheets/add_manager_dialog.dart';
+import 'package:mess_erp/features/clerk/views/sheets/add_muneem_dialog.dart';
+import 'package:mess_erp/features/clerk/views/sheets/add_student_dialog.dart';
+import 'package:mess_erp/features/clerk/views/sheets/add_vendor_dialog.dart';
+import 'package:mess_erp/features/clerk/views/sheets/change_password_dialog.dart';
+import 'package:mess_erp/features/clerk/views/sheets/impose_fine_dialog.dart';
 
 class ClerkDashboardScreen extends GetView<ClerkDashboardController> {
   const ClerkDashboardScreen({Key? key}) : super(key: key);
@@ -46,7 +46,7 @@ class ClerkDashboardScreen extends GetView<ClerkDashboardController> {
         }),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showAddStudentDialog(context),
+        onPressed: () => _showAddStudentSheet(context),
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.person_add, color: Colors.white),
       ),
@@ -171,7 +171,7 @@ class ClerkDashboardScreen extends GetView<ClerkDashboardController> {
                 ),
               ),
               IconButton(
-                onPressed: () => _showChangePasswordDialog(context),
+                onPressed: () => _showChangePasswordSheet(context),
                 icon: Icon(
                   Icons.lock_outline,
                   color: AppColors.primary,
@@ -219,7 +219,7 @@ class ClerkDashboardScreen extends GetView<ClerkDashboardController> {
                   icon: Icons.payment,
                   title: AppStrings.imposeFine,
                   color: AppColors.error,
-                  onTap: () => _showImposeFineDialog(context),
+                  onTap: () => _showImposeFineSheet(context),
                 ),
                 _buildVerticalDivider(),
                 _buildQuickActionItem(
@@ -348,7 +348,7 @@ class ClerkDashboardScreen extends GetView<ClerkDashboardController> {
                 title: AppStrings.addStudent,
                 subtitle: 'Create new student accounts',
                 color: AppColors.success,
-                onTap: () => _showAddStudentDialog(context),
+                onTap: () => _showAddStudentSheet(context),
               ),
               Divider(
                   height: 24.h,
@@ -360,7 +360,7 @@ class ClerkDashboardScreen extends GetView<ClerkDashboardController> {
                 title: AppStrings.addManager,
                 subtitle: 'Create new manager accounts',
                 color: AppColors.tertiary,
-                onTap: () => _showAddManagerDialog(context),
+                onTap: () => _showAddManagerSheet(context),
               ),
               Divider(
                   height: 24.h,
@@ -372,7 +372,7 @@ class ClerkDashboardScreen extends GetView<ClerkDashboardController> {
                 title: 'Add Muneem',
                 subtitle: 'Create new muneem accounts',
                 color: const Color(0xFF26A69A),
-                onTap: () => _showAddMuneemDialog(context),
+                onTap: () => _showAddMuneemSheet(context),
               ),
               Divider(
                   height: 24.h,
@@ -384,7 +384,7 @@ class ClerkDashboardScreen extends GetView<ClerkDashboardController> {
                 title: 'Add Committee Member',
                 subtitle: 'Create new committee member accounts',
                 color: const Color(0xFFFFB300),
-                onTap: () => _showAddCommitteeDialog(context),
+                onTap: () => _showAddCommitteeSheet(context),
               ),
               Divider(
                   height: 24.h,
@@ -396,7 +396,7 @@ class ClerkDashboardScreen extends GetView<ClerkDashboardController> {
                 title: 'Add Vendor',
                 subtitle: 'Create new vendor accounts',
                 color: const Color(0xFFEC407A),
-                onTap: () => _showAddVendorDialog(context),
+                onTap: () => _showAddVendorSheet(context),
               ),
             ],
           ),
@@ -764,7 +764,7 @@ class ClerkDashboardScreen extends GetView<ClerkDashboardController> {
             title: AppStrings.changePassword,
             onTap: () {
               Get.back();
-              _showChangePasswordDialog(context);
+              _showChangePasswordSheet(context);
             },
           ),
           _buildDrawerTile(
@@ -795,10 +795,9 @@ class ClerkDashboardScreen extends GetView<ClerkDashboardController> {
     );
   }
 
-  void _showChangePasswordDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => ChangePasswordDialog(
+  void _showChangePasswordSheet(BuildContext context) {
+    Get.bottomSheet(
+      ChangePasswordSheet(
         onChangePassword: (newPassword) async {
           final success = await controller.changePassword(newPassword);
           Get.back();
@@ -821,48 +820,63 @@ class ClerkDashboardScreen extends GetView<ClerkDashboardController> {
           }
         },
       ),
+      isScrollControlled: true,
+      enterBottomSheetDuration: const Duration(milliseconds: 300),
+      exitBottomSheetDuration: const Duration(milliseconds: 200),
     );
   }
 
-  void _showAddStudentDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AddStudentDialog(),
+  void _showAddStudentSheet(BuildContext context) {
+    Get.bottomSheet(
+      AddStudentSheet(),
+      isScrollControlled: true,
+      enterBottomSheetDuration: const Duration(milliseconds: 300),
+      exitBottomSheetDuration: const Duration(milliseconds: 200),
     );
   }
 
-  void _showAddVendorDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AddVendorDialog(),
+  void _showAddVendorSheet(BuildContext context) {
+    Get.bottomSheet(
+      AddVendorSheet(),
+      isScrollControlled: true,
+      enterBottomSheetDuration: const Duration(milliseconds: 300),
+      exitBottomSheetDuration: const Duration(milliseconds: 200),
     );
   }
 
-  void _showImposeFineDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => ImposeFineDialog(),
+  void _showImposeFineSheet(BuildContext context) {
+    Get.bottomSheet(
+      ImposeFineSheet(),
+      isScrollControlled: true,
+      enterBottomSheetDuration: const Duration(milliseconds: 300),
+      exitBottomSheetDuration: const Duration(milliseconds: 200),
     );
   }
 
-  void _showAddManagerDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AddManagerDialog(),
+  void _showAddManagerSheet(BuildContext context) {
+    Get.bottomSheet(
+      AddManagerSheet(),
+      isScrollControlled: true,
+      enterBottomSheetDuration: const Duration(milliseconds: 300),
+      exitBottomSheetDuration: const Duration(milliseconds: 200),
     );
   }
 
-  void _showAddMuneemDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AddMuneemDialog(),
+  void _showAddMuneemSheet(BuildContext context) {
+    Get.bottomSheet(
+      AddMuneemSheet(),
+      isScrollControlled: true,
+      enterBottomSheetDuration: const Duration(milliseconds: 300),
+      exitBottomSheetDuration: const Duration(milliseconds: 200),
     );
   }
 
-  void _showAddCommitteeDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => AddCommitteeDialog(),
+  void _showAddCommitteeSheet(BuildContext context) {
+    Get.bottomSheet(
+      AddCommitteeSheet(),
+      isScrollControlled: true,
+      enterBottomSheetDuration: const Duration(milliseconds: 300),
+      exitBottomSheetDuration: const Duration(milliseconds: 200),
     );
   }
 }
