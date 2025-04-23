@@ -1,6 +1,6 @@
-import 'dart:io';
+// import 'dart:io';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+// import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -13,7 +13,7 @@ import 'package:mess_erp/features/clerk/controllers/tender_controller.dart';
 import '../models/index.dart';
 
 class OpenTenderScreen extends StatefulWidget {
-  const OpenTenderScreen({Key? key}) : super(key: key);
+  const OpenTenderScreen({super.key});
 
   @override
   State<OpenTenderScreen> createState() => _OpenTenderScreenState();
@@ -21,7 +21,7 @@ class OpenTenderScreen extends StatefulWidget {
 
 class _OpenTenderScreenState extends State<OpenTenderScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TenderController _controller = Get.put(TenderController());
+  late final TenderController _controller;
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _itemNameController = TextEditingController();
@@ -34,6 +34,12 @@ class _OpenTenderScreenState extends State<OpenTenderScreen> {
   final RxBool _isUploading = false.obs;
   final RxDouble _uploadProgress = 0.0.obs;
   final RxBool _isSubmitting = false.obs;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = Get.find<TenderController>();
+  }
 
   @override
   void dispose() {
@@ -1501,22 +1507,22 @@ class _OpenTenderScreenState extends State<OpenTenderScreen> {
     try {
       _isSubmitting.value = true;
 
-      // Upload file to Firebase Storage
-      Reference ref = FirebaseStorage.instance.ref().child('tenders').child(
-          '${DateTime.now().millisecondsSinceEpoch}_${_titleController.text}');
+      // // Upload file to Firebase Storage
+      // Reference ref = FirebaseStorage.instance.ref().child('tenders').child(
+      //     '${DateTime.now().millisecondsSinceEpoch}_${_titleController.text}');
 
-      _isUploading.value = true;
+      // _isUploading.value = true;
 
-      UploadTask uploadTask = ref.putFile(File(_controller.filePath.value));
+      // UploadTask uploadTask = ref.putFile(File(_controller.filePath.value));
 
-      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
-        _uploadProgress.value = snapshot.bytesTransferred / snapshot.totalBytes;
-      });
+      // uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+      //   _uploadProgress.value = snapshot.bytesTransferred / snapshot.totalBytes;
+      // });
 
-      await uploadTask;
-      String fileUrl = await ref.getDownloadURL();
+      // await uploadTask;
+      // String fileUrl = await ref.getDownloadURL();
 
-      _isUploading.value = false;
+      // _isUploading.value = false;
 
       final tender = Tender(
         tenderId: 'T${DateTime.now().millisecondsSinceEpoch}',
@@ -1524,7 +1530,8 @@ class _OpenTenderScreenState extends State<OpenTenderScreen> {
         tenderItems: _controller.tenderItems,
         deadline: _controller.deadline.value,
         openingDate: _controller.openingDate.value,
-        fileUrl: fileUrl,
+        fileUrl: "fileUrl",
+        hostelId: _controller.hostelId.value,
         bids: [],
       );
 

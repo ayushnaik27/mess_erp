@@ -403,6 +403,17 @@ class _LoginScreenState extends State<LoginScreen> {
           SizedBox(height: 8.h),
           _buildRoleDropdown(),
           SizedBox(height: 24.h),
+          Text(
+            'Select Hostel',
+            style: TextStyle(
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w500,
+              color: AppColors.textSecondary,
+            ),
+          ),
+          SizedBox(height: 8.h),
+          _buildHostelDropdown(),
+          SizedBox(height: 24.h),
         ],
         if (!authController.isAdmin) ...[
           Text(
@@ -509,6 +520,49 @@ class _LoginScreenState extends State<LoginScreen> {
               onChanged: (value) {
                 if (value == null) return;
                 authController.setSelectedRole(value);
+              },
+            ),
+          ),
+        ));
+  }
+
+  Widget _buildHostelDropdown() {
+    return Obx(() => Container(
+          height: 56.h,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12.r),
+            border: Border.all(color: AppColors.divider),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 16.w),
+          child: DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              isExpanded: true,
+              hint: Text(
+                authController.selectedHostel.isEmpty
+                    ? 'Select Hostel'
+                    : authController.selectedHostel,
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  color: authController.selectedHostel.isEmpty
+                      ? AppColors.textTertiary
+                      : AppColors.textPrimary,
+                ),
+              ),
+              icon: const Icon(
+                Icons.keyboard_arrow_down_rounded,
+                color: AppColors.textSecondary,
+              ),
+              borderRadius: BorderRadius.circular(12.r),
+              items: authController.hostels.map((hostel) {
+                return DropdownMenuItem<String>(
+                  value: hostel,
+                  child: Text(hostel),
+                );
+              }).toList(),
+              onChanged: (value) {
+                if (value == null) return;
+                authController.setSelectedHostel(value);
               },
             ),
           ),

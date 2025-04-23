@@ -16,7 +16,8 @@ import 'package:mess_erp/features/student/bindings/extra_items_binding.dart';
 import 'package:mess_erp/features/student/bindings/student_dashboard_binding.dart';
 import 'package:mess_erp/features/student/views/request_extra_items_screen.dart';
 import 'package:mess_erp/features/student/views/student_dashboard.dart';
-import 'package:mess_erp/student/apply_leave_screen.dart';
+import 'package:mess_erp/manager/manager_dashboard.dart';
+import 'package:mess_erp/features/student/views/apply_leave_screen.dart';
 import 'package:mess_erp/student/file_grievance_screen.dart';
 import 'package:mess_erp/student/mess_bill_screen.dart';
 import 'package:mess_erp/student/qr_scanner_screen.dart';
@@ -160,6 +161,10 @@ class AppRouter {
       name: AppRoutes.enrollmentRequests,
       page: () => const EnrollmentRequestScreen(),
       binding: EnrollmentRequestBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.managerDashboard,
+      page: () => const ManagerDashboardScreen(),
     ),
     GetPage(
       name: AppRoutes.assignedGrievances,

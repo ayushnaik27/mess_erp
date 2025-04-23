@@ -9,17 +9,32 @@ class FirestoreConstants {
   static const String stock = 'stock';
   static const String grievances = 'grievances';
   static const String tenders = 'tenders';
-  static const String extraItems = 'extra_items';
+  static const String extraItems = 'extraItems';
+  static const String hostels = 'hostels';
 
   // Documents
   static const String roles = 'roles';
 
   // Subcollections
-  static const String student = 'student';
+  static const String students = 'students';
   static const String clerk = 'clerk';
   static const String manager = 'manager';
   static const String muneem = 'muneem';
   static const String committee = 'committee';
+
+  // Hostel subcollections
+  static const String hostelInfo = 'info';
+  static const String hostelStudents = 'students';
+  static const String hostelStaff = 'staff';
+  static const String hostelMess = 'mess';
+
+  // Mess subcollections
+  static const String messGrievances = 'grievances';
+  static const String messBills = 'bills';
+  static const String messStock = 'stock';
+  static const String messTenders = 'tenders';
+  static const String messExtraItems = 'extraItems';
+  static const String messMenu = 'menu';
 
   // Field names
   static const String password = 'password';
@@ -31,10 +46,9 @@ class FirestoreConstants {
   static const String announcements = 'announcements';
   static const String meal = 'meal';
 
-  static const String extraItemRequests = 'extraItems_requests';
-  static const String extraItemAmount = 'extraItems_amount';
+  static const String extraItemRequests = 'extraItemRequests';
+  static const String extraItemAmount = 'extraItemsAmount';
 
-  // Role-specific usernames
   static const Map<String, String> adminUsernames = {
     clerk: 'admin',
     manager: 'manager@gmail.com',
@@ -42,7 +56,6 @@ class FirestoreConstants {
     committee: 'committee@gmail.com',
   };
 
-  // Path builders
   static String getRolePath(String role) => '$loginCredentials/$roles/$role';
 
   static String getUserDocPath(String role, String userId) =>
@@ -56,11 +69,96 @@ class FirestoreConstants {
   static const String paymentVouchers = 'paymentVouchers';
 
   static String getStudentBillsPath(String studentId) =>
-      '$loginCredentials/$roles/$student/$studentId/$bills';
+      '$loginCredentials/$roles/$students/$studentId/$bills';
 
   static String getStudentLeavesPath(String studentId) =>
-      '$loginCredentials/$roles/$student/$studentId/$newLeaveDetails';
+      '$loginCredentials/$roles/$students/$studentId/$newLeaveDetails';
+
+  static const String storagePathTenders = 'tenders';
+  static const String storagePathProfiles = 'profiles';
 
   static String getStudentFinesPath(String studentId) =>
-      '$loginCredentials/$roles/$student/$studentId/$fineDetails';
+      '$loginCredentials/$roles/$students/$studentId/$fineDetails';
+
+  // Initial passwords for each role-hostel combination
+  static const Map<String, Map<String, String>> initialPasswords = {
+    // Boys Hostels
+    'BH1': {
+      'clerk': 'clerk123',
+      'manager': 'manager123',
+      'muneem': 'muneem123',
+      'committee': 'committee123',
+    },
+    'BH2': {
+      'clerk': 'clerk123',
+      'manager': 'manager123',
+      'muneem': 'muneem123',
+      'committee': 'committee123',
+    },
+    'BH3': {
+      'clerk': 'clerk123',
+      'manager': 'manager123',
+      'muneem': 'muneem123',
+      'committee': 'committee123',
+    },
+    'BH4': {
+      'clerk': 'clerk123',
+      'manager': 'manager123',
+      'muneem': 'muneem123',
+      'committee': 'committee123',
+    },
+    'BH5': {
+      'clerk': 'clerk123',
+      'manager': 'manager123',
+      'muneem': 'muneem123',
+      'committee': 'committee123',
+    },
+    'BH6': {
+      'clerk': 'clerk123',
+      'manager': 'manager123',
+      'muneem': 'muneem123',
+      'committee': 'committee123',
+    },
+    'BH7': {
+      'clerk': 'clerk123',
+      'manager': 'manager123',
+      'muneem': 'muneem123',
+      'committee': 'committee123',
+    },
+    // Girls Hostels
+    'GH1': {
+      'clerk': 'clerk123',
+      'manager': 'manager123',
+      'muneem': 'muneem123',
+      'committee': 'committee123',
+    },
+    'GH2': {
+      'clerk': 'clerk123',
+      'manager': 'manager123',
+      'muneem': 'muneem123',
+      'committee': 'committee123',
+    },
+    'GH3': {
+      'clerk': 'clerk123',
+      'manager': 'manager123',
+      'muneem': 'muneem123',
+      'committee': 'committee123',
+    },
+    'MGH': {
+      'clerk': 'clerk123',
+      'manager': 'manager123',
+      'muneem': 'muneem123',
+      'committee': 'committee123',
+    },
+    // Add more hostels as needed
+  };
+
+  // Helper method to get initial password
+  static String getInitialPassword(String hostelId, String role) {
+    if (initialPasswords.containsKey(hostelId) &&
+        initialPasswords[hostelId]!.containsKey(role)) {
+      return initialPasswords[hostelId]![role]!;
+    }
+    return ''; // Empty string if no password found
+  }
 }

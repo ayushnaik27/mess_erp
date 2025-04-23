@@ -8,7 +8,7 @@ import 'package:mess_erp/features/clerk/controllers/tender_controller.dart';
 import 'package:mess_erp/features/clerk/models/index.dart';
 
 class AllTendersScreen extends StatefulWidget {
-  const AllTendersScreen({Key? key}) : super(key: key);
+  const AllTendersScreen({super.key});
 
   @override
   State<AllTendersScreen> createState() => _AllTendersScreenState();
@@ -29,7 +29,6 @@ class _AllTendersScreenState extends State<AllTendersScreen> {
       _searchQuery.value = _searchController.text;
     });
 
-    // Add more sort options to controller if needed
     if (!_controller.allTenders.isNotEmpty) {
       _controller.fetchAndSetTenders();
     }

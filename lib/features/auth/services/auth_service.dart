@@ -37,61 +37,96 @@ class AuthService {
 
   Future<Map<String, dynamic>> adminLogin({
     required String role,
+    required String hostelId,
     required String password,
   }) async {
     if (!_isInitialized) await init();
     try {
-      final String? adminUsername =
-          FirestoreConstants.adminUsernames[role.toLowerCase()];
+      final String userId = '${role}_$hostelId';
 
-      if (adminUsername == null) {
-        return {'success': false, 'message': 'Invalid role selected'};
-      }
-
-      final docSnapshot = await _firestore
-          .collection(FirestoreConstants.loginCredentials)
-          .doc(FirestoreConstants.roles)
-          .collection(role.toLowerCase())
-          .doc(adminUsername)
+      final userDoc = await _firestore
+          .collection(FirestoreConstants.users)
+          .doc(userId)
           .get();
 
-      if (!docSnapshot.exists) {
-        _logger.w('Admin login failed: User does not exist');
-        return {'success': false, 'message': 'Invalid credentials'};
-      }
+      if (userDoc.exists) {
+        final userData = userDoc.data() ?? {};
+        final String storedPassword = userData['password'] ?? '';
+        final String hashedPassword = HashHelper.encode(password);
 
-      final String storedPassword =
-          docSnapshot.data()?[FirestoreConstants.password] ?? '';
-      final String hashedPassword = HashHelper.encode(password);
-
-      if (storedPassword != hashedPassword) {
-        _logger.w('Admin login failed: Incorrect password');
-        return {'success': false, 'message': 'Invalid credentials'};
-      }
-
-      final userData = docSnapshot.data() ?? {};
-      final user = User(
-        id: adminUsername,
-        name: userData['name'] ?? 'Admin',
-        email: userData['email'] ?? adminUsername,
-        role: role.toLowerCase(),
-        hostel: userData['hostel'] ?? '',
-        rollNumber: adminUsername,
-        phoneNumber: userData['phoneNumber'],
-        additionalInfo: userData,
-      );
-
-      await _persistenceService?.persistUserLogin(user);
-
-      _logger.i('Admin login successful for role: $role');
-      return {
-        'success': true,
-        'data': {
-          'username': adminUsername,
-          'role': role,
-          'user': user,
+        if (storedPassword != hashedPassword) {
+          _logger.w('Admin login failed: Incorrect password');
+          return {'success': false, 'message': 'Invalid credentials'};
         }
-      };
+
+        final user = User.fromFirestore(userData, userId);
+
+        await userDoc.reference.update({
+          'lastLogin': FieldValue.serverTimestamp(),
+        });
+
+        await _persistenceService?.persistUserLogin(user);
+
+        _logger.i('Admin login successful: $role for hostel $hostelId');
+        return {
+          'success': true,
+          'data': {
+            'username': userId,
+            'role': role,
+            'user': user,
+          }
+        };
+      } else {
+        final String initialPassword =
+            FirestoreConstants.getInitialPassword(hostelId, role);
+        final String hashedInitialPassword = HashHelper.encode(password);
+        final String expectedHashedPassword =
+            HashHelper.encode(initialPassword);
+
+        if (expectedHashedPassword != hashedInitialPassword) {
+          _logger.w('Admin login failed: Incorrect initial password');
+          return {'success': false, 'message': 'Invalid credentials'};
+        }
+
+        final String email = '$role@$hostelId.nitj.ac.in';
+        final String name =
+            role.substring(0, 1).toUpperCase() + role.substring(1);
+
+        final user = User(
+          id: userId,
+          name: '$name ($hostelId)',
+          email: email,
+          role: role.toLowerCase(),
+          hostelId: hostelId,
+          phoneNumber: '',
+          additionalInfo: {'isFirstLogin': true},
+        );
+
+        // Store in Firestore
+        await _firestore.collection(FirestoreConstants.users).doc(userId).set({
+          'name': user.name,
+          'email': user.email,
+          'role': user.role,
+          'hostelId': user.hostelId,
+          'password': hashedInitialPassword,
+          'isFirstLogin': true,
+          'createdAt': FieldValue.serverTimestamp(),
+          'lastLogin': FieldValue.serverTimestamp(),
+        });
+
+        await _persistenceService?.persistUserLogin(user);
+
+        _logger
+            .i('First-time admin login successful: $role for hostel $hostelId');
+        return {
+          'success': true,
+          'data': {
+            'username': userId,
+            'role': role,
+            'user': user,
+          }
+        };
+      }
     } catch (e, stack) {
       _logger.e('Admin login error', error: e, stackTrace: stack);
       return {'success': false, 'message': 'An unexpected error occurred'};
@@ -104,50 +139,104 @@ class AuthService {
   }) async {
     if (!_isInitialized) await init();
     try {
-      final docSnapshot = await _firestore
-          .collection(FirestoreConstants.loginCredentials)
-          .doc(FirestoreConstants.roles)
-          .collection(FirestoreConstants.student)
-          .doc(username)
+      // Try new structure first
+      final userQuery = await _firestore
+          .collection(FirestoreConstants.users)
+          .where('rollNumber', isEqualTo: username)
+          .where('role', isEqualTo: 'student')
+          .limit(1)
           .get();
 
-      if (!docSnapshot.exists) {
-        _logger.w('Student login failed: User does not exist');
-        return {'success': false, 'message': 'Invalid credentials'};
-      }
+      if (userQuery.docs.isEmpty) {
+        // Fallback to legacy structure
+        final docSnapshot = await _firestore
+            .collection(FirestoreConstants.loginCredentials)
+            .doc(FirestoreConstants.roles)
+            .collection(FirestoreConstants.students)
+            .doc(username)
+            .get();
 
-      final String storedPassword =
-          docSnapshot.data()?[FirestoreConstants.password] ?? '';
-      final String hashedPassword = HashHelper.encode(password);
-
-      if (storedPassword != hashedPassword) {
-        _logger.w('Student login failed: Incorrect password');
-        return {'success': false, 'message': 'Invalid credentials'};
-      }
-
-      final userData = docSnapshot.data() ?? {};
-      final user = User(
-        id: username,
-        name: userData['name'] ?? '',
-        email: userData['email'] ?? '',
-        role: 'student',
-        hostel: userData['hostel'] ?? '',
-        rollNumber: username,
-        phoneNumber: userData['phoneNumber'],
-        additionalInfo: userData,
-      );
-
-      await _persistenceService?.persistUserLogin(user);
-
-      _logger.i('Student login successful for: $username');
-      return {
-        'success': true,
-        'data': {
-          'username': username,
-          'role': 'student',
-          'user': user,
+        if (!docSnapshot.exists) {
+          _logger.w('Student login failed: User does not exist');
+          return {'success': false, 'message': 'Invalid credentials'};
         }
-      };
+
+        final String storedPassword =
+            docSnapshot.data()?[FirestoreConstants.password] ?? '';
+        final String hashedPassword = HashHelper.encode(password);
+
+        if (storedPassword != hashedPassword) {
+          _logger.w('Student login failed: Incorrect password');
+          return {'success': false, 'message': 'Invalid credentials'};
+        }
+
+        final userData = docSnapshot.data() ?? {};
+        final String hostel = userData['hostel'] ?? 'BH4'; // Default hostel
+
+        final user = User(
+          id: username,
+          name: userData['name'] ?? '',
+          email: userData['email'] ?? '',
+          role: 'student',
+          hostelId: hostel,
+          rollNumber: username,
+          phoneNumber: userData['phoneNumber'],
+          additionalInfo: userData,
+        );
+
+        // Store in new structure
+        await _firestore.collection(FirestoreConstants.users).doc(username).set(
+              user.toFirestore()
+                ..addAll({
+                  'password': storedPassword,
+                  'createdAt': FieldValue.serverTimestamp(),
+                }),
+              SetOptions(merge: true),
+            );
+
+        await _persistenceService?.persistUserLogin(user);
+
+        _logger.i('Student login successful for: $username');
+        return {
+          'success': true,
+          'data': {
+            'username': username,
+            'role': 'student',
+            'user': user,
+          }
+        };
+      } else {
+        // Use the new structure
+        final userDoc = userQuery.docs.first;
+        final userData = userDoc.data();
+
+        final String storedPassword = userData['password'] ?? '';
+        final String hashedPassword = HashHelper.encode(password);
+
+        if (storedPassword != hashedPassword) {
+          _logger.w('Student login failed: Incorrect password');
+          return {'success': false, 'message': 'Invalid credentials'};
+        }
+
+        final user = User.fromFirestore(userData, userDoc.id);
+
+        // Update last login
+        await userDoc.reference.update({
+          'lastLogin': FieldValue.serverTimestamp(),
+        });
+
+        await _persistenceService?.persistUserLogin(user);
+
+        _logger.i('Student login successful for: ${user.rollNumber}');
+        return {
+          'success': true,
+          'data': {
+            'username': user.id,
+            'role': user.role,
+            'user': user,
+          }
+        };
+      }
     } catch (e, stack) {
       _logger.e('Student login error', error: e, stackTrace: stack);
       return {'success': false, 'message': 'An unexpected error occurred'};
@@ -164,51 +253,57 @@ class AuthService {
   }) async {
     if (!_isInitialized) await init();
     try {
-      DocumentSnapshot documentSnapshot = await _firestore
-          .collection(FirestoreConstants.loginCredentials)
-          .doc(FirestoreConstants.roles)
-          .collection(FirestoreConstants.student)
+      final userDoc = await _firestore
+          .collection(FirestoreConstants.users)
           .doc(rollNumber)
           .get();
 
-      if (documentSnapshot.exists) {
-        _logger.w('Registration failed: Roll number already exists');
-        return {'success': false, 'message': 'Roll number already exists'};
+      if (userDoc.exists) {
+        _logger.w('Registration failed: User already exists');
+        return {'success': false, 'message': 'User already exists'};
       }
 
-      DocumentSnapshot enrollmentSnapshot = await _firestore
-          .collection(FirestoreConstants.enrollments)
+      final String hashedPassword = HashHelper.encode(password);
+
+      await _firestore
+          .collection(FirestoreConstants.users)
           .doc(rollNumber)
-          .get();
-
-      if (enrollmentSnapshot.exists) {
-        _logger.w('Registration failed: Verification pending');
-        return {'success': false, 'message': 'Verification pending'};
-      }
-
-      String hashedPassword = HashHelper.encode(password);
+          .set({
+        'name': name,
+        'email': email,
+        'rollNumber': rollNumber,
+        'role': 'student',
+        'hostelId': hostel,
+        'password': hashedPassword,
+        'phoneNumber': phoneNumber,
+        'isActive': false,
+        'createdAt': FieldValue.serverTimestamp(),
+        'lastUpdated': FieldValue.serverTimestamp(),
+      });
 
       await _firestore
           .collection(FirestoreConstants.enrollments)
           .doc(rollNumber)
           .set({
-        FirestoreConstants.name: name,
-        FirestoreConstants.password: hashedPassword,
-        FirestoreConstants.rollNumber: rollNumber,
-        FirestoreConstants.email: email,
+        'name': name,
+        'email': email,
+        'rollNumber': rollNumber,
         'hostel': hostel,
         'phoneNumber': phoneNumber,
-        FirestoreConstants.timestamp: FieldValue.serverTimestamp(),
+        'timestamp': FieldValue.serverTimestamp(),
+        'status': 'pending',
       });
 
-      _logger.i('Student registered: $rollNumber, Hostel: $hostel');
-      return {'success': true, 'message': 'Registered successfully'};
+      _logger.i('Student registration submitted: $rollNumber, Hostel: $hostel');
+      return {
+        'success': true,
+        'message': 'Registration submitted successfully'
+      };
     } catch (e, stack) {
       _logger.e('Registration error', error: e, stackTrace: stack);
       return {
         'success': false,
-        'message':
-            'Registration failed. Please check your connection and try again.'
+        'message': 'Registration failed. Please try again.'
       };
     }
   }
@@ -221,6 +316,26 @@ class AuthService {
     } catch (e) {
       _logger.e('Logout error', error: e);
       return false;
+    }
+  }
+
+  // New method to fetch accessible hostels for user
+  Future<List<String>> getUserAccessibleHostels(String userId) async {
+    try {
+      final userDoc = await _firestore
+          .collection(FirestoreConstants.users)
+          .doc(userId)
+          .get();
+
+      if (!userDoc.exists) return [];
+
+      final userData = userDoc.data() ?? {};
+      final List<dynamic> hostels = userData['accessibleHostels'] ?? [];
+
+      return hostels.cast<String>();
+    } catch (e) {
+      _logger.e('Error fetching accessible hostels', error: e);
+      return [];
     }
   }
 }

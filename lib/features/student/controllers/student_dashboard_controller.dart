@@ -9,10 +9,38 @@ class StudentDashboardController extends GetxController {
   final RxBool isMealLive = false.obs;
   final AppLogger _logger = AppLogger();
 
+  // User data
   String? userRollNumber;
+  final RxString userName = ''.obs;
+  final RxString userEmail = ''.obs;
+  final RxString userRole = ''.obs;
 
   void initializeUser(String? rollNumber) {
     userRollNumber = rollNumber;
+    if (rollNumber != null && rollNumber.isNotEmpty) {
+      _fetchUserDetails(rollNumber);
+    }
+  }
+
+  Future<void> _fetchUserDetails(String rollNumber) async {
+    try {
+      final DocumentSnapshot<Map<String, dynamic>> userDetails =
+          await FirebaseFirestore.instance
+              .collection('loginCredentials')
+              .doc('roles')
+              .collection('student')
+              .doc(rollNumber)
+              .get();
+
+      userName.value = userDetails['name'] ?? '';
+      userRole.value = userDetails['role'] ?? '';
+      // Email field might be missing for some users
+      userEmail.value = userDetails['email'] ?? '';
+
+      _logger.i('User details fetched: ${userName.value}');
+    } catch (e) {
+      _logger.e('Error fetching user details', error: e);
+    }
   }
 
   @override
@@ -23,6 +51,9 @@ class StudentDashboardController extends GetxController {
 
   Future<void> refreshData() async {
     await checkMealStatus();
+    if (userRollNumber != null && userRollNumber!.isNotEmpty) {
+      await _fetchUserDetails(userRollNumber!);
+    }
     _logger.i('Dashboard data refreshed');
   }
 
@@ -37,6 +68,24 @@ class StudentDashboardController extends GetxController {
       });
     } catch (e) {
       _logger.e('Error checking meal status', error: e);
+    }
+  }
+
+  Future<bool> submitLeaveRequest({
+    required String rollNumber,
+    required DateTime fromDate,
+    required DateTime toDate,
+    required String fromMeal,
+    required String toMeal,
+    required List<String> mealOptions,
+  }) async {
+    try {
+      _logger.i('Submitting leave request for $rollNumber');
+
+      return true;
+    } catch (e) {
+      _logger.e('Error submitting leave request', error: e);
+      return false;
     }
   }
 

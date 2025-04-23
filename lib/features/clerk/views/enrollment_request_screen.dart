@@ -6,13 +6,15 @@ import 'package:intl/intl.dart';
 import 'package:mess_erp/core/extensions/size_extension.dart';
 import 'package:mess_erp/core/theme/app_colors.dart';
 import 'package:mess_erp/core/utils/screen_utils.dart';
+import 'package:mess_erp/features/clerk/bindings/enrollment_request_bindings.dart';
 import 'package:mess_erp/features/clerk/controllers/enrollment_request_controller.dart';
 
 class EnrollmentRequestScreen extends StatelessWidget {
-  const EnrollmentRequestScreen({Key? key}) : super(key: key);
+  const EnrollmentRequestScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    EnrollmentRequestBinding().dependencies();
     final controller = Get.find<EnrollmentRequestController>();
     ScreenUtil.instance.init(context);
 

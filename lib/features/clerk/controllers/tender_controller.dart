@@ -3,13 +3,21 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mess_erp/core/constants/firestore_constants.dart';
 import 'package:mess_erp/core/utils/logger.dart';
+import 'package:mess_erp/features/auth/services/auth_persistence_service.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'dart:io';
 
 import '../models/index.dart';
 
 class TenderController extends GetxController {
   final AppLogger _logger = AppLogger();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final AuthPersistenceService _persistenceService;
+
+  // Add hostelId to track which hostel this controller is for
+  final RxString hostelId = ''.obs;
+  final RxString username = ''.obs;
 
   final RxList<TenderItem> tenderItems = <TenderItem>[].obs;
   final Rx<DateTime> deadline = DateTime.now().add(Duration(days: 14)).obs;
@@ -23,15 +31,41 @@ class TenderController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxBool isSubmitting = false.obs;
 
+  TenderController({required AuthPersistenceService persistenceService})
+      : _persistenceService = persistenceService;
+
   @override
   void onInit() {
     super.onInit();
-    _logger.i('TenderController initialized');
-    fetchAndSetTenders();
-    fetchAndSetActiveTenders();
+    _logger.i('TenderController initializing...');
+    _initializeController();
   }
 
-  // For tender creation flow
+  Future<void> _initializeController() async {
+    try {
+      final user = await _persistenceService.getCurrentUser();
+      if (user != null && user.hostelId.isNotEmpty) {
+        hostelId.value = user.hostelId;
+        username.value = user.name;
+        _logger.i('TenderController initialized for hostel: ${hostelId.value}');
+
+        fetchAndSetTenders();
+        fetchAndSetActiveTenders();
+      } else {
+        _logger.e('Failed to initialize TenderController: No hostel ID found');
+        Get.snackbar(
+          'Error',
+          'Unable to determine your hostel. Please log out and log in again.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      _logger.e('Error initializing TenderController', error: e);
+    }
+  }
+
   void addTenderItem(TenderItem item) {
     tenderItems.add(item);
     _logger.i('Added tender item: ${item.itemName}');
@@ -83,20 +117,27 @@ class TenderController extends GetxController {
     _logger.i('Reset tender form');
   }
 
-  // Tender management methods
   Future<void> fetchAndSetTenders() async {
     try {
-      isLoading.value = true;
-      _logger.i('Fetching all tenders');
+      if (hostelId.isEmpty) {
+        _logger.e('Cannot fetch tenders: No hostel ID');
+        return;
+      }
 
-      final snapshot =
-          await _firestore.collection(FirestoreConstants.tenders).get();
+      isLoading.value = true;
+      _logger.i('Fetching all tenders for hostel: ${hostelId.value}');
+
+      final snapshot = await _firestore
+          .collection(FirestoreConstants.tenders)
+          .where('hostelId', isEqualTo: hostelId.value)
+          .get();
 
       allTenders.value = snapshot.docs.map((doc) {
         return Tender.fromMap(doc.data());
       }).toList();
 
-      _logger.i('Fetched ${allTenders.length} tenders');
+      _logger.i(
+          'Fetched ${allTenders.length} tenders for hostel ${hostelId.value}');
     } catch (e) {
       _logger.e('Error fetching tenders', error: e);
       Get.snackbar(
@@ -113,13 +154,18 @@ class TenderController extends GetxController {
 
   Future<void> fetchAndSetActiveTenders() async {
     try {
+      if (hostelId.isEmpty) {
+        _logger.e('Cannot fetch active tenders: No hostel ID');
+        return;
+      }
+
       isLoading.value = true;
-      _logger.i('Fetching active tenders');
+      _logger.i('Fetching active tenders for hostel: ${hostelId.value}');
 
       try {
-        // Try the compound query first
         final snapshot = await _firestore
             .collection(FirestoreConstants.tenders)
+            .where('hostelId', isEqualTo: hostelId.value)
             .where('deadline', isGreaterThanOrEqualTo: DateTime.now())
             .where('status', isEqualTo: 'active')
             .get();
@@ -128,14 +174,16 @@ class TenderController extends GetxController {
           return Tender.fromMap(doc.data());
         }).toList();
 
-        _logger.i('Fetched ${activeTenders.length} active tenders');
+        _logger.i(
+            'Fetched ${activeTenders.length} active tenders for hostel ${hostelId.value}');
       } catch (queryError) {
-        // If the index doesn't exist, fall back to client-side filtering
         _logger.w(
             'Index error, falling back to client-side filtering: $queryError');
 
-        final snapshot =
-            await _firestore.collection(FirestoreConstants.tenders).get();
+        final snapshot = await _firestore
+            .collection(FirestoreConstants.tenders)
+            .where('hostelId', isEqualTo: hostelId.value)
+            .get();
 
         // Filter tenders on the client side
         final now = DateTime.now();
@@ -146,9 +194,8 @@ class TenderController extends GetxController {
             .toList();
 
         _logger.i(
-            'Fetched ${activeTenders.length} active tenders with client filtering');
+            'Fetched ${activeTenders.length} active tenders for hostel ${hostelId.value} with client filtering');
 
-        // Show a one-time message to create the index
         Get.snackbar(
           'Database Index Required',
           'Please create the required database index using the link in the logs. This is a one-time setup.',
@@ -185,13 +232,11 @@ class TenderController extends GetxController {
     }
   }
 
-  // Helper method to open the index creation URL
   void _openIndexUrl() async {
     const String indexUrl =
         'https://console.firebase.google.com/project/messerp-26027/firestore/indexes';
 
     try {
-      // Use url_launcher package to open the URL
       if (await canLaunch(indexUrl)) {
         await launch(indexUrl);
       } else {
@@ -213,21 +258,27 @@ class TenderController extends GetxController {
 
   Future<void> addTender(Tender tender) async {
     try {
+      if (hostelId.isEmpty) {
+        _logger.e('Cannot add tender: No hostel ID');
+        throw Exception('Hostel ID not found. Please log in again.');
+      }
+
       isSubmitting.value = true;
-      _logger.i('Adding tender: ${tender.title}');
+      _logger.i('Adding tender: ${tender.title} for hostel: ${hostelId.value}');
+
+      final updatedTender = tender.copyWith(hostelId: hostelId.value);
 
       await _firestore
           .collection(FirestoreConstants.tenders)
-          .doc(tender.tenderId)
-          .set(tender.toMap());
+          .doc(updatedTender.tenderId)
+          .set(updatedTender.toMap());
 
-      // Add to local list
-      allTenders.add(tender);
-      if (tender.deadline.isAfter(DateTime.now())) {
-        activeTenders.add(tender);
+      allTenders.add(updatedTender);
+      if (updatedTender.deadline.isAfter(DateTime.now())) {
+        activeTenders.add(updatedTender);
       }
 
-      _logger.i('Tender added successfully: ${tender.tenderId}');
+      _logger.i('Tender added successfully: ${updatedTender.tenderId}');
 
       resetTenderForm();
     } catch (e) {
@@ -243,6 +294,11 @@ class TenderController extends GetxController {
       isSubmitting.value = true;
       _logger.i('Submitting bid for tender: $tenderId');
 
+      final tender = findById(tenderId);
+      if (tender == null || tender.hostelId != hostelId.value) {
+        throw Exception('Tender not found or not authorized for this hostel');
+      }
+
       await _firestore
           .collection(FirestoreConstants.tenders)
           .doc(tenderId)
@@ -253,9 +309,8 @@ class TenderController extends GetxController {
       final index =
           allTenders.indexWhere((tender) => tender.tenderId == tenderId);
       if (index != -1) {
-        final tender = allTenders[index];
-        final updatedBids = [...tender.bids, bid];
-        allTenders[index] = tender.copyWith(bids: updatedBids);
+        final updatedBids = [...allTenders[index].bids, bid];
+        allTenders[index] = allTenders[index].copyWith(bids: updatedBids);
 
         final activeIndex =
             activeTenders.indexWhere((tender) => tender.tenderId == tenderId);
@@ -279,6 +334,11 @@ class TenderController extends GetxController {
       isSubmitting.value = true;
       _logger.i('Closing tender: $tenderId');
 
+      final tender = findById(tenderId);
+      if (tender == null || tender.hostelId != hostelId.value) {
+        throw Exception('Tender not found or not authorized for this hostel');
+      }
+
       await _firestore
           .collection(FirestoreConstants.tenders)
           .doc(tenderId)
@@ -286,13 +346,11 @@ class TenderController extends GetxController {
         'status': 'closed',
       });
 
-      // Update local tender object
       final index =
           allTenders.indexWhere((tender) => tender.tenderId == tenderId);
       if (index != -1) {
         allTenders[index] = allTenders[index].copyWith(status: 'closed');
 
-        // Remove from active tenders
         activeTenders.removeWhere((tender) => tender.tenderId == tenderId);
       }
 
@@ -310,6 +368,11 @@ class TenderController extends GetxController {
       isSubmitting.value = true;
       _logger.i('Awarding tender $tenderId to vendor $vendorId');
 
+      final tender = findById(tenderId);
+      if (tender == null || tender.hostelId != hostelId.value) {
+        throw Exception('Tender not found or not authorized for this hostel');
+      }
+
       await _firestore
           .collection(FirestoreConstants.tenders)
           .doc(tenderId)
@@ -319,13 +382,11 @@ class TenderController extends GetxController {
         'awardedAt': FieldValue.serverTimestamp(),
       });
 
-      // Update local tender object
       final index =
           allTenders.indexWhere((tender) => tender.tenderId == tenderId);
       if (index != -1) {
         allTenders[index] = allTenders[index].copyWith(status: 'awarded');
 
-        // Remove from active tenders
         activeTenders.removeWhere((tender) => tender.tenderId == tenderId);
       }
 
@@ -340,16 +401,24 @@ class TenderController extends GetxController {
 
   Future<List<Tender>> fetchTendersByVendor(String vendorId) async {
     try {
+      if (hostelId.isEmpty) {
+        _logger.e('Cannot fetch vendor tenders: No hostel ID');
+        return [];
+      }
+
       isLoading.value = true;
-      _logger.i('Fetching tenders for vendor: $vendorId');
+      _logger.i(
+          'Fetching tenders for vendor: $vendorId in hostel: ${hostelId.value}');
 
       final snapshot = await _firestore
           .collection(FirestoreConstants.tenders)
-          .where('bids', arrayContains: {'vendorId': vendorId}).get();
+          .where('hostelId', isEqualTo: hostelId.value)
+          .get();
 
-      final tenders = snapshot.docs.map((doc) {
-        return Tender.fromMap(doc.data());
-      }).toList();
+      final tenders = snapshot.docs
+          .map((doc) => Tender.fromMap(doc.data()))
+          .where((tender) => tender.bids.any((bid) => bid.vendorId == vendorId))
+          .toList();
 
       _logger.i('Fetched ${tenders.length} tenders for vendor: $vendorId');
       return tenders;
@@ -367,5 +436,100 @@ class TenderController extends GetxController {
 
   void setIsUploading(bool value) {
     isUploading.value = value;
+  }
+
+  void setHostelId(String id) {
+    if (id.isNotEmpty && id != hostelId.value) {
+      hostelId.value = id;
+      fetchAndSetTenders();
+      fetchAndSetActiveTenders();
+    }
+  }
+
+  Future<String> uploadTenderFile(String filePath, String title) async {
+    try {
+      if (filePath.isEmpty) {
+        throw Exception('File path is empty');
+      }
+
+      isUploading.value = true;
+      _logger.i('Uploading tender file: $filePath');
+
+      // Use FirestoreConstants for storage paths
+      Reference ref = FirebaseStorage.instance
+          .ref()
+          .child(FirestoreConstants.storagePathTenders)
+          .child('${DateTime.now().millisecondsSinceEpoch}_$title');
+
+      UploadTask uploadTask = ref.putFile(File(filePath));
+
+      // Listen to upload progress events
+      uploadTask.snapshotEvents.listen((TaskSnapshot snapshot) {
+        uploadProgress.value = snapshot.bytesTransferred / snapshot.totalBytes;
+      });
+
+      // Wait for upload to complete
+      await uploadTask;
+      String fileUrl = await ref.getDownloadURL();
+
+      _logger.i('File uploaded successfully: $fileUrl');
+      return fileUrl;
+    } catch (e) {
+      _logger.e('Error uploading file', error: e);
+      throw e;
+    } finally {
+      isUploading.value = false;
+    }
+  }
+
+  Future<void> submitTender(
+      {required String title,
+      required String description,
+      required List<TenderItem> items,
+      required DateTime deadline,
+      required DateTime openingDate,
+      required String filePath}) async {
+    try {
+      if (hostelId.isEmpty) {
+        _logger.e('Cannot submit tender: No hostel ID');
+        throw Exception('Hostel ID not found. Please log in again.');
+      }
+
+      isSubmitting.value = true;
+      _logger.i('Submitting tender: $title for hostel: ${hostelId.value}');
+
+      String fileUrl = '';
+      if (filePath.isNotEmpty) {
+        try {
+          fileUrl = await uploadTenderFile(filePath, title);
+        } catch (uploadError) {
+          _logger.e('Error uploading file (continuing with empty URL)',
+              error: uploadError);
+          fileUrl = "https://placeholder.url/document-pending";
+        }
+      }
+
+      final tender = Tender(
+        tenderId: 'T${DateTime.now().millisecondsSinceEpoch}',
+        title: title,
+        tenderItems: items,
+        deadline: deadline,
+        openingDate: openingDate,
+        fileUrl: fileUrl,
+        status: 'active',
+        hostelId: hostelId.value,
+        bids: [],
+      );
+
+      await addTender(tender);
+
+      _logger.i('Tender submitted successfully: ${tender.tenderId}');
+      return;
+    } catch (e) {
+      _logger.e('Error submitting tender', error: e);
+      throw e;
+    } finally {
+      isSubmitting.value = false;
+    }
   }
 }

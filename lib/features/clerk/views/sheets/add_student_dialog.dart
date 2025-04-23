@@ -6,13 +6,21 @@ import 'package:mess_erp/core/extensions/size_extension.dart';
 import 'package:mess_erp/core/theme/app_colors.dart';
 import 'package:mess_erp/features/clerk/controllers/clerk_sheet_controller.dart';
 
-class AddStudentSheet extends StatelessWidget {
+class AddStudentSheet extends StatefulWidget {
   AddStudentSheet({super.key});
 
+  @override
+  _AddStudentSheetState createState() => _AddStudentSheetState();
+}
+
+class _AddStudentSheetState extends State<AddStudentSheet> {
   final controller = Get.find<ClerkDialogController>();
   final nameController = TextEditingController();
   final rollNumberController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -175,6 +183,93 @@ class AddStudentSheet extends StatelessWidget {
                     },
                   ).animate().fade(duration: 700.ms).slideY(begin: 0.2, end: 0),
 
+                  SizedBox(height: 16.h),
+
+                  // Email Field
+                  TextFormField(
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: AppStrings.email,
+                      hintText: "Enter email address",
+                      labelStyle: TextStyle(
+                        fontSize: 14.sp,
+                        color: AppColors.textSecondary,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                        borderSide: const BorderSide(color: AppColors.divider),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                        borderSide: const BorderSide(
+                            color: AppColors.primary, width: 2),
+                      ),
+                      prefixIcon:
+                          const Icon(Icons.email, color: AppColors.primary),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 16.h,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.withOpacity(0.05),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter email';
+                      }
+                      if (!GetUtils.isEmail(value)) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
+                  ).animate().fade(duration: 750.ms).slideY(begin: 0.2, end: 0),
+
+                  SizedBox(height: 16.h),
+
+                  // Phone Number Field
+                  TextFormField(
+                    controller: phoneController,
+                    keyboardType: TextInputType.phone,
+                    decoration: InputDecoration(
+                      labelText: "Phone Number",
+                      hintText: "Enter phone number",
+                      labelStyle: TextStyle(
+                        fontSize: 14.sp,
+                        color: AppColors.textSecondary,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                      ),
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                        borderSide: const BorderSide(color: AppColors.divider),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12.r),
+                        borderSide: const BorderSide(
+                            color: AppColors.primary, width: 2),
+                      ),
+                      prefixIcon:
+                          const Icon(Icons.phone, color: AppColors.primary),
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: 16.w,
+                        vertical: 16.h,
+                      ),
+                      filled: true,
+                      fillColor: Colors.grey.withOpacity(0.05),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return 'Please enter phone number';
+                      }
+                      return null;
+                    },
+                  ).animate().fade(duration: 800.ms).slideY(begin: 0.2, end: 0),
+
                   SizedBox(height: 32.h),
 
                   // Action Buttons
@@ -202,47 +297,41 @@ class AddStudentSheet extends StatelessWidget {
                       ),
                       SizedBox(width: 16.w),
                       Expanded(
-                        child: Obx(() => ElevatedButton(
-                              onPressed: controller.isLoading.value
-                                  ? null
-                                  : () {
-                                      if (_formKey.currentState!.validate()) {
-                                        controller.addStudent(
-                                          nameController.text.trim(),
-                                          rollNumberController.text.trim(),
-                                        );
-                                        Get.back();
-                                      }
-                                    },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.primary,
-                                foregroundColor: Colors.white,
-                                padding: EdgeInsets.symmetric(vertical: 12.h),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12.r),
+                        child: ElevatedButton(
+                          onPressed: _isLoading
+                              ? null
+                              : () {
+                                  _submitForm();
+                                },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppColors.primary,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(vertical: 12.h),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12.r),
+                            ),
+                            elevation: 0,
+                          ),
+                          child: _isLoading
+                              ? SizedBox(
+                                  height: 20.h,
+                                  width: 20.w,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : Text(
+                                  AppStrings.add,
+                                  style: TextStyle(
+                                    fontSize: 16.sp,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
-                                elevation: 0,
-                              ),
-                              child: controller.isLoading.value
-                                  ? SizedBox(
-                                      height: 20.h,
-                                      width: 20.w,
-                                      child: CircularProgressIndicator(
-                                        color: Colors.white,
-                                        strokeWidth: 2,
-                                      ),
-                                    )
-                                  : Text(
-                                      AppStrings.add,
-                                      style: TextStyle(
-                                        fontSize: 16.sp,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                            )),
+                        ),
                       ),
                     ],
-                  ).animate().fade(duration: 800.ms).slideY(begin: 0.2, end: 0),
+                  ).animate().fade(duration: 850.ms).slideY(begin: 0.2, end: 0),
 
                   SizedBox(height: 16.h),
                 ],
@@ -252,5 +341,29 @@ class AddStudentSheet extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      try {
+        await controller.addStudent(
+          nameController.text,
+          rollNumberController.text,
+          emailController.text,
+          phoneController.text,
+        );
+        Get.back();
+      } catch (e) {
+        // Error is already handled in the controller
+      } finally {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 }

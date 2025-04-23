@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mess_erp/core/constants/firestore_constants.dart';
 import 'package:mess_erp/core/utils/logger.dart';
+import 'package:mess_erp/features/auth/services/auth_persistence_service.dart';
 
 class EnrollmentRequestController extends GetxController {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final AppLogger _logger = AppLogger();
+  final AuthPersistenceService _persistenceService;
 
   final RxList<Map<String, dynamic>> enrollmentRequests =
       <Map<String, dynamic>>[].obs;
@@ -15,20 +17,55 @@ class EnrollmentRequestController extends GetxController {
   final RxString searchQuery = ''.obs;
   final RxString sortBy = 'timestamp'.obs;
   final RxBool sortAscending = false.obs;
+  final RxString hostelId = ''.obs;
+
+  EnrollmentRequestController(
+      {required AuthPersistenceService persistenceService})
+      : _persistenceService = persistenceService;
 
   @override
   void onInit() {
     super.onInit();
-    fetchEnrollmentRequests();
+    _initializeController();
+  }
+
+  Future<void> _initializeController() async {
+    try {
+      final user = await _persistenceService.getCurrentUser();
+      if (user != null && user.hostelId.isNotEmpty) {
+        hostelId.value = user.hostelId;
+        _logger.i(
+            'EnrollmentRequestController initialized for hostel: ${hostelId.value}');
+        fetchEnrollmentRequests();
+      } else {
+        _logger.e(
+            'Failed to initialize EnrollmentRequestController: No hostel ID found');
+        Get.snackbar(
+          'Error',
+          'Unable to determine your hostel. Please log out and log in again.',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+      }
+    } catch (e) {
+      _logger.e('Error initializing EnrollmentRequestController', error: e);
+    }
   }
 
   Future<void> fetchEnrollmentRequests() async {
     try {
+      if (hostelId.isEmpty) {
+        _logger.e('Cannot fetch enrollment requests: No hostel ID');
+        return;
+      }
+
       isLoading.value = true;
-      _logger.i('Fetching enrollment requests');
+      _logger.i('Fetching enrollment requests for hostel: ${hostelId.value}');
 
       QuerySnapshot snapshot = await _firestore
           .collection(FirestoreConstants.enrollments)
+          .where('hostel', isEqualTo: hostelId.value)
           .orderBy('timestamp', descending: true)
           .get();
 
@@ -43,12 +80,15 @@ class EnrollmentRequestController extends GetxController {
           'password': data['password'] ?? 'Unknown',
           'email': data['email'] ?? '',
           'hostel': data['hostel'] ?? '',
+          'phone': data['phone'] ?? '',
+          'room': data['room'] ?? '',
           'timestamp': data['timestamp'] ?? Timestamp.now(),
         });
       }
 
       enrollmentRequests.value = requests;
-      _logger.i('Fetched ${requests.length} enrollment requests');
+      _logger.i(
+          'Fetched ${requests.length} enrollment requests for hostel: ${hostelId.value}');
     } catch (e) {
       _logger.e('Error fetching enrollment requests', error: e);
       Get.snackbar(
@@ -99,18 +139,21 @@ class EnrollmentRequestController extends GetxController {
       String name = request['name']?.toString().toLowerCase() ?? '';
       String rollNumber = request['rollNumber']?.toString().toLowerCase() ?? '';
       String email = request['email']?.toString().toLowerCase() ?? '';
+      String room = request['room']?.toString().toLowerCase() ?? '';
       String query = searchQuery.value.toLowerCase();
 
       return name.contains(query) ||
           rollNumber.contains(query) ||
-          email.contains(query);
+          email.contains(query) ||
+          room.contains(query);
     }).toList();
   }
 
   Future<void> rejectRequest(String id, String name) async {
     try {
       isProcessing.value = true;
-      _logger.i('Rejecting enrollment request: $id ($name)');
+      _logger.i(
+          'Rejecting enrollment request: $id ($name) from hostel: ${hostelId.value}');
 
       await _firestore
           .collection(FirestoreConstants.enrollments)
@@ -149,29 +192,72 @@ class EnrollmentRequestController extends GetxController {
       String id = request['id'];
       String name = request['name'];
       String rollNumber = request['rollNumber'];
-      String password = request['password'];
+      String password =
+          request['password']; // This should be the actual password
       String email = request['email'] ?? '';
-      String hostel = request['hostel'] ?? '';
+      String hostel = request['hostel'] ?? hostelId.value;
+      String phone = request['phone'] ?? '';
+      String room = request['room'] ?? '';
 
-      _logger.i('Approving enrollment request: $id ($name, $rollNumber)');
+      _logger.i(
+          'Approving enrollment request: $id ($name, $rollNumber) for hostel: $hostel');
 
-      // Add student to the student collection
+      String userId = rollNumber;
+      _logger.i(
+          'Password from enrollment request: ${password.isEmpty ? "EMPTY" : "NOT EMPTY"}');
+
+      final existingUserDoc = await _firestore
+          .collection(FirestoreConstants.users)
+          .doc(userId)
+          .get();
+
+      await _firestore.collection(FirestoreConstants.users).doc(userId).set({
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'hostelId': hostel,
+        'rollNumber': rollNumber,
+        'role': FirestoreConstants.students,
+        'room': room,
+        'isActive': true,
+        'lastUpdated': FieldValue.serverTimestamp(),
+        'createdAt': existingUserDoc.exists
+            ? (existingUserDoc.data()?['createdAt'])
+            : FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
       await _firestore
           .collection(FirestoreConstants.loginCredentials)
-          .doc('roles')
-          .collection(FirestoreConstants.student)
+          .doc(userId)
+          .set({
+        'userId': userId,
+        'role': FirestoreConstants.students,
+        'password': password,
+        'lastUpdated': FieldValue.serverTimestamp(),
+        'createdAt': existingUserDoc.exists
+            ? (existingUserDoc.data()?['createdAt'])
+            : FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+
+      await _firestore
+          .collection(FirestoreConstants.hostels)
+          .doc(hostel)
+          .collection(FirestoreConstants.students)
           .doc(rollNumber)
           .set({
         'name': name,
         'email': email,
-        'hostel': hostel,
+        'phone': phone,
         'rollNumber': rollNumber,
-        'role': FirestoreConstants.student,
-        'password': password,
+        'room': room,
+        'userId': userId,
+        'isActive': true,
+        'hasPaid': false,
+        'dues': 0,
+        'lastUpdated': FieldValue.serverTimestamp(),
         'createdAt': FieldValue.serverTimestamp(),
-      });
+      }, SetOptions(merge: true));
 
-      // Remove from enrollment requests
       await _firestore
           .collection(FirestoreConstants.enrollments)
           .doc(id)
@@ -181,7 +267,7 @@ class EnrollmentRequestController extends GetxController {
 
       Get.snackbar(
         'Success',
-        'Student $name approved and added to the system',
+        'Student $name approved and added to hostel $hostel',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green.shade700,
         colorText: Colors.white,
@@ -200,6 +286,17 @@ class EnrollmentRequestController extends GetxController {
       );
     } finally {
       isProcessing.value = false;
+    }
+  }
+
+  Future<void> refreshRequests() async {
+    await fetchEnrollmentRequests();
+  }
+
+  void setHostelId(String id) {
+    if (id.isNotEmpty && id != hostelId.value) {
+      hostelId.value = id;
+      fetchEnrollmentRequests();
     }
   }
 }

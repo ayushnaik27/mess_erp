@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mess_erp/core/utils/logger.dart';
-import 'package:mess_erp/features/clerk/services/clerk_service.dart';
+import 'package:mess_erp/features/clerk/controllers/clerk_dashboard_controller.dart';
 
 class ClerkDialogController extends GetxController {
-  final ClerkService _clerkService = Get.find<ClerkService>();
+  final ClerkDashboardController _dashboardController =
+      Get.find<ClerkDashboardController>();
   final AppLogger _logger = AppLogger();
 
   final RxBool isLoading = false.obs;
 
-  Future<void> addStudent(String name, String rollNumber) async {
+  // Get the hostelId from the dashboard controller
+  String get hostelId => _dashboardController.hostelId.value;
+
+  Future<void> addStudent(
+      String name, String rollNumber, String email, String phoneNumber) async {
     try {
       isLoading.value = true;
-      final success = await _clerkService.addStudent(name, rollNumber);
+      final success = await _dashboardController.addStudent(
+          name, rollNumber, email, phoneNumber);
+
       if (success) {
         Get.snackbar(
           'Success',
@@ -44,10 +51,13 @@ class ClerkDialogController extends GetxController {
     }
   }
 
-  Future<void> addVendor(String name) async {
+  Future<void> addVendor(
+      String name, String contactNumber, String email) async {
     try {
       isLoading.value = true;
-      final success = await _clerkService.addVendor(name);
+      final success =
+          await _dashboardController.addVendor(name, contactNumber, email);
+
       if (success) {
         Get.snackbar(
           'Success',
@@ -79,10 +89,13 @@ class ClerkDialogController extends GetxController {
     }
   }
 
-  Future<void> imposeFine(String rollNumber, double amount) async {
+  Future<void> imposeFine(
+      String rollNumber, double amount, String reason) async {
     try {
       isLoading.value = true;
-      final success = await _clerkService.imposeStudentFine(rollNumber, amount);
+      final success =
+          await _dashboardController.imposeFine(rollNumber, amount, reason);
+
       if (success) {
         Get.snackbar(
           'Success',
@@ -114,10 +127,12 @@ class ClerkDialogController extends GetxController {
     }
   }
 
-  Future<void> addManager(String name, String email) async {
+  Future<void> addManager(String name, String email, String phoneNumber) async {
     try {
       isLoading.value = true;
-      final success = await _clerkService.addManager(name, email);
+      final success =
+          await _dashboardController.addManager(name, email, phoneNumber);
+
       if (success) {
         Get.snackbar(
           'Success',
@@ -149,10 +164,12 @@ class ClerkDialogController extends GetxController {
     }
   }
 
-  Future<void> addMuneem(String name, String email) async {
+  Future<void> addMuneem(String name, String email, String phoneNumber) async {
     try {
       isLoading.value = true;
-      final success = await _clerkService.addMuneem(name, email);
+      final success =
+          await _dashboardController.addMuneem(name, email, phoneNumber);
+
       if (success) {
         Get.snackbar(
           'Success',
@@ -184,10 +201,13 @@ class ClerkDialogController extends GetxController {
     }
   }
 
-  Future<void> addCommitteeMember(String name, String email) async {
+  Future<void> addCommitteeMember(
+      String name, String email, String phoneNumber) async {
     try {
       isLoading.value = true;
-      final success = await _clerkService.addCommitteeMember(name, email);
+      final success = await _dashboardController.addCommitteeMember(
+          name, email, phoneNumber);
+
       if (success) {
         Get.snackbar(
           'Success',

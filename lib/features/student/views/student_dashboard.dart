@@ -879,7 +879,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       await FirebaseFirestore.instance
           .collection(FirestoreConstants.loginCredentials)
           .doc(FirestoreConstants.roles)
-          .collection(FirestoreConstants.student)
+          .collection(FirestoreConstants.students)
           .doc(rollNumber)
           .update({
         FirestoreConstants.password: hashedPassword,

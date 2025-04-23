@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "606131232960",
+    "project_id": "nitjmess-6f37f",
+    "storage_bucket": "nitjmess-6f37f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606131232960:android:f76f6fb1ef1c5862e58d25",
+        "android_client_info": {
+          "package_name": "com.example.mess_erp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDTkDmY0b55MuK0QXmzRyK-9anTCdzDsPk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

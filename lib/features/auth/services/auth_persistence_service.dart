@@ -44,9 +44,17 @@ class AuthPersistenceService {
     return _prefsService!.isLoggedIn();
   }
 
-  User? getCurrentUser() {
-    if (!_isInitialized || _hiveService == null) return null;
-    return _hiveService!.getUser();
+  // Changed to async
+  Future<User?> getCurrentUser() async {
+    if (!_isInitialized) await init();
+    if (_hiveService == null) return null;
+
+    try {
+      return await _hiveService!.getUser();
+    } catch (e) {
+      _logger.e('Error getting current user', error: e);
+      return null;
+    }
   }
 
   String? getUserRole() {
@@ -89,7 +97,6 @@ class AuthPersistenceService {
 
     try {
       await _hiveService!.deleteUser();
-
       await _prefsService!.clearAuthData();
 
       _logger.i('User data cleared on logout');
@@ -113,23 +120,19 @@ class AuthPersistenceService {
         return null;
       }
 
-      final collection = userRole == 'student'
-          ? FirestoreConstants.student
-          : userRole.toLowerCase();
-
-      final doc = await _firestore
-          .collection(FirestoreConstants.loginCredentials)
-          .doc(FirestoreConstants.roles)
-          .collection(collection)
+      // Query Firestore for the latest user data
+      // (Update this to use the new data structure)
+      final userDoc = await _firestore
+          .collection(FirestoreConstants.users)
           .doc(userId)
           .get();
 
-      if (!doc.exists) {
+      if (!userDoc.exists) {
         _logger.w('User document not found in Firestore');
         return null;
       }
 
-      final user = User.fromFirestore(doc.data()!, userId);
+      final user = User.fromFirestore(userDoc.data()!, userId);
       await persistUserLogin(user);
 
       return user;

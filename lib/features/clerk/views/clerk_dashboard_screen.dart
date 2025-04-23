@@ -5,6 +5,7 @@ import 'package:mess_erp/core/constants/app_strings.dart';
 import 'package:mess_erp/core/extensions/size_extension.dart';
 import 'package:mess_erp/core/theme/app_colors.dart';
 import 'package:mess_erp/features/clerk/controllers/clerk_dashboard_controller.dart';
+import 'package:mess_erp/features/clerk/controllers/clerk_sheet_controller.dart';
 import 'package:mess_erp/features/clerk/views/sheets/add_committee_dialog.dart';
 import 'package:mess_erp/features/clerk/views/sheets/add_manager_dialog.dart';
 import 'package:mess_erp/features/clerk/views/sheets/add_muneem_dialog.dart';
@@ -16,8 +17,16 @@ import 'package:mess_erp/features/clerk/views/sheets/impose_fine_dialog.dart';
 class ClerkDashboardScreen extends GetView<ClerkDashboardController> {
   const ClerkDashboardScreen({Key? key}) : super(key: key);
 
+  void _initializeSheetControllers() {
+    if (!Get.isRegistered<ClerkDialogController>()) {
+      Get.put(ClerkDialogController(), permanent: true);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    _initializeSheetControllers();
+
     return Scaffold(
       backgroundColor: AppColors.background,
       drawer: _buildDrawer(context),
@@ -167,6 +176,15 @@ class ClerkDashboardScreen extends GetView<ClerkDashboardController> {
                         .animate()
                         .fadeIn(duration: 600.ms)
                         .slideX(begin: -0.1, end: 0),
+                    SizedBox(height: 4.h),
+                    Text(
+                      'Hostel: ${controller.hostelId.value}',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ).animate().fadeIn(duration: 700.ms),
                   ],
                 ),
               ),

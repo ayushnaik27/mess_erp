@@ -17,7 +17,9 @@ class DependencyInjection {
     await SharedPrefsService.getInstance();
     logger.i('SharedPrefs service initialized');
 
-    await AuthPersistenceService.getInstance();
-    logger.i('Auth persistence service initialized');
+    Get.putAsync<AuthPersistenceService>(
+      () => AuthPersistenceService.getInstance(),
+      permanent: true,
+    );
   }
 }

@@ -17,31 +17,40 @@ class User extends HiveObject {
   final String role;
 
   @HiveField(4)
-  final String? hostel;
+  final String hostelId;
 
   @HiveField(5)
-  final String rollNumber;
+  final String? rollNumber;
 
   @HiveField(6)
   final String? phoneNumber;
 
   @HiveField(7)
-  final Map<String, dynamic>? additionalInfo;
+  final bool isActive;
 
   @HiveField(8)
+  final Map<String, dynamic>? additionalInfo;
+
+  @HiveField(9)
   final DateTime lastUpdated;
+
+  @HiveField(10)
+  final DateTime createdAt;
 
   User({
     required this.id,
     required this.name,
     required this.email,
     required this.role,
-    required this.hostel,
-    required this.rollNumber,
+    required this.hostelId,
+    this.rollNumber,
     this.phoneNumber,
+    this.isActive = true,
     this.additionalInfo,
     DateTime? lastUpdated,
-  }) : lastUpdated = lastUpdated ?? DateTime.now();
+    DateTime? createdAt,
+  })  : lastUpdated = lastUpdated ?? DateTime.now(),
+        createdAt = createdAt ?? DateTime.now();
 
   factory User.fromFirestore(Map<String, dynamic> data, String id) {
     return User(
@@ -49,10 +58,17 @@ class User extends HiveObject {
       name: data['name'] ?? '',
       email: data['email'] ?? '',
       role: data['role'] ?? 'student',
-      hostel: data['hostel'] ?? '',
-      rollNumber: data['rollNumber'] ?? id,
+      hostelId: data['hostelId'],
+      rollNumber: data['rollNumber'],
       phoneNumber: data['phoneNumber'],
+      isActive: data['isActive'] ?? true,
       additionalInfo: data['additionalInfo'],
+      lastUpdated: data['lastUpdated'] != null
+          ? (data['lastUpdated'] as dynamic).toDate()
+          : DateTime.now(),
+      createdAt: data['createdAt'] != null
+          ? (data['createdAt'] as dynamic).toDate()
+          : DateTime.now(),
     );
   }
 
@@ -61,11 +77,13 @@ class User extends HiveObject {
       'name': name,
       'email': email,
       'role': role,
-      'hostel': hostel,
+      'hostelId': hostelId,
       'rollNumber': rollNumber,
       'phoneNumber': phoneNumber,
+      'isActive': isActive,
       'additionalInfo': additionalInfo,
       'lastUpdated': DateTime.now(),
+      'createdAt': createdAt,
     };
   }
 
@@ -73,8 +91,9 @@ class User extends HiveObject {
     String? name,
     String? email,
     String? role,
-    String? hostel,
+    String? hostelId,
     String? phoneNumber,
+    bool? isActive,
     Map<String, dynamic>? additionalInfo,
   }) {
     return User(
@@ -82,11 +101,33 @@ class User extends HiveObject {
       name: name ?? this.name,
       email: email ?? this.email,
       role: role ?? this.role,
-      hostel: hostel ?? this.hostel,
+      hostelId: hostelId ?? this.hostelId,
       rollNumber: this.rollNumber,
       phoneNumber: phoneNumber ?? this.phoneNumber,
+      isActive: isActive ?? this.isActive,
       additionalInfo: additionalInfo ?? this.additionalInfo,
+      createdAt: this.createdAt,
       lastUpdated: DateTime.now(),
     );
+  }
+
+  bool canAccessHostel(String hostelId) {
+    return this.hostelId == hostelId;
+  }
+
+  bool get isAdmin {
+    return role != 'student';
+  }
+
+  bool get isStaff {
+    return role == 'clerk' ||
+        role == 'manager' ||
+        role == 'muneem' ||
+        role == 'committee' ||
+        role == 'warden';
+  }
+
+  bool get isSuperAdmin {
+    return role == 'super_admin';
   }
 }

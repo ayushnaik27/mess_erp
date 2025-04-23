@@ -10,6 +10,7 @@ class Tender {
   final DateTime deadline;
   final DateTime openingDate;
   final String fileUrl;
+  final String hostelId;
   final List<Bid> bids;
   final DateTime? createdAt;
   final String? status;
@@ -18,6 +19,7 @@ class Tender {
     required this.tenderId,
     required this.title,
     required this.tenderItems,
+    required this.hostelId,
     required this.deadline,
     required this.openingDate,
     required this.fileUrl,
@@ -37,11 +39,13 @@ class Tender {
       'bids': bids.map((bid) => bid.toMap()).toList(),
       'createdAt': createdAt ?? FieldValue.serverTimestamp(),
       'status': status ?? 'active',
+      'hostelId': hostelId,
     };
   }
 
   factory Tender.fromMap(Map<String, dynamic> map) {
     return Tender(
+      hostelId: map['hostelId'],
       tenderId: map['tenderId'] ?? '',
       title: map['title'] ?? '',
       tenderItems: List<TenderItem>.from(
@@ -73,8 +77,10 @@ class Tender {
     List<Bid>? bids,
     DateTime? createdAt,
     String? status,
+    String? hostelId,
   }) {
     return Tender(
+      hostelId: hostelId ?? this.hostelId,
       tenderId: tenderId ?? this.tenderId,
       title: title ?? this.title,
       tenderItems: tenderItems ?? this.tenderItems,

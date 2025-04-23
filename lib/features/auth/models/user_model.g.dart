@@ -21,18 +21,20 @@ class UserAdapter extends TypeAdapter<User> {
       name: fields[1] as String,
       email: fields[2] as String,
       role: fields[3] as String,
-      hostel: fields[4] as String,
-      rollNumber: fields[5] as String,
+      hostelId: fields[4] as String,
+      rollNumber: fields[5] as String?,
       phoneNumber: fields[6] as String?,
-      additionalInfo: (fields[7] as Map?)?.cast<String, dynamic>(),
-      lastUpdated: fields[8] as DateTime?,
+      isActive: fields[7] as bool,
+      additionalInfo: (fields[8] as Map?)?.cast<String, dynamic>(),
+      lastUpdated: fields[9] as DateTime?,
+      createdAt: fields[10] as DateTime?,
     );
   }
 
   @override
   void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(9)
+      ..writeByte(11)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -42,15 +44,19 @@ class UserAdapter extends TypeAdapter<User> {
       ..writeByte(3)
       ..write(obj.role)
       ..writeByte(4)
-      ..write(obj.hostel)
+      ..write(obj.hostelId)
       ..writeByte(5)
       ..write(obj.rollNumber)
       ..writeByte(6)
       ..write(obj.phoneNumber)
       ..writeByte(7)
-      ..write(obj.additionalInfo)
+      ..write(obj.isActive)
       ..writeByte(8)
-      ..write(obj.lastUpdated);
+      ..write(obj.additionalInfo)
+      ..writeByte(9)
+      ..write(obj.lastUpdated)
+      ..writeByte(10)
+      ..write(obj.createdAt);
   }
 
   @override

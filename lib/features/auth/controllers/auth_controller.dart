@@ -17,6 +17,7 @@ class AuthController extends GetxController {
   final RxString _selectedRole = AppStrings.selectRole.obs;
   final RxString _selectedHostel = RxString('');
   final RxBool _isInitialized = false.obs;
+  final Rx<User?> _currentUser = Rx<User?>(null);
 
   bool get isLoading => _isLoading.value;
   String? get errorMessage =>
@@ -26,6 +27,8 @@ class AuthController extends GetxController {
   String get selectedHostel => _selectedHostel.value;
   List<String> get hostels => HostelConstants.allHostels;
   bool get isInitialized => _isInitialized.value;
+  User? get currentUser => _currentUser.value;
+  String get activeHostel => _currentUser.value?.hostelId ?? '';
 
   @override
   void onInit() {
@@ -42,6 +45,7 @@ class AuthController extends GetxController {
       if (isLoggedIn) {
         final user = await _authService.getCurrentUser();
         if (user != null) {
+          _currentUser.value = user;
           _navigateBasedOnRole(user.role, user.id);
         }
       }
@@ -77,6 +81,11 @@ class AuthController extends GetxController {
       return false;
     }
 
+    if (_isAdmin.value && _selectedHostel.value.isEmpty) {
+      _errorMessage.value = 'Please select a hostel';
+      return false;
+    }
+
     if (password.isEmpty) {
       _errorMessage.value = AppStrings.enterPasswordError;
       return false;
@@ -95,6 +104,7 @@ class AuthController extends GetxController {
       if (_isAdmin.value) {
         result = await _authService.adminLogin(
           role: _selectedRole.value,
+          hostelId: _selectedHostel.value,
           password: password,
         );
       } else {
@@ -108,6 +118,7 @@ class AuthController extends GetxController {
 
       if (result['success']) {
         final user = result['data']['user'] as User;
+        _currentUser.value = user;
         _navigateBasedOnRole(user.role, user.id);
         return true;
       } else {
@@ -205,6 +216,7 @@ class AuthController extends GetxController {
       _isLoading.value = false;
 
       if (success) {
+        _currentUser.value = null;
         Get.offAllNamed(AppRoutes.login);
       }
 
@@ -221,32 +233,38 @@ class AuthController extends GetxController {
       case 'student':
         Get.offAllNamed(
           AppRoutes.studentDashboard,
-          arguments: {'rollNumber': userId},
+          arguments: {'rollNumber': userId, 'hostelId': activeHostel},
         );
         break;
       case 'clerk':
         Get.offAllNamed(
           AppRoutes.clerkDashboard,
-          arguments: {'username': userId},
+          arguments: {'username': userId, 'hostelId': activeHostel},
         );
         break;
       case 'manager':
         Get.offAllNamed(
           AppRoutes.managerDashboard,
-          arguments: {'username': userId},
+          arguments: {'username': userId, 'hostelId': activeHostel},
         );
         break;
       case 'muneem':
         Get.offAllNamed(
           AppRoutes.muneemDashboard,
-          arguments: {'username': userId},
+          arguments: {'username': userId, 'hostelId': activeHostel},
         );
         break;
       case 'committee':
         Get.offAllNamed(
           AppRoutes.committeeDashboard,
-          arguments: {'username': userId},
+          arguments: {'username': userId, 'hostelId': activeHostel},
         );
+        break;
+      case 'warden':
+        // Get.offAllNamed(
+        //   AppRoutes.wardenDashboard,
+        //   arguments: {'username': userId, 'hostelId': activeHostel},
+        // );
         break;
       default:
         _logger.w('Unknown role: $role');

@@ -167,7 +167,7 @@ class ExtraItemsService {
       CollectionReference studentsBillCollection = _firestore
           .collection(FirestoreConstants.loginCredentials)
           .doc(FirestoreConstants.roles)
-          .collection(FirestoreConstants.student)
+          .collection(FirestoreConstants.students)
           .doc(rollNumber)
           .collection(FirestoreConstants.bills);
 
