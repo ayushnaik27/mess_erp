@@ -19,6 +19,8 @@ import 'package:mess_erp/features/manager/bindings/manager_dashboard_binding.dar
 import 'package:mess_erp/features/manager/presentation/add_items_screen.dart';
 import 'package:mess_erp/features/manager/presentation/generate_voucher_screen.dart';
 import 'package:mess_erp/features/manager/presentation/issue_stock_screen.dart';
+import 'package:mess_erp/features/muneem/bindings/muneem_dashboard_binding.dart';
+import 'package:mess_erp/features/muneem/presentation/muneen_dashboard.dart';
 import 'package:mess_erp/features/student/bindings/extra_items_binding.dart';
 import 'package:mess_erp/features/student/bindings/student_dashboard_binding.dart';
 import 'package:mess_erp/features/student/views/request_extra_items_screen.dart';
@@ -203,6 +205,14 @@ class AppRouter {
       },
       // binding: AssignedGrievancesBinding(),
       transition: Transition.rightToLeft,
+    ),
+
+    // Muneem Dashboard
+    GetPage(
+      name: AppRoutes.muneemDashboard,
+      page: () => const MuneemDashboardScreen(),
+      binding: MuneemDashboardBinding(),
+      transition: Transition.fadeIn,
     ),
   ];
 

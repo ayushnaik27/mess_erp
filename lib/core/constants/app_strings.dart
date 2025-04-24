@@ -183,4 +183,53 @@ class AppStrings {
   static const String billGenerationWarning =
       'This will generate bills for all students based on the rounded per diet cost. Previous bills and leave details will be deleted.';
   static const String generatingBills = 'Generating Bills...';
+
+  // Muneem Dashboard
+  static const String muneemDashboard = 'Muneem Dashboard';
+  static const String messOverview = 'Mess Overview';
+  static const String studentsPresent = 'Present';
+  static const String onLeave = 'On Leave';
+  static const String extraItems = 'Extra Items';
+  static const String todaysAttendance = 'Today\'s Attendance';
+  static const String weeklyAttendanceTrend = 'Weekly Attendance Trend';
+  static const String todaysMeals = 'Today\'s Meals';
+  static const String menu = 'Menu';
+  static const String breakfastTime = '7:00 AM - 9:30 AM';
+  static const String lunchTime = '12:00 PM - 2:30 PM';
+  static const String dinnerTime = '7:30 PM - 9:30 PM';
+  static const String activeNow = 'Active Now';
+  static const String comingSoon = 'Coming Soon';
+  static const String completed = 'Completed';
+  static const String studentsOnLeave = 'Students on Leave';
+  static const String noStudentsOnLeave = 'No students on leave';
+  static const String recentActivities = 'Recent Activities';
+  static const String noRecentActivities = 'No recent activities';
+  static const String noMealsAvailable = 'No meals available for today';
+
+  // Bottom Navigation
+  static const String meals = 'Meals';
+  static const String students = 'Students';
+
+  // Extra Item Dialog
+  static const String imposeExtraAmount = 'Impose Extra Amount';
+  static const String studentInformation = 'Student Information';
+  static const String rollNumberHint = 'e.g. 19BCE101';
+  static const String pleaseEnterRollNumber = 'Please enter roll number';
+  static const String itemDetails = 'Item Details';
+  static const String itemName = 'Item Name';
+  static const String itemNameHint = 'e.g. Samosa, Cold Drink';
+  static const String pleaseEnterItemName = 'Please enter item name';
+  static const String amountHint = 'e.g. 50';
+  static const String pleaseEnterAmount = 'Please enter amount';
+  static const String pleaseEnterValidAmount = 'Please enter a valid amount';
+  static const String amountMustBeGreaterThanZero =
+      'Amount must be greater than zero';
+
+  // Password Dialog
+  static const String passwordStrengthRequirement =
+      'Enter a strong password with at least 8 characters';
+  static const String pleaseEnterPassword = 'Please enter a password';
+  static const String passwordLengthError =
+      'Password must be at least 8 characters';
+  static const String updatePassword = 'Update Password';
 }

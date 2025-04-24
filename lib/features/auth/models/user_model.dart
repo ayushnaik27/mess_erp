@@ -130,4 +130,14 @@ class User extends HiveObject {
   bool get isSuperAdmin {
     return role == 'super_admin';
   }
+
+  static User empty() {
+    return User(
+      id: '',
+      name: '',
+      email: '',
+      role: '',
+      hostelId: '',
+    );
+  }
 }
