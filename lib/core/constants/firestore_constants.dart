@@ -11,9 +11,18 @@ class FirestoreConstants {
   static const String tenders = 'tenders';
   static const String extraItems = 'extraItems';
   static const String hostels = 'hostels';
+  static const String vendors = 'vendors';
 
   // Documents
   static const String roles = 'roles';
+
+  static const String stockCategories = 'stock_categories';
+  static const String transactions = 'transactions';
+  static const String budgets = 'budgets';
+
+  // Storage paths
+  static const String storageTenders = 'tenders';
+  static const String storageProfiles = 'profiles';
 
   // Subcollections
   static const String students = 'students';
@@ -48,6 +57,8 @@ class FirestoreConstants {
 
   static const String extraItemRequests = 'extraItemRequests';
   static const String extraItemAmount = 'extraItemsAmount';
+
+  static const String stockItems = 'stock_items';
 
   static const Map<String, String> adminUsernames = {
     clerk: 'admin',
@@ -161,4 +172,7 @@ class FirestoreConstants {
     }
     return ''; // Empty string if no password found
   }
+
+  // Add these new constants
+  static const String stockTransactions = 'stock_transactions';
 }

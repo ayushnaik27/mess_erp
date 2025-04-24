@@ -10,7 +10,7 @@ import 'package:mess_erp/core/utils/logger.dart';
 import 'package:mess_erp/features/auth/bindings/auth_bindings.dart';
 import 'package:mess_erp/features/auth/views/login_screen.dart';
 import 'package:mess_erp/firebase_options.dart';
-import 'package:mess_erp/providers/bills_of_purchase_provider.dart';
+// import 'package:mess_erp/providers/bills_of_purchase_provider.dart';
 import 'package:mess_erp/providers/extra_item_provider.dart';
 import 'package:mess_erp/providers/itemListProvider.dart';
 import 'package:mess_erp/providers/stock_provider.dart';
@@ -51,7 +51,7 @@ class _MyAppState extends State<MyApp> {
       providers: [
         ChangeNotifierProvider(create: (_) => ExtraItemsProvider()),
         ChangeNotifierProvider(create: (_) => VendorNameProvider()),
-        ChangeNotifierProvider(create: (_) => BillsOfPurchaseProvider()),
+        // ChangeNotifierProvider(create: (_) => BillsOfPurchaseProvider()),
         ChangeNotifierProvider(create: (_) => StockProvider()),
         ChangeNotifierProvider(create: (_) => PaymentVoucherProvider()),
         ChangeNotifierProvider(create: (_) => UserProvider()),

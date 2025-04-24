@@ -1,187 +1,116 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:get/get.dart';
 import 'package:mess_erp/committee/assigned_grievances_screen.dart';
 import 'package:mess_erp/core/extensions/size_extension.dart';
+import 'package:mess_erp/core/router/app_router.dart';
 import 'package:mess_erp/core/theme/app_colors.dart';
-import 'package:mess_erp/core/utils/logger.dart';
 import 'package:mess_erp/core/utils/screen_utils.dart';
-import 'package:mess_erp/manager/track_bills_screen.dart';
+import 'package:mess_erp/features/manager/controllers/manager_dashboard_controller.dart';
+import 'package:mess_erp/muneem/netx_three_meals_screen.dart';
 import 'package:mess_erp/widgets/change_password_dialog.dart';
-import 'package:provider/provider.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:intl/intl.dart';
 
-import '../muneem/netx_three_meals_screen.dart';
-import '../providers/hash_helper.dart';
-import '../providers/user_provider.dart';
-
-class ManagerDashboardScreen extends StatefulWidget {
+class ManagerDashboardScreen extends GetView<ManagerDashboardController> {
   static const routeName = '/managerDashboard';
 
   const ManagerDashboardScreen({super.key});
 
   @override
-  State<ManagerDashboardScreen> createState() => _ManagerDashboardScreenState();
-}
-
-class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
-  bool _isLoading = true;
-  int _totalGrievances = 0;
-  int _pendingVouchers = 0;
-  int _stockItems = 0;
-  double _stockValue = 0;
-
-  // Mock data for demonstration - replace with real data from Firestore
-  final List<Map<String, dynamic>> _recentTransactions = [
-    {
-      'title': 'Rice purchase',
-      'date': DateTime.now().subtract(Duration(days: 1)),
-      'amount': 12500.0,
-      'type': 'expense'
-    },
-    {
-      'title': 'Vegetables delivery',
-      'date': DateTime.now().subtract(Duration(days: 2)),
-      'amount': 3800.0,
-      'type': 'expense'
-    },
-    {
-      'title': 'Bill payments received',
-      'date': DateTime.now().subtract(Duration(days: 3)),
-      'amount': 25000.0,
-      'type': 'income'
-    },
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    _loadDashboardData();
-  }
-
-  Future<void> _loadDashboardData() async {
-    setState(() => _isLoading = true);
-    try {
-      final grievancesSnapshot = await FirebaseFirestore.instance
-          .collection('grievances')
-          .where('assignedTo', isEqualTo: 'manager')
-          .get();
-
-      final vouchersSnapshot = await FirebaseFirestore.instance
-          .collection('vouchers')
-          .where('status', isEqualTo: 'pending')
-          .get();
-
-      final stockSnapshot =
-          await FirebaseFirestore.instance.collection('stock').get();
-
-      double totalStockValue = 0;
-      for (var doc in stockSnapshot.docs) {
-        if (doc.data().containsKey('balance') && doc['balance'] != null) {
-          totalStockValue += double.parse(doc['balance'].toString());
-        }
-      }
-
-      setState(() {
-        _totalGrievances = grievancesSnapshot.docs.length;
-        _pendingVouchers = vouchersSnapshot.docs.length;
-        _stockItems = stockSnapshot.docs.length;
-        _stockValue = totalStockValue;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() => _isLoading = false);
-      AppLogger().e('Failed to load dashboard data: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to load dashboard data. Please try again.'),
-          duration: Duration(seconds: 3),
-        ),
-      );
-    }
-  }
-
-  void changePassword(String newPassword) async {
-    String hashedPassword = HashHelper.encode(newPassword);
-    await FirebaseFirestore.instance
-        .collection('loginCredentials')
-        .doc('roles')
-        .collection('manager')
-        .doc('manager@gmail.com')
-        .update({
-      'password': hashedPassword,
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Password changed successfully!')),
-    );
-  }
-
-  String capitalize(String s) =>
-      s.isEmpty ? '' : s[0].toUpperCase() + s.substring(1);
-
-  @override
   Widget build(BuildContext context) {
     ScreenUtil.instance.init(context);
-    MyUser user = Provider.of<UserProvider>(context, listen: false).user;
 
     return Scaffold(
       backgroundColor: Color(0xFFFAFAFA),
-      appBar: _buildAppBar(user),
-      body: _isLoading ? _buildLoadingState() : _buildDashboard(),
+      appBar: _buildAppBar(),
+      body: Obx(() => controller.isLoading.value
+          ? _buildLoadingState()
+          : _buildDashboard()),
       bottomNavigationBar: _buildBottomNav(),
     );
   }
 
-  PreferredSizeWidget _buildAppBar(MyUser user) {
+  PreferredSizeWidget _buildAppBar() {
     return AppBar(
       elevation: 0,
       backgroundColor: Colors.white,
       centerTitle: false,
-      title: Row(
-        children: [
-          CircleAvatar(
-            backgroundColor: AppColors.primary.withOpacity(0.2),
-            radius: 20.r,
-            child: Text(
-              user.name.isNotEmpty ? user.name[0].toUpperCase() : 'M',
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
-                color: AppColors.primary,
-              ),
-            ),
-          ),
-          SizedBox(width: 12.w),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text(
-                'Welcome back,',
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  color: Colors.grey.shade600,
-                  fontWeight: FontWeight.normal,
-                ),
-              ),
-              Text(
-                capitalize(user.name.isNotEmpty ? user.name : 'Manager'),
+      title: Obx(() {
+        final user = controller.currentUser.value;
+        return Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: AppColors.primary.withOpacity(0.2),
+              radius: 20.r,
+              child: Text(
+                user?.name.isNotEmpty == true
+                    ? user!.name[0].toUpperCase()
+                    : 'M',
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+                  color: AppColors.primary,
                 ),
               ),
-            ],
-          ),
-        ],
+            ),
+            SizedBox(width: 12.w),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Welcome back,',
+                  style: TextStyle(
+                    fontSize: 12.sp,
+                    color: Colors.grey.shade600,
+                    fontWeight: FontWeight.normal,
+                  ),
+                ),
+                Text(
+                  controller.capitalize(user?.name ?? 'Manager'),
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        );
+      }),
+      bottom: PreferredSize(
+        preferredSize: Size.fromHeight(24.h),
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 4.h),
+          alignment: Alignment.centerLeft,
+          child: Obx(() => Row(
+                children: [
+                  Icon(
+                    Icons.location_on_outlined,
+                    size: 14.sp,
+                    color: AppColors.primary,
+                  ),
+                  SizedBox(width: 4.w),
+                  Text(
+                    controller.hostelName.value.isNotEmpty
+                        ? controller.hostelName.value
+                        : 'Hostel ${controller.hostelId.value}',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ],
+              )),
+        ),
       ),
       actions: [
         IconButton(
           icon: Icon(Icons.refresh_outlined, color: Colors.black87),
-          onPressed: _loadDashboardData,
+          onPressed: controller.loadDashboardData,
         ),
         IconButton(
           icon: Icon(Icons.notifications_outlined, color: Colors.black87),
@@ -198,7 +127,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                   showAdaptiveDialog(
                     context: context,
                     builder: (context) => ChangePasswordDialog(
-                      changePassword: changePassword,
+                      changePassword: controller.changePassword,
                     ),
                   );
                 });
@@ -207,7 +136,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
             PopupMenuItem(
               child: Text('Logout'),
               onTap: () {
-                Navigator.of(context).pop();
+                Get.offAllNamed('/login');
               },
             ),
           ],
@@ -245,7 +174,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
 
   Widget _buildDashboard() {
     return RefreshIndicator(
-      onRefresh: _loadDashboardData,
+      onRefresh: () => controller.loadDashboardData(),
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
@@ -323,18 +252,18 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                 ],
               ),
               SizedBox(height: 10.h),
-              Text(
-                '₹${NumberFormat('#,##,###').format(_stockValue)}',
-                style: TextStyle(
-                  fontSize: 32.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                  letterSpacing: -1,
-                ),
-              ),
+              Obx(() => Text(
+                    '₹${NumberFormat('#,##,###').format(controller.stockValue.value)}',
+                    style: TextStyle(
+                      fontSize: 32.sp,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
+                      letterSpacing: -1,
+                    ),
+                  )),
               SizedBox(height: 20.h),
               OutlinedButton(
-                onPressed: () => Navigator.of(context).pushNamed('/issueStock'),
+                onPressed: () => Get.toNamed('/issueStock'),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.primary,
                   side: BorderSide(color: AppColors.primary),
@@ -366,39 +295,36 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
         // Metrics Cards Row
         Row(
           children: [
-            _buildMetricCard(
-              title: 'Grievances',
-              value: _totalGrievances.toString(),
-              icon: Icons.report_problem_outlined,
-              color: Colors.orange.shade700,
-              onTap: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const AssignedGrievancesScreen(
-                            userType: 'manager')));
-              },
-            ),
+            Obx(() => _buildMetricCard(
+                  title: 'Grievances',
+                  value: controller.totalGrievances.value.toString(),
+                  icon: Icons.report_problem_outlined,
+                  color: Colors.orange.shade700,
+                  onTap: () {
+                    Get.to(() =>
+                        const AssignedGrievancesScreen(userType: 'manager'));
+                  },
+                )),
             SizedBox(width: 12.w),
-            _buildMetricCard(
-              title: 'Vouchers',
-              value: _pendingVouchers.toString(),
-              icon: Icons.receipt_long_outlined,
-              color: Colors.purple.shade700,
-              onTap: () {
-                Navigator.of(context).pushNamed('/previousVouchers');
-              },
-            ),
+            Obx(() => _buildMetricCard(
+                  title: 'Vouchers',
+                  value: controller.pendingVouchers.value.toString(),
+                  icon: Icons.receipt_long_outlined,
+                  color: Colors.purple.shade700,
+                  onTap: () {
+                    Get.toNamed('/previousVouchers');
+                  },
+                )),
             SizedBox(width: 12.w),
-            _buildMetricCard(
-              title: 'Stock Items',
-              value: _stockItems.toString(),
-              icon: Icons.inventory_2_outlined,
-              color: AppColors.primary,
-              onTap: () {
-                Navigator.of(context).pushNamed('/issueStock');
-              },
-            ),
+            Obx(() => _buildMetricCard(
+                  title: 'Stock Items',
+                  value: controller.stockItems.value.toString(),
+                  icon: Icons.inventory_2_outlined,
+                  color: AppColors.primary,
+                  onTap: () {
+                    Get.toNamed('/issueStock');
+                  },
+                )),
           ],
         ),
       ],
@@ -500,24 +426,24 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
       children: [
         StaggeredGridTile.count(
           crossAxisCellCount: 2,
-          mainAxisCellCount: 2.2, // Increased height
+          mainAxisCellCount: 2.2,
           child: _buildActionTile(
             title: 'Generate Voucher',
             subtitle: 'Create payment vouchers',
             icon: Icons.receipt_outlined,
             color: AppColors.primary,
-            onTap: () => Navigator.of(context).pushNamed('/generateVoucher'),
+            onTap: () => Get.toNamed(AppRoutes.generateVoucher),
           ),
         ),
         StaggeredGridTile.count(
           crossAxisCellCount: 2,
-          mainAxisCellCount: 2.2, // Increased height
+          mainAxisCellCount: 2.2,
           child: _buildActionTile(
             title: 'Receive Stock',
             subtitle: 'Add new stock items',
             icon: Icons.add_box_outlined,
             color: Colors.teal,
-            onTap: () => Navigator.of(context).pushNamed('/receiveStock'),
+            onTap: () => Get.toNamed('/receiveStock'),
           ),
         ),
         // Apply the same height increase to all remaining tiles
@@ -529,7 +455,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
             subtitle: 'Release inventory items',
             icon: Icons.outbox_outlined,
             color: Colors.orange,
-            onTap: () => Navigator.of(context).pushNamed('/issueStock'),
+            onTap: () => Get.toNamed(AppRoutes.issueStock),
           ),
         ),
         StaggeredGridTile.count(
@@ -540,8 +466,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
             subtitle: 'Monitor student bills',
             icon: Icons.receipt_long_outlined,
             color: Colors.purple,
-            onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => TrackBillsScreen())),
+            onTap: () => {},
+            // onTap: () => Get.to(() => TrackBillsScreen()),
           ),
         ),
         StaggeredGridTile.count(
@@ -552,8 +478,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
             subtitle: 'View upcoming meals',
             icon: Icons.restaurant_menu_outlined,
             color: Colors.indigo,
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) => NextThreeMealsScreen())),
+            onTap: () => Get.to(() => NextThreeMealsScreen()),
           ),
         ),
         StaggeredGridTile.count(
@@ -564,11 +489,8 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
             subtitle: 'Manage student grievances',
             icon: Icons.support_agent_outlined,
             color: Colors.red.shade700,
-            onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) =>
-                        const AssignedGrievancesScreen(userType: 'manager'))),
+            onTap: () => Get.to(
+                () => const AssignedGrievancesScreen(userType: 'manager')),
           ),
         ),
       ],
@@ -650,171 +572,176 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
           ),
         ],
       ),
-      child: ListView.separated(
-        shrinkWrap: true,
-        physics: NeverScrollableScrollPhysics(),
-        itemCount: _recentTransactions.length,
-        separatorBuilder: (context, index) => Divider(height: 1),
-        itemBuilder: (context, index) {
-          final transaction = _recentTransactions[index];
-          final isExpense = transaction['type'] == 'expense';
+      child: Obx(() => ListView.separated(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            itemCount: controller.recentTransactions.length,
+            separatorBuilder: (context, index) => Divider(height: 1),
+            itemBuilder: (context, index) {
+              final transaction = controller.recentTransactions[index];
+              final isExpense = transaction['type'] == 'expense';
 
-          return ListTile(
-            contentPadding:
-                EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-            leading: Container(
-              padding: EdgeInsets.all(8.w),
-              decoration: BoxDecoration(
-                color: isExpense
-                    ? Colors.red.withOpacity(0.1)
-                    : Colors.green.withOpacity(0.1),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                isExpense ? Icons.arrow_upward : Icons.arrow_downward,
-                color: isExpense ? Colors.red : Colors.green,
-                size: 20.sp,
-              ),
-            ),
-            title: Text(
-              transaction['title'],
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            subtitle: Text(
-              DateFormat('MMM dd, yyyy').format(transaction['date']),
-              style: TextStyle(
-                fontSize: 14.sp,
-                color: Colors.grey.shade600,
-              ),
-            ),
-            trailing: Text(
-              '${isExpense ? '-' : '+'}₹${NumberFormat('#,##,###').format(transaction['amount'])}',
-              style: TextStyle(
-                fontSize: 16.sp,
-                fontWeight: FontWeight.bold,
-                color: isExpense ? Colors.red : Colors.green,
-              ),
-            ),
-          );
-        },
-      ),
+              return ListTile(
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+                leading: Container(
+                  padding: EdgeInsets.all(8.w),
+                  decoration: BoxDecoration(
+                    color: isExpense
+                        ? Colors.red.withOpacity(0.1)
+                        : Colors.green.withOpacity(0.1),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isExpense ? Icons.arrow_upward : Icons.arrow_downward,
+                    color: isExpense ? Colors.red : Colors.green,
+                    size: 20.sp,
+                  ),
+                ),
+                title: Text(
+                  transaction['title'],
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                subtitle: Text(
+                  DateFormat('MMM dd, yyyy').format(transaction['date']),
+                  style: TextStyle(
+                    fontSize: 14.sp,
+                    color: Colors.grey.shade600,
+                  ),
+                ),
+                trailing: Text(
+                  '${isExpense ? '-' : '+'}₹${NumberFormat('#,##,###').format(transaction['amount'])}',
+                  style: TextStyle(
+                    fontSize: 16.sp,
+                    fontWeight: FontWeight.bold,
+                    color: isExpense ? Colors.red : Colors.green,
+                  ),
+                ),
+              );
+            },
+          )),
     );
   }
 
   Widget _buildFinancialOverview() {
-    // In a real app, you would calculate these values from your database
-    final double totalBudget = 400000;
-    final double totalSpent = 285000;
-    final double percentSpent = totalSpent / totalBudget;
+    return Obx(() {
+      final totalBudget = controller.totalBudget.value;
+      final totalSpent = controller.totalSpent.value;
+      final percentSpent = totalBudget > 0 ? totalSpent / totalBudget : 0.0;
 
-    return Container(
-      padding: EdgeInsets.all(20.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.r),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Monthly Budget',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    '₹${NumberFormat('#,##,###').format(totalBudget)}',
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Text(
-                    'Spent',
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  SizedBox(height: 4.h),
-                  Text(
-                    '₹${NumberFormat('#,##,###').format(totalSpent)}',
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          SizedBox(height: 24.h),
-          LinearPercentIndicator(
-            animation: true,
-            lineHeight: 16.h,
-            animationDuration: 1500,
-            percent: percentSpent,
-            center: Text(
-              '${(percentSpent * 100).toStringAsFixed(1)}%',
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
+      return Container(
+        padding: EdgeInsets.all(20.w),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12.r),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: Offset(0, 2),
             ),
-            barRadius: Radius.circular(8.r),
-            progressColor: percentSpent > 0.8 ? Colors.red : AppColors.primary,
-            backgroundColor: Colors.grey.shade200,
-          ),
-          SizedBox(height: 16.h),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              _buildFinancialMetric(
-                label: 'Bills Collected',
-                value: '₹145,000',
-                color: Colors.green,
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Monthly Budget',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      '₹${NumberFormat('#,##,###').format(totalBudget)}',
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      'Spent',
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      '₹${NumberFormat('#,##,###').format(totalSpent)}',
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 24.h),
+            LinearPercentIndicator(
+              animation: true,
+              lineHeight: 16.h,
+              animationDuration: 1500,
+              percent: percentSpent > 1.0 ? 1.0 : percentSpent,
+              center: Text(
+                '${(percentSpent * 100).toStringAsFixed(1)}%',
+                style: TextStyle(
+                  fontSize: 12.sp,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
-              _buildFinancialMetric(
-                label: 'Bills Pending',
-                value: '₹38,500',
-                color: Colors.orange,
-              ),
-              _buildFinancialMetric(
-                label: 'Savings',
-                value: '₹22,500',
-                color: AppColors.primary,
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
+              barRadius: Radius.circular(8.r),
+              progressColor:
+                  percentSpent > 0.8 ? Colors.red : AppColors.primary,
+              backgroundColor: Colors.grey.shade200,
+            ),
+            SizedBox(height: 16.h),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _buildFinancialMetric(
+                  label: 'Bills Collected',
+                  value:
+                      '₹${NumberFormat('#,##,###').format(controller.billsCollected.value)}',
+                  color: Colors.green,
+                ),
+                _buildFinancialMetric(
+                  label: 'Bills Pending',
+                  value:
+                      '₹${NumberFormat('#,##,###').format(controller.billsPending.value)}',
+                  color: Colors.orange,
+                ),
+                _buildFinancialMetric(
+                  label: 'Savings',
+                  value:
+                      '₹${NumberFormat('#,##,###').format(controller.savings.value)}',
+                  color: AppColors.primary,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildFinancialMetric({
@@ -846,34 +773,6 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
   }
 
   Widget _buildInventoryOverview() {
-    // Sample data for inventory categories
-    final List<Map<String, dynamic>> categories = [
-      {
-        'name': 'Grains & Rice',
-        'count': 12,
-        'icon': Icons.grain,
-        'color': Colors.amber
-      },
-      {
-        'name': 'Vegetables',
-        'count': 18,
-        'icon': Icons.eco,
-        'color': Colors.green
-      },
-      {
-        'name': 'Dairy Products',
-        'count': 7,
-        'icon': Icons.egg_alt,
-        'color': Colors.blue
-      },
-      {
-        'name': 'Spices',
-        'count': 15,
-        'icon': Icons.spa,
-        'color': Colors.deepOrange
-      },
-    ];
-
     return Container(
       padding: EdgeInsets.all(20.w),
       decoration: BoxDecoration(
@@ -902,7 +801,7 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                 ),
               ),
               TextButton(
-                onPressed: () => Navigator.of(context).pushNamed('/issueStock'),
+                onPressed: () => Get.toNamed('/issueStock'),
                 child: Text(
                   'Manage Stock',
                   style: TextStyle(
@@ -915,74 +814,110 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
             ],
           ),
           SizedBox(height: 16.h),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2,
-              crossAxisSpacing: 16.w,
-              mainAxisSpacing: 16.h,
-              childAspectRatio: 1.5,
-            ),
-            itemCount: categories.length,
-            itemBuilder: (context, index) {
-              final category = categories[index];
-              return Container(
-                padding: EdgeInsets.all(16.w),
-                decoration: BoxDecoration(
-                  color: category['color'].withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10.r),
-                  border: Border.all(
-                    color: category['color'].withOpacity(0.3),
-                    width: 1,
-                  ),
+          Obx(() => GridView.builder(
+                shrinkWrap: true,
+                physics: NeverScrollableScrollPhysics(),
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 16.w,
+                  mainAxisSpacing: 16.h,
+                  childAspectRatio: 1.5,
                 ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Row(
+                itemCount: controller.inventoryCategories.length,
+                itemBuilder: (context, index) {
+                  final category = controller.inventoryCategories[index];
+
+                  Color categoryColor = _getColorFromString(category['color']);
+                  IconData categoryIcon = _getIconFromString(category['icon']);
+
+                  return Container(
+                    padding: EdgeInsets.all(16.w),
+                    decoration: BoxDecoration(
+                      color: categoryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(10.r),
+                      border: Border.all(
+                        color: categoryColor.withOpacity(0.3),
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
-                          padding: EdgeInsets.all(8.w),
-                          decoration: BoxDecoration(
-                            color: category['color'].withOpacity(0.2),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(
-                            category['icon'],
-                            color: category['color'],
-                            size: 20.sp,
-                          ),
+                        Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(8.w),
+                              decoration: BoxDecoration(
+                                color: categoryColor.withOpacity(0.2),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                categoryIcon,
+                                color: categoryColor,
+                                size: 20.sp,
+                              ),
+                            ),
+                            SizedBox(width: 8.w),
+                            Text(
+                              category['count'].toString(),
+                              style: TextStyle(
+                                fontSize: 18.sp,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(width: 8.w),
+                        SizedBox(height: 8.h),
                         Text(
-                          category['count'].toString(),
+                          category['name'],
                           style: TextStyle(
-                            fontSize: 18.sp,
-                            fontWeight: FontWeight.bold,
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w500,
                             color: Colors.black87,
                           ),
                         ),
                       ],
                     ),
-                    SizedBox(height: 8.h),
-                    Text(
-                      category['name'],
-                      style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            },
-          ),
+                  );
+                },
+              )),
         ],
       ),
     );
+  }
+
+  // Helper method to convert string to color
+  Color _getColorFromString(String colorName) {
+    switch (colorName) {
+      case 'amber':
+        return Colors.amber;
+      case 'green':
+        return Colors.green;
+      case 'blue':
+        return Colors.blue;
+      case 'deepOrange':
+        return Colors.deepOrange;
+      default:
+        return AppColors.primary;
+    }
+  }
+
+  // Helper method to convert string to icon
+  IconData _getIconFromString(String iconName) {
+    switch (iconName) {
+      case 'grain':
+        return Icons.grain;
+      case 'eco':
+        return Icons.eco;
+      case 'egg_alt':
+        return Icons.egg_alt;
+      case 'spa':
+        return Icons.spa;
+      default:
+        return Icons.inventory_2_outlined;
+    }
   }
 
   Widget _buildBottomNav() {
@@ -1012,16 +947,20 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
                 icon: Icons.inventory_2_outlined,
                 label: 'Inventory',
                 isSelected: false,
+                onTap: () => Get.toNamed('/issueStock'),
               ),
               _buildNavItem(
                 icon: Icons.receipt_long_outlined,
                 label: 'Finance',
                 isSelected: false,
+                onTap: () => Get.toNamed('/generateVoucher'),
               ),
               _buildNavItem(
                 icon: Icons.support_agent_outlined,
                 label: 'Grievances',
                 isSelected: false,
+                onTap: () => Get.to(
+                    () => const AssignedGrievancesScreen(userType: 'manager')),
               ),
               _buildNavItem(
                 icon: Icons.person_outline,
@@ -1039,9 +978,10 @@ class _ManagerDashboardScreenState extends State<ManagerDashboardScreen> {
     required IconData icon,
     required String label,
     required bool isSelected,
+    VoidCallback? onTap,
   }) {
     return InkWell(
-      onTap: () {},
+      onTap: onTap,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [

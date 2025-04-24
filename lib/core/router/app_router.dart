@@ -12,11 +12,18 @@ import 'package:mess_erp/features/auth/views/student_register.dart';
 import 'package:mess_erp/features/clerk/bindings/clerk_dashboard_binding.dart';
 import 'package:mess_erp/features/clerk/views/clerk_dashboard_screen.dart';
 import 'package:mess_erp/features/clerk/views/monthly_report_screen.dart';
+import 'package:mess_erp/features/manager/bindings/add_item_binding.dart';
+import 'package:mess_erp/features/manager/bindings/generate_voucher_binding.dart';
+import 'package:mess_erp/features/manager/bindings/issue_stock_binding.dart';
+import 'package:mess_erp/features/manager/bindings/manager_dashboard_binding.dart';
+import 'package:mess_erp/features/manager/presentation/add_items_screen.dart';
+import 'package:mess_erp/features/manager/presentation/generate_voucher_screen.dart';
+import 'package:mess_erp/features/manager/presentation/issue_stock_screen.dart';
 import 'package:mess_erp/features/student/bindings/extra_items_binding.dart';
 import 'package:mess_erp/features/student/bindings/student_dashboard_binding.dart';
 import 'package:mess_erp/features/student/views/request_extra_items_screen.dart';
 import 'package:mess_erp/features/student/views/student_dashboard.dart';
-import 'package:mess_erp/manager/manager_dashboard.dart';
+import 'package:mess_erp/features/manager/presentation/manager_dashboard.dart';
 import 'package:mess_erp/features/student/views/apply_leave_screen.dart';
 import 'package:mess_erp/student/file_grievance_screen.dart';
 import 'package:mess_erp/student/mess_bill_screen.dart';
@@ -44,6 +51,10 @@ class AppRoutes {
   static const trackLeaves = '/student/track-leaves';
   static const fileGrievance = '/student/file-grievance';
   static const trackComplaints = '/student/track-complaints';
+
+  // Manager Routes
+  static const generateVoucher = '/generate-voucher';
+  static const issueStock = '/issue-stock';
 
   // Add new routes for clerk navigation
   static const String monthlyReportScreen = '/monthly-report-screen';
@@ -165,6 +176,23 @@ class AppRouter {
     GetPage(
       name: AppRoutes.managerDashboard,
       page: () => const ManagerDashboardScreen(),
+      binding: ManagerDashboardBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.managerDashboard,
+      page: () => const AddItemScreen(),
+      binding: AddItemBinding(),
+    ),
+
+    GetPage(
+      name: AppRoutes.generateVoucher,
+      page: () => const GenerateVoucherScreen(),
+      binding: GenerateVoucherBinding(),
+    ),
+    GetPage(
+      name: AppRoutes.issueStock,
+      page: () => const IssueStockScreen(),
+      binding: IssueStockBinding(),
     ),
     GetPage(
       name: AppRoutes.assignedGrievances,
