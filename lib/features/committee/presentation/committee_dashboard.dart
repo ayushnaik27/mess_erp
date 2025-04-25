@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mess_erp/core/constants/app_strings.dart';
 import 'package:mess_erp/core/extensions/size_extension.dart';
+import 'package:mess_erp/core/router/app_router.dart';
 import 'package:mess_erp/core/theme/app_colors.dart';
 import 'package:mess_erp/core/widgets/loading_view.dart';
 import 'package:mess_erp/features/committee/controllers/committee_dashboard_controller.dart';
@@ -12,8 +13,6 @@ import 'package:mess_erp/features/committee/presentation/widgets/dashboard_stats
 import 'package:mess_erp/features/committee/presentation/widgets/feature_card.dart';
 
 class CommitteeDashboardScreen extends StatelessWidget {
-  static const routeName = '/committeeDashboard';
-
   const CommitteeDashboardScreen({super.key});
 
   @override
@@ -188,7 +187,9 @@ class CommitteeDashboardScreen extends StatelessWidget {
         'subtitle': AppStrings.viewOrUpdateMenu,
         'icon': Icons.restaurant_menu,
         'gradient': [AppColors.info, AppColors.info.withOpacity(0.7)],
-        'onTap': controller.viewMessMenu,
+        'onTap': () => Get.toNamed(AppRoutes.messMenuOperations, arguments: {
+              'hostelId': controller.user.value.hostelId,
+            }),
         'isLarge': true,
       },
       // {

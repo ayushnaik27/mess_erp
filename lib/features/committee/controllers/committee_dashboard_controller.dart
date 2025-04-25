@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
+import 'package:mess_erp/core/enums/user_role.dart';
+import 'package:mess_erp/core/router/app_router.dart';
 import 'package:mess_erp/features/committee/models/committee_user.dart';
 import 'package:mess_erp/features/committee/repositories/committee_repository.dart';
 import 'package:mess_erp/features/student/models/announcement_model.dart';
@@ -10,14 +12,15 @@ import 'package:mess_erp/providers/hash_helper.dart';
 class CommitteeDashboardController extends GetxController {
   final CommitteeRepository _repository = CommitteeRepository();
   final AnnouncementService _announcementService = AnnouncementService();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Reactive state variables
   final Rx<CommitteeUser> user = CommitteeUser(
     name: '',
     username: '',
     password: '',
-    role: '',
+    role: UserRole.committee.value,
     email: '',
+    hostelId: '',
   ).obs;
 
   final RxList<Announcement> announcements = <Announcement>[].obs;
@@ -61,19 +64,38 @@ class CommitteeDashboardController extends GetxController {
   }
 
   Future<void> _fetchUserData() async {
-    // This would eventually fetch directly from Firebase
-    // For now, using the provider data passed from previous screen
-    final userData = Get.arguments as Map<String, dynamic>?;
+    try {
+      // First check if we have user data passed from previous screen
+      final userData = Get.arguments as Map<String, dynamic>?;
 
-    if (userData != null && userData.containsKey('user')) {
-      user.value = CommitteeUser.fromJson(userData['user']);
-    } else {
-      // Fallback to fetch from Firebase
-      final committeeUser =
-          await _repository.getCommitteeUser('committee@gmail.com');
-      if (committeeUser != null) {
-        user.value = committeeUser;
+      if (userData != null && userData.containsKey('user')) {
+        user.value = CommitteeUser.fromJson(userData['user']);
+      } else {
+        // Try to get hostelId from storage or from args
+        String? hostelId;
+        if (userData != null && userData.containsKey('hostelId')) {
+          hostelId = userData['hostelId'];
+        }
+
+        // Fetch committee user by hostel ID
+        final committeeUser =
+            await _repository.getCommitteeUser(hostelId: hostelId);
+
+        if (committeeUser != null) {
+          user.value = committeeUser;
+        } else {
+          // If no user found, try to get any committee user
+          final anyCommitteeUser = await _repository.getCommitteeUser();
+          if (anyCommitteeUser != null) {
+            user.value = anyCommitteeUser;
+          } else {
+            throw Exception('No committee user found');
+          }
+        }
       }
+    } catch (e) {
+      hasError.value = true;
+      errorMessage.value = 'Failed to load user data: ${e.toString()}';
     }
   }
 
@@ -148,20 +170,24 @@ class CommitteeDashboardController extends GetxController {
     try {
       isLoading.value = true;
       String hashedPassword = HashHelper.encode(newPassword);
+      final String userId = user.value.id;
 
-      await FirebaseFirestore.instance
-          .collection('loginCredentials')
-          .doc('roles')
-          .collection('committee')
-          .doc('committee@gmail.com')
-          .update({
-        'password': hashedPassword,
-      });
+      if (userId.isNotEmpty) {
+        // Direct document reference if we have the user ID
+        await _firestore.collection('users').doc(userId).update({
+          'password': hashedPassword,
+        });
+      } else {
+        // Fallback to query by email and role
+        final hostelId = user.value.hostelId;
+        final docId = 'committee_$hostelId';
 
-      // Update local user data
-      user.update((val) {
-        val?.password = hashedPassword;
-      });
+        await _firestore.collection('users').doc(docId).update({
+          'password': hashedPassword,
+        });
+      }
+
+      user.value = user.value.copyWith(password: hashedPassword);
 
       Get.back();
       Get.snackbar(
@@ -187,7 +213,15 @@ class CommitteeDashboardController extends GetxController {
   Future<void> viewMessMenu() async {
     try {
       isLoading.value = true;
-      // await MessMenuHelper.viewMessMenu();
+
+      // Check if user has a hostel ID
+      final hostelId = user.value.hostelId.isNotEmpty
+          ? user.value.hostelId
+          : 'default_hostel';
+
+      Get.toNamed(AppRoutes.messMenuOperations, arguments: {
+        'hostelId': hostelId,
+      });
     } catch (e) {
       Get.snackbar(
         'Error',

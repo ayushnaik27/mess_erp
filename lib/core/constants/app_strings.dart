@@ -256,4 +256,25 @@ class AppStrings {
   // Common actions
   static const String open = 'Open';
   static const String view = 'View';
+
+  // Mess Menu CRUD module
+  static const String editTiming = 'Edit Timing';
+  static const String startTime = 'Start Time';
+  static const String endTime = 'End Time';
+  static const String menuItems = 'Menu Items';
+  static const String addMenuItem = 'Add Menu Item';
+  static const String editMenuItem = 'Edit Menu Item';
+  static const String deleteMenuItem = 'Delete Menu Item';
+  static const String enterMenuItem = 'Enter food item...';
+  static const String noMenuItemsAdded =
+      'No menu items added yet. Add items to display here.';
+  static const String addItem = 'Add Item';
+  static const String areYouSureDeleteItem = 'Are you sure you want to delete';
+  static const String saveChanges = 'Save Changes';
+  static const String messMenuUpdated = 'Mess menu updated successfully';
+  static const String menuItemsUpdated = 'Menu items updated';
+  static const String mealTimingsUpdated = 'Meal timings updated';
+  static const String update = 'Update';
+  static const String delete = 'Delete';
+  static const String error = 'Error';
 }

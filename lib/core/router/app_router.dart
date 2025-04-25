@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:mess_erp/features/committee/controllers/committee_dashboard_controller.dart';
+import 'package:mess_erp/features/committee/controllers/mess_menu_controller.dart';
 import 'package:mess_erp/features/committee/presentation/committee_dashboard.dart';
 import 'package:mess_erp/features/clerk/bindings/all_tender_binding.dart';
 import 'package:mess_erp/features/clerk/bindings/enrollment_request_bindings.dart';
@@ -14,6 +15,7 @@ import 'package:mess_erp/features/auth/views/student_register.dart';
 import 'package:mess_erp/features/clerk/bindings/clerk_dashboard_binding.dart';
 import 'package:mess_erp/features/clerk/views/clerk_dashboard_screen.dart';
 import 'package:mess_erp/features/clerk/views/monthly_report_screen.dart';
+import 'package:mess_erp/features/committee/presentation/mess_menu_screen.dart';
 import 'package:mess_erp/features/manager/bindings/add_item_binding.dart';
 import 'package:mess_erp/features/manager/bindings/generate_voucher_binding.dart';
 import 'package:mess_erp/features/manager/bindings/issue_stock_binding.dart';
@@ -66,6 +68,7 @@ class AppRoutes {
   static const String allTenders = '/all-tenders';
   static const String enrollmentRequests = '/enrollment-requests';
   static const String assignedGrievances = '/assigned-grievances';
+  static const String messMenuOperations = '/mess-menu-operations';
 }
 
 class AppRouter {
@@ -225,6 +228,14 @@ class AppRouter {
       binding: BindingsBuilder(() {
         Get.lazyPut<CommitteeDashboardController>(
             () => CommitteeDashboardController());
+      }),
+    ),
+
+    GetPage(
+      name: AppRoutes.messMenuOperations,
+      page: () => const MessMenuScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<MessMenuController>(() => MessMenuController());
       }),
     ),
   ];

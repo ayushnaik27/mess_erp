@@ -154,7 +154,7 @@ class CommitteeAppBar extends StatelessWidget {
                       )),
                   SizedBox(height: 4.h),
                   Obx(() => Text(
-                        controller.user.value.email ?? 'Mess Committee',
+                        controller.user.value.email,
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.9),
                           fontSize: 14.sp,

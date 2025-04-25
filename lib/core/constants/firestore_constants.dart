@@ -175,4 +175,21 @@ class FirestoreConstants {
 
   // Add these new constants
   static const String stockTransactions = 'stock_transactions';
+  static const String settings = 'settings';
+
+  // Fields - User related
+  static const String role = 'role';
+  static const String hostelId = 'hostelId';
+  static const String username = 'username';
+  static const String isFirstLogin = 'isFirstLogin';
+  static const String lastLogin = 'lastLogin';
+  static const String createdAt = 'createdAt';
+
+  // Fields - Common
+  static const String id = 'id';
+  static const String title = 'title';
+  static const String description = 'description';
+  static const String status = 'status';
+  static const String createdBy = 'createdBy';
+  static const String updatedAt = 'updatedAt';
 }
