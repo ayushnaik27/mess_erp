@@ -232,4 +232,28 @@ class AppStrings {
   static const String passwordLengthError =
       'Password must be at least 8 characters';
   static const String updatePassword = 'Update Password';
+
+  static const String committeeDashboard = 'Mess Committee Dashboard';
+  static const String welcomeCommittee = 'Welcome, Committee Member';
+  static const String uploadMessMenu = 'Upload Mess Menu';
+  static const String manageExtraItems = 'Manage Extra Items';
+  static const String previousVouchers = 'Previous Vouchers';
+  static const String viewGrievances = 'View Grievances';
+  static const String billsAndPayments = 'Bills & Payments';
+
+  static const String viewOrUpdateMenu = 'View or update the current menu';
+  static const String shareNewMenuWithStudents =
+      'Share a new menu with students';
+  static const String manageFinancialTransactions =
+      'Manage financial transactions';
+  static const String manageAdditionalFoodItems =
+      'Manage additional food items';
+  static const String viewPreviousExpenditureRecords =
+      'View previous expenditure records';
+  static const String addressStudentComplaints = 'Address student complaints';
+  static const String messMenuUploaded = 'Mess Menu Uploaded';
+
+  // Common actions
+  static const String open = 'Open';
+  static const String view = 'View';
 }

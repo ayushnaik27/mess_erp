@@ -217,7 +217,7 @@ class EnrollmentRequestController extends GetxController {
         'phone': phone,
         'hostelId': hostel,
         'rollNumber': rollNumber,
-        'role': FirestoreConstants.students,
+        'role': FirestoreConstants.student,
         'room': room,
         'isActive': true,
         'lastUpdated': FieldValue.serverTimestamp(),
@@ -231,7 +231,7 @@ class EnrollmentRequestController extends GetxController {
           .doc(userId)
           .set({
         'userId': userId,
-        'role': FirestoreConstants.students,
+        'role': FirestoreConstants.student,
         'password': password,
         'lastUpdated': FieldValue.serverTimestamp(),
         'createdAt': existingUserDoc.exists
@@ -242,7 +242,7 @@ class EnrollmentRequestController extends GetxController {
       await _firestore
           .collection(FirestoreConstants.hostels)
           .doc(hostel)
-          .collection(FirestoreConstants.students)
+          .collection(FirestoreConstants.student)
           .doc(rollNumber)
           .set({
         'name': name,

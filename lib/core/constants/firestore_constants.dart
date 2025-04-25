@@ -25,7 +25,7 @@ class FirestoreConstants {
   static const String storageProfiles = 'profiles';
 
   // Subcollections
-  static const String students = 'students';
+  static const String student = 'student';
   static const String clerk = 'clerk';
   static const String manager = 'manager';
   static const String muneem = 'muneem';
@@ -80,16 +80,16 @@ class FirestoreConstants {
   static const String paymentVouchers = 'paymentVouchers';
 
   static String getStudentBillsPath(String studentId) =>
-      '$loginCredentials/$roles/$students/$studentId/$bills';
+      '$loginCredentials/$roles/$student/$studentId/$bills';
 
   static String getStudentLeavesPath(String studentId) =>
-      '$loginCredentials/$roles/$students/$studentId/$newLeaveDetails';
+      '$loginCredentials/$roles/$student/$studentId/$newLeaveDetails';
 
   static const String storagePathTenders = 'tenders';
   static const String storagePathProfiles = 'profiles';
 
   static String getStudentFinesPath(String studentId) =>
-      '$loginCredentials/$roles/$students/$studentId/$fineDetails';
+      '$loginCredentials/$roles/$student/$studentId/$fineDetails';
 
   // Initial passwords for each role-hostel combination
   static const Map<String, Map<String, String>> initialPasswords = {

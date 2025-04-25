@@ -152,7 +152,7 @@ class AuthService {
         final docSnapshot = await _firestore
             .collection(FirestoreConstants.loginCredentials)
             .doc(FirestoreConstants.roles)
-            .collection(FirestoreConstants.students)
+            .collection(FirestoreConstants.student)
             .doc(username)
             .get();
 

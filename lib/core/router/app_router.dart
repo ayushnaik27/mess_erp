@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:mess_erp/features/committee/controllers/committee_dashboard_controller.dart';
+import 'package:mess_erp/features/committee/presentation/committee_dashboard.dart';
 import 'package:mess_erp/features/clerk/bindings/all_tender_binding.dart';
 import 'package:mess_erp/features/clerk/bindings/enrollment_request_bindings.dart';
 import 'package:mess_erp/features/clerk/bindings/monthly_report_binding.dart';
@@ -213,6 +215,17 @@ class AppRouter {
       page: () => const MuneemDashboardScreen(),
       binding: MuneemDashboardBinding(),
       transition: Transition.fadeIn,
+    ),
+
+    // committee dashboard
+
+    GetPage(
+      name: AppRoutes.committeeDashboard,
+      page: () => const CommitteeDashboardScreen(),
+      binding: BindingsBuilder(() {
+        Get.lazyPut<CommitteeDashboardController>(
+            () => CommitteeDashboardController());
+      }),
     ),
   ];
 

@@ -254,7 +254,7 @@ class MonthlyReportController extends GetxController {
         QuerySnapshot<Map<String, dynamic>> studentSnapshot = await _firestore
             .collection(FirestoreConstants.loginCredentials)
             .doc(FirestoreConstants.roles)
-            .collection(FirestoreConstants.students)
+            .collection(FirestoreConstants.student)
             .get();
 
         for (var student in studentSnapshot.docs) {
@@ -275,7 +275,7 @@ class MonthlyReportController extends GetxController {
               await _firestore
                   .collection(FirestoreConstants.loginCredentials)
                   .doc(FirestoreConstants.roles)
-                  .collection(FirestoreConstants.students)
+                  .collection(FirestoreConstants.student)
                   .doc(studentId)
                   .collection(FirestoreConstants.bills)
                   .get();
@@ -297,7 +297,7 @@ class MonthlyReportController extends GetxController {
               _firestore
                   .collection(FirestoreConstants.loginCredentials)
                   .doc(FirestoreConstants.roles)
-                  .collection(FirestoreConstants.students)
+                  .collection(FirestoreConstants.student)
                   .doc(studentId),
               {'totalExtra': studentExtra},
               SetOptions(merge: true));
@@ -360,7 +360,7 @@ class MonthlyReportController extends GetxController {
       QuerySnapshot<Map<String, dynamic>> studentSnapshot = await _firestore
           .collection(FirestoreConstants.loginCredentials)
           .doc(FirestoreConstants.roles)
-          .collection(FirestoreConstants.students)
+          .collection(FirestoreConstants.student)
           .get();
 
       await Future.forEach(studentSnapshot.docs, (student) async {
@@ -368,7 +368,7 @@ class MonthlyReportController extends GetxController {
             await _firestore
                 .collection(FirestoreConstants.loginCredentials)
                 .doc(FirestoreConstants.roles)
-                .collection(FirestoreConstants.students)
+                .collection(FirestoreConstants.student)
                 .doc(student.id)
                 .collection('newLeaveDetails')
                 .get();
@@ -507,7 +507,7 @@ class MonthlyReportController extends GetxController {
         QuerySnapshot<Map<String, dynamic>> studentSnapshot = await _firestore
             .collection(FirestoreConstants.loginCredentials)
             .doc(FirestoreConstants.roles)
-            .collection(FirestoreConstants.students)
+            .collection(FirestoreConstants.student)
             .get();
 
         studentIds = studentSnapshot.docs.map((doc) => doc.id).toList();
@@ -531,7 +531,7 @@ class MonthlyReportController extends GetxController {
           QuerySnapshot<Map<String, dynamic>> billSnapshot = await _firestore
               .collection(FirestoreConstants.loginCredentials)
               .doc(FirestoreConstants.roles)
-              .collection(FirestoreConstants.students)
+              .collection(FirestoreConstants.student)
               .doc(studentId)
               .collection(FirestoreConstants.bills)
               .limit(20) // Process in pages to avoid large queries
@@ -570,7 +570,7 @@ class MonthlyReportController extends GetxController {
       QuerySnapshot<Map<String, dynamic>> studentSnapshot = await _firestore
           .collection(FirestoreConstants.loginCredentials)
           .doc(FirestoreConstants.roles)
-          .collection(FirestoreConstants.students)
+          .collection(FirestoreConstants.student)
           .get();
 
       await Future.forEach(studentSnapshot.docs, (student) async {
@@ -578,7 +578,7 @@ class MonthlyReportController extends GetxController {
         QuerySnapshot<Map<String, dynamic>> leaveSnapshot = await _firestore
             .collection(FirestoreConstants.loginCredentials)
             .doc(FirestoreConstants.roles)
-            .collection(FirestoreConstants.students)
+            .collection(FirestoreConstants.student)
             .doc(student.id)
             .collection('newLeaveDetails')
             .get();
@@ -591,7 +591,7 @@ class MonthlyReportController extends GetxController {
         await _firestore
             .collection(FirestoreConstants.loginCredentials)
             .doc(FirestoreConstants.roles)
-            .collection(FirestoreConstants.students)
+            .collection(FirestoreConstants.student)
             .doc(student.id)
             .set({
           'totalExtra': 0.0,
@@ -601,7 +601,7 @@ class MonthlyReportController extends GetxController {
         QuerySnapshot<Map<String, dynamic>> fineSnapshot = await _firestore
             .collection(FirestoreConstants.loginCredentials)
             .doc(FirestoreConstants.roles)
-            .collection(FirestoreConstants.students)
+            .collection(FirestoreConstants.student)
             .doc(student.id)
             .collection('fineDetails')
             .get();

@@ -30,11 +30,18 @@ class AppColors {
   // UI element colors
   static const Color divider = Color(0xFFE0E0E0); // Light gray divider
   static const Color inactive = Color(0xFFBDBDBD); // Inactive state
-  static const Color shadow =
-      Color(0x1A000000); // Shadow color (10% opacity black)
 
   // Form colors
   static const Color inputBorder = Color(0xFFE0E0E0);
   static const Color inputFocusBorder = Color(0xFF00C853);
   static const Color inputFill = Color(0xFFFFFFFF);
+
+  // Add additional colors for gradient cards
+  static const Color purpleLight = Color(0xFFCE93D8);
+  static const Color purpleDark = Color(0xFF9C27B0);
+  static const Color indigoLight = Color(0xFF9FA8DA);
+  static const Color indigoDark = Color(0xFF3949AB);
+
+  // Shadow color
+  static const Color shadow = Color(0xFF000000);
 }
