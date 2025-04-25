@@ -1,16 +1,20 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:mess_erp/core/constants/firestore_constants.dart';
 import 'package:mess_erp/core/extensions/size_extension.dart';
+import 'package:mess_erp/core/services/user_service.dart';
 import 'package:mess_erp/core/theme/app_colors.dart';
 import 'package:mess_erp/core/utils/logger.dart';
 import 'package:mess_erp/core/utils/screen_utils.dart';
+import 'package:mess_erp/features/auth/models/user_model.dart';
 import 'package:mess_erp/features/student/controllers/student_dashboard_controller.dart';
 import 'package:mess_erp/features/student/models/announcement_model.dart';
 import 'package:mess_erp/features/student/services/announcement_service.dart';
+import 'package:mess_erp/features/student/widgets/meal_preview_slider.dart';
 import 'package:mess_erp/providers/hash_helper.dart';
 import 'package:mess_erp/providers/user_provider.dart';
 import 'package:provider/provider.dart';
@@ -43,151 +47,397 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
   @override
   Widget build(BuildContext context) {
     ScreenUtil.instance.init(context);
-    final user = Provider.of<UserProvider>(context).user;
 
-    return Scaffold(
-      key: _scaffoldKey,
-      backgroundColor: Colors.white,
-      appBar: _buildAppBar(user),
-      drawer: _buildDrawer(user),
-      body: SafeArea(
-        child: RefreshIndicator(
-          color: AppColors.primary,
-          onRefresh: () async {
-            await _controller.refreshData();
-          },
-          child: SingleChildScrollView(
-            physics: const AlwaysScrollableScrollPhysics(),
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 20.w),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(height: 20.h),
+    return Obx(() {
+      final user = UserService.to.currentUser.value;
 
-                  // Welcome section
-                  _buildWelcomeSection(user),
+      if (user == null) {
+        return const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(color: AppColors.primary),
+          ),
+        );
+      }
 
-                  SizedBox(height: 24.h),
+      return Scaffold(
+        key: _scaffoldKey,
+        backgroundColor: Colors.white,
+        appBar: _buildAppBar(user),
+        drawer: _buildDrawer(user),
+        body: SafeArea(
+          child: RefreshIndicator(
+            color: AppColors.primary,
+            onRefresh: () async {
+              await _controller.refreshData();
+            },
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 20.h),
 
-                  // Quick actions
-                  _buildQuickActions(),
+                    // Welcome section with hostel ID
+                    _buildWelcomeSection(user),
 
-                  SizedBox(height: 24.h),
+                    SizedBox(height: 24.h),
 
-                  // Announcements
-                  _buildAnnouncementsSection(),
+                    // Quick actions
+                    _buildQuickActions(),
 
-                  SizedBox(height: 24.h),
+                    SizedBox(height: 24.h),
 
-                  // Features grid
-                  _buildFeaturesGrid(user),
+                    // Announcements
+                    _buildAnnouncementsSection(),
 
-                  SizedBox(height: 24.h),
-                ],
+                    SizedBox(height: 24.h),
+
+                    // Features grid
+                    _buildFeaturesGrid(user),
+
+                    SizedBox(height: 24.h),
+                  ],
+                ),
               ),
             ),
           ),
         ),
-      ),
-    );
+      );
+    });
   }
 
-  AppBar _buildAppBar(MyUser user) {
+  AppBar _buildAppBar(User user) {
     return AppBar(
       backgroundColor: Colors.white,
-      elevation: 0,
-      leading: IconButton(
-        icon: const Icon(Icons.menu, color: AppColors.textPrimary),
-        onPressed: () => _scaffoldKey.currentState?.openDrawer(),
+      elevation: 2,
+      leadingWidth: 48.w,
+      leading: Padding(
+        padding: EdgeInsets.only(left: 8.w),
+        child: IconButton(
+          icon: Icon(Icons.menu, color: AppColors.textPrimary, size: 24.sp),
+          onPressed: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
+          splashRadius: 28.r,
+          constraints: BoxConstraints(),
+          padding: EdgeInsets.zero,
+        ),
       ),
-      title: const Text(
+      titleSpacing: 0,
+      title: Text(
         'Student Dashboard',
         style: TextStyle(
           color: AppColors.textPrimary,
           fontWeight: FontWeight.w600,
+          fontSize: 16.sp,
         ),
       ),
+      toolbarHeight: 72.h,
       actions: [
+        // QR Code scanner button with Obx wrapper
         Obx(
           () => _controller.isMealLive.value
-              ? IconButton(
-                  onPressed: () =>
-                      _controller.navigateToQrScanner(user.username),
-                  icon: const Icon(Icons.qr_code_scanner,
-                      color: AppColors.primary),
-                  tooltip: 'Scan QR for Meal',
+              ? Container(
+                  margin: EdgeInsets.symmetric(vertical: 12.h),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.08),
+                    borderRadius: BorderRadius.circular(8.r),
+                  ),
+                  child: IconButton(
+                    onPressed: () => _controller.navigateToQrScanner(user.id),
+                    icon: const Icon(Icons.qr_code_scanner,
+                        color: AppColors.primary),
+                    tooltip: 'Scan QR for Meal',
+                    splashRadius: 24.r,
+                  ),
                 )
-              : const SizedBox(),
+              : const SizedBox.shrink(),
         ),
 
-        // Profile button
+        SizedBox(width: 8.w),
         Padding(
-          padding: EdgeInsets.only(right: 8.w),
-          child: CircleAvatar(
-            radius: 18.r,
-            backgroundColor: AppColors.primary.withOpacity(0.1),
-            child: Text(
-              user.name.isNotEmpty ? user.name[0].toUpperCase() : 'S',
-              style: TextStyle(
-                color: AppColors.primary,
-                fontWeight: FontWeight.w600,
-                fontSize: 16.sp,
+          padding: EdgeInsets.fromLTRB(0, 12.h, 16.w, 12.h),
+          child: GestureDetector(
+            onTap: () {
+              Get.bottomSheet(
+                Container(
+                  padding: EdgeInsets.all(16.w),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(20.r)),
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      ListTile(
+                        leading: Icon(Icons.person, color: AppColors.primary),
+                        title: Text('My Profile',
+                            style: TextStyle(fontSize: 16.sp)),
+                        onTap: () {
+                          Get.back();
+                        },
+                      ),
+                      ListTile(
+                        leading:
+                            Icon(Icons.lock_outline, color: AppColors.primary),
+                        title: Text('Change Password',
+                            style: TextStyle(fontSize: 16.sp)),
+                        onTap: () {
+                          Get.back();
+                          _showChangePasswordDialog(user.id);
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.logout, color: AppColors.error),
+                        title: Text('Logout',
+                            style: TextStyle(
+                                fontSize: 16.sp, color: AppColors.error)),
+                        onTap: () {
+                          Get.back();
+                          _controller.logout();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                    color: AppColors.primary.withOpacity(0.2), width: 2),
+              ),
+              child: CircleAvatar(
+                radius: 18.r,
+                backgroundColor: AppColors.primary.withOpacity(0.1),
+                child: Text(
+                  user.name.isNotEmpty ? user.name[0].toUpperCase() : 'S',
+                  style: TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 16.sp,
+                  ),
+                ),
               ),
             ),
           ),
-        ),
+        )
       ],
+      systemOverlayStyle: SystemUiOverlayStyle(
+        statusBarColor: Colors.transparent,
+        statusBarIconBrightness: Brightness.dark,
+        statusBarBrightness: Brightness.light,
+      ), // Status bar style
     );
   }
 
-  Widget _buildWelcomeSection(MyUser user) {
+  Widget _buildWelcomeSection(User user) {
     final now = DateTime.now();
     String greeting;
+    String timeOfDay;
 
     if (now.hour < 12) {
       greeting = 'Good morning';
+      timeOfDay = 'morning';
     } else if (now.hour < 17) {
       greeting = 'Good afternoon';
+      timeOfDay = 'afternoon';
     } else {
       greeting = 'Good evening';
+      timeOfDay = 'evening';
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          greeting,
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: AppColors.textSecondary,
-            fontWeight: FontWeight.w500,
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.r),
+        border: Border.all(
+          color: AppColors.primary.withOpacity(0.1),
+          width: 1,
+        ),
+      ),
+      child: Stack(
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: EdgeInsets.fromLTRB(20.w, 24.h, 20.w, 16.h),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          _getTimeIcon(timeOfDay),
+                          size: 16.sp,
+                          color: AppColors.primary,
+                        ),
+                        SizedBox(width: 6.w),
+                        Text(
+                          greeting,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: AppColors.textSecondary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ).animate().fadeIn(duration: 600.ms),
+                    SizedBox(height: 8.h),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            _capitalize(user.name),
+                            style: TextStyle(
+                              fontSize: 24.sp,
+                              color: AppColors.textPrimary,
+                              fontWeight: FontWeight.bold,
+                              height: 1.1,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                    // SizedBox(height: 16.h),
+                    // SingleChildScrollView(
+                    //   scrollDirection: Axis.horizontal,
+                    //   physics: BouncingScrollPhysics(),
+                    //   child: Row(
+                    //     children: [
+                    //       _buildInfoBadge(
+                    //         icon: Icons.badge_outlined,
+                    //         label: user.id,
+                    //         isPrimary: false,
+                    //       ),
+
+                    //       SizedBox(width: 10.w),
+
+                    //       _buildInfoBadge(
+                    //         icon: Icons.apartment,
+                    //         label: 'Hostel ${user.hostelId}',
+                    //         isPrimary: false,
+                    //       ),
+
+                    //       SizedBox(width: 10.w),
+
+                    //       // Current date badge
+                    //       _buildInfoBadge(
+                    //         icon: Icons.calendar_today,
+                    //         label: DateFormat('MMM d, yyyy')
+                    //             .format(DateTime.now()),
+                    //         isPrimary: false,
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ).animate().fadeIn(
+                    //       duration: 800.ms,
+                    //       delay: 100.ms,
+                    //     ),
+                  ],
+                ),
+              ),
+
+              // Divider with improved styling
+              Container(
+                height: 1,
+                margin: EdgeInsets.symmetric(horizontal: 16.w),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      Colors.transparent,
+                      AppColors.primary.withOpacity(0.1),
+                      AppColors.primary.withOpacity(0.1),
+                      Colors.transparent,
+                    ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                  ),
+                ),
+              ),
+
+              Padding(
+                padding: EdgeInsets.fromLTRB(10.h, 0.h, 10.h, 16.h),
+                child: MealPreviewSlider(hostelId: user.hostelId),
+              ),
+            ],
           ),
-        ).animate().fadeIn(duration: 500.ms),
-        SizedBox(height: 4.h),
-        Text(
-          _capitalize(user.name),
-          style: TextStyle(
-            fontSize: 24.sp,
-            color: AppColors.textPrimary,
-            fontWeight: FontWeight.bold,
-          ),
-        ).animate().fadeIn(duration: 500.ms).slideX(
-              begin: -0.1,
-              end: 0,
-              curve: Curves.easeOutQuad,
-              duration: 500.ms,
-            ),
-        SizedBox(height: 4.h),
-        Text(
-          'Roll No: ${user.username}',
-          style: TextStyle(
-            fontSize: 14.sp,
-            color: AppColors.textSecondary,
-          ),
-        ).animate().fadeIn(duration: 500.ms, delay: 200.ms),
-      ],
-    );
+        ],
+      ),
+    ).animate().fadeIn(duration: 600.ms).scale(
+          begin: const Offset(0.97, 0.97),
+          end: const Offset(1.0, 1.0),
+          curve: Curves.easeOutQuad,
+          duration: 700.ms,
+        );
+  }
+
+  // // Helper method for info badges
+  // Widget _buildInfoBadge(
+  //     {required IconData icon,
+  //     required String label,
+  //     required bool isPrimary}) {
+  //   return Container(
+  //     padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+  //     decoration: BoxDecoration(
+  //       color: isPrimary ? AppColors.primary.withOpacity(0.08) : Colors.white,
+  //       borderRadius: BorderRadius.circular(30.r),
+  //       border: Border.all(
+  //         color: isPrimary
+  //             ? AppColors.primary.withOpacity(0.2)
+  //             : Colors.grey.shade200,
+  //         width: 1,
+  //       ),
+  //       boxShadow: [
+  //         if (isPrimary)
+  //           BoxShadow(
+  //             color: AppColors.primary.withOpacity(0.15),
+  //             blurRadius: 8,
+  //             offset: Offset(0, 2),
+  //           )
+  //       ],
+  //     ),
+  //     child: Row(
+  //       mainAxisSize: MainAxisSize.min,
+  //       children: [
+  //         Icon(
+  //           icon,
+  //           size: 16.sp,
+  //           color: isPrimary ? AppColors.primary : Colors.grey.shade600,
+  //         ),
+  //         SizedBox(width: 6.w),
+  //         Text(
+  //           label,
+  //           style: TextStyle(
+  //             fontSize: 13.sp,
+  //             fontWeight: isPrimary ? FontWeight.w600 : FontWeight.w500,
+  //             color: isPrimary ? AppColors.primary : AppColors.textSecondary,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  // Get an appropriate icon based on time of day
+  IconData _getTimeIcon(String timeOfDay) {
+    switch (timeOfDay) {
+      case 'morning':
+        return Icons.wb_sunny_outlined;
+      case 'afternoon':
+        return Icons.wb_cloudy_outlined;
+      case 'evening':
+        return Icons.nightlight_round;
+      default:
+        return Icons.access_time_rounded;
+    }
   }
 
   Widget _buildQuickActions() {
@@ -460,22 +710,22 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     return Icons.campaign;
   }
 
-  Widget _buildFeaturesGrid(MyUser user) {
+  Widget _buildFeaturesGrid(User user) {
     final features = [
       {
         'title': 'Request\nExtra Items',
         'icon': Icons.add_shopping_cart,
-        'onTap': () => _controller.navigateToRequestExtraItems(user.username),
+        'onTap': () => _controller.navigateToRequestExtraItems(user.id),
       },
       {
         'title': 'Apply for\nLeave',
         'icon': Icons.event_available,
-        'onTap': () => _controller.navigateToApplyLeave(user.username),
+        'onTap': () => _controller.navigateToApplyLeave(user.id),
       },
       {
         'title': 'Track\nLeaves',
         'icon': Icons.calendar_today,
-        'onTap': () => _controller.navigateToTrackLeaves(user.username),
+        'onTap': () => _controller.navigateToTrackLeaves(user.id),
       },
       {
         'title': 'File\nGrievance',
@@ -490,7 +740,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
       {
         'title': 'Change\nPassword',
         'icon': Icons.lock,
-        'onTap': () => _showChangePasswordDialog(user.username),
+        'onTap': () => _showChangePasswordDialog(user.id),
       },
     ];
 
@@ -588,7 +838,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
         );
   }
 
-  Widget _buildDrawer(MyUser user) {
+  Widget _buildDrawer(User user) {
     return Drawer(
       backgroundColor: Colors.white,
       child: ListView(
@@ -623,12 +873,33 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     color: Colors.white,
                   ),
                 ),
-                Text(
-                  user.username,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    color: Colors.white.withOpacity(0.8),
-                  ),
+                Row(
+                  children: [
+                    Text(
+                      user.id,
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        color: Colors.white.withOpacity(0.8),
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: Text(
+                        'Hostel ${user.hostelId}',
+                        style: TextStyle(
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -638,7 +909,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             title: 'Scan QR Code',
             onTap: () {
               Get.back();
-              _controller.navigateToQrScanner(user.username);
+              _controller.navigateToQrScanner(user.id);
             },
             isVisible: _controller.isMealLive.value,
           ),
@@ -655,7 +926,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             title: 'View Mess Bill',
             onTap: () {
               Get.back();
-              _controller.navigateToMessBill(user.username);
+              _controller.navigateToMessBill(user.id);
             },
           ),
           _buildDrawerItem(
@@ -663,7 +934,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             title: 'Request Extra Items',
             onTap: () {
               Get.back();
-              _controller.navigateToRequestExtraItems(user.username);
+              _controller.navigateToRequestExtraItems(user.id);
             },
           ),
           _buildDrawerItem(
@@ -671,7 +942,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             title: 'Apply for Leave',
             onTap: () {
               Get.back();
-              _controller.navigateToApplyLeave(user.username);
+              _controller.navigateToApplyLeave(user.id);
             },
           ),
           _buildDrawerItem(
@@ -679,7 +950,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             title: 'Track Leaves',
             onTap: () {
               Get.back();
-              _controller.navigateToTrackLeaves(user.username);
+              _controller.navigateToTrackLeaves(user.id);
             },
           ),
           _buildDrawerItem(
@@ -704,7 +975,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             title: 'Change Password',
             onTap: () {
               Get.back();
-              _showChangePasswordDialog(user.username);
+              _showChangePasswordDialog(user.id);
             },
           ),
           _buildDrawerItem(
