@@ -85,7 +85,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     SizedBox(height: 24.h),
 
                     // Quick actions
-                    _buildQuickActions(),
+                    _buildQuickActions(user.hostelId),
 
                     SizedBox(height: 24.h),
 
@@ -440,7 +440,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
     }
   }
 
-  Widget _buildQuickActions() {
+  Widget _buildQuickActions(String hostelId) {
     return Obx(() => Row(
           children: [
             _buildActionButton(
@@ -458,8 +458,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
             _buildActionButton(
               icon: Icons.restaurant_menu,
               label: 'Mess Menu',
-              onTap: () => () {},
-              // onTap: () => MessMenuService.viewMessMenu(),
+              onTap: () => _controller.navigateToMessMenu(hostelId),
             ),
             SizedBox(width: 12.w),
             _buildActionButton(

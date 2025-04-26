@@ -111,8 +111,8 @@ class StudentDashboardController extends GetxController {
         arguments: {'rollNumber': rollNumber});
   }
 
-  void navigateToApplyLeave(String rollNumber) {
-    Get.toNamed(AppRoutes.applyLeave, arguments: {'rollNumber': rollNumber});
+  void navigateToApplyLeave(String studentId) {
+    Get.toNamed(AppRoutes.applyLeave, arguments: {'studentId': studentId});
   }
 
   void navigateToTrackLeaves(String rollNumber) {
@@ -133,5 +133,9 @@ class StudentDashboardController extends GetxController {
 
   void logout() {
     Get.offAllNamed(AppRoutes.login);
+  }
+
+  void navigateToMessMenu(String hostelId) {
+    Get.toNamed(AppRoutes.messMenuScreen, arguments: {'hostelId': hostelId});
   }
 }

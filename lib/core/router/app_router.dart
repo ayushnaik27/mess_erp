@@ -27,14 +27,15 @@ import 'package:mess_erp/features/muneem/bindings/muneem_dashboard_binding.dart'
 import 'package:mess_erp/features/muneem/presentation/muneen_dashboard.dart';
 import 'package:mess_erp/features/student/bindings/extra_items_binding.dart';
 import 'package:mess_erp/features/student/bindings/student_dashboard_binding.dart';
+import 'package:mess_erp/features/student/views/mess_menu_screen.dart';
 import 'package:mess_erp/features/student/views/request_extra_items_screen.dart';
 import 'package:mess_erp/features/student/views/student_dashboard.dart';
 import 'package:mess_erp/features/manager/presentation/manager_dashboard.dart';
 import 'package:mess_erp/features/student/views/apply_leave_screen.dart';
+import 'package:mess_erp/features/student/views/track_leaves_screen.dart';
 import 'package:mess_erp/student/file_grievance_screen.dart';
 import 'package:mess_erp/student/mess_bill_screen.dart';
 import 'package:mess_erp/student/qr_scanner_screen.dart';
-import 'package:mess_erp/student/track_leaves_screen.dart';
 
 import '../../features/clerk/views/all_tender_screen.dart';
 import '../../features/clerk/views/open_tender_screen.dart';
@@ -69,6 +70,7 @@ class AppRoutes {
   static const String enrollmentRequests = '/enrollment-requests';
   static const String assignedGrievances = '/assigned-grievances';
   static const String messMenuOperations = '/mess-menu-operations';
+  static const String messMenuScreen = '/mess-menu-screen';
 }
 
 class AppRouter {
@@ -127,29 +129,29 @@ class AppRouter {
       // binding: LeaveBinding(),
       transition: Transition.rightToLeft,
     ),
-    GetPage(
-      name: AppRoutes.trackLeaves,
-      page: () => const TrackLeavesScreen(
-        studentRollNumber: '',
-      ),
-      // binding: LeaveBinding(),
-      transition: Transition.rightToLeft,
-    ),
+    // GetPage(
+    //   name: AppRoutes.trackLeaves,
+    //   page: () => const TrackLeavesScreen(
+    //     studentRollNumber: '',
+    //   ),
+    //   // binding: LeaveBinding(),
+    //   transition: Transition.rightToLeft,
+    // ),
     GetPage(
       name: AppRoutes.fileGrievance,
       page: () => const FileGrievanceScreen(),
       // binding: GrievanceBinding(),
       transition: Transition.rightToLeft,
     ),
-    GetPage(
-      name: AppRoutes.trackLeaves,
-      page: () {
-        final args = Get.arguments;
-        final rollNumber = args?['rollNumber'] ?? '';
-        return TrackLeavesScreen(studentRollNumber: rollNumber);
-      },
-      transition: Transition.rightToLeft,
-    ),
+    // GetPage(
+    //   name: AppRoutes.trackLeaves,
+    //   page: () {
+    //     final args = Get.arguments;
+    //     final rollNumber = args?['rollNumber'] ?? '';
+    //     return TrackLeavesScreen(studentRollNumber: rollNumber);
+    //   },
+    //   transition: Transition.rightToLeft,
+    // ),
 
     GetPage(
       name: AppRoutes.clerkDashboard,
@@ -233,10 +235,33 @@ class AppRouter {
 
     GetPage(
       name: AppRoutes.messMenuOperations,
-      page: () => const MessMenuScreen(),
+      page: () => const MessMenuOperationsScreen(),
       binding: BindingsBuilder(() {
         Get.lazyPut<MessMenuController>(() => MessMenuController());
       }),
+    ),
+
+    GetPage(
+      name: AppRoutes.messMenuScreen,
+      page: () => MessMenuScreen(
+        hostelId: Get.arguments['hostelId'],
+      ),
+      transition: Transition.rightToLeft,
+    ),
+
+    GetPage(
+      name: AppRoutes.applyLeave,
+      page: () => const ApplyLeaveScreen(),
+      transition: Transition.rightToLeft,
+    ),
+    GetPage(
+      name: AppRoutes.trackLeaves,
+      page: () {
+        final args = Get.arguments;
+        final rollNumber = args?['studentId'] ?? '';
+        return TrackLeavesScreen(studentRollNumber: rollNumber);
+      },
+      transition: Transition.rightToLeft,
     ),
   ];
 

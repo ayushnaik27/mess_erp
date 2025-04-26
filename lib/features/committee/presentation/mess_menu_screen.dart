@@ -9,10 +9,10 @@ import 'package:mess_erp/features/committee/controllers/mess_menu_controller.dar
 import 'package:mess_erp/features/committee/models/day_menu_model.dart';
 import 'package:mess_erp/features/committee/presentation/widgets/meal_card.dart';
 
-class MessMenuScreen extends StatelessWidget {
+class MessMenuOperationsScreen extends StatelessWidget {
   static const routeName = '/messMenu';
 
-  const MessMenuScreen({super.key});
+  const MessMenuOperationsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
