@@ -93,7 +93,11 @@ class _FileGrievanceScreenState extends State<FileGrievanceScreen> {
                 submitGrievance(context);
               },
               style: ElevatedButton.styleFrom(
+<<<<<<< HEAD
                 primary: theme.colorScheme.primary,
+=======
+                backgroundColor: theme.colorScheme.primary,
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
                 textStyle: theme.textTheme.bodyMedium,
               ),
               child: Text('Submit', style: theme.textTheme.bodyMedium),

@@ -5,7 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+<<<<<<< HEAD
 import 'package:mess_erp/api_keys.dart';
+=======
+// import 'package:mess_erp/api_keys.dart';
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
 import 'package:mess_erp/providers/user_provider.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
@@ -154,9 +158,14 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
     try {
       String? userEmail =
           Provider.of<UserProvider>(context, listen: false).user.email;
+<<<<<<< HEAD
       String username = emailUsername;
       String password = emailPassword;
       
+=======
+      String username = "emailUsername";
+      String password = "emailPassword";
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
 
       final smtpServer = gmail(username, password);
       String studentName = widget.grievance
@@ -165,7 +174,11 @@ class _GrievanceDetailScreenState extends State<GrievanceDetailScreen> {
       File file = await generateHistoryPDF();
 
       final message1 = Message()
+<<<<<<< HEAD
         ..from = Address(username,'ERP MESS')
+=======
+        ..from = Address(username, 'ERP MESS')
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
         ..ccRecipients.add(userEmail)
         ..recipients.add(receipentEmail)
         ..subject =

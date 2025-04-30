@@ -1,6 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
 import 'package:qr_flutter/qr_flutter.dart';
+=======
+// import 'package:qr_flutter/qr_flutter.dart';
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
 
 class ShowQRScreen extends StatefulWidget {
   @override
@@ -47,11 +51,19 @@ class _ShowQRScreenState extends State<ShowQRScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+<<<<<<< HEAD
                   QrImageView(
                     data: 'ABCD', // Just a key
                     version: QrVersions.auto,
                     size: 200.0,
                   ),
+=======
+                  // QrImageView(
+                  //   data: 'ABCD', // Just a key
+                  //   version: QrVersions.auto,
+                  //   size: 200.0,
+                  // ),
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
                   const SizedBox(height: 20),
                   !isMealLive
                       ? ElevatedButton(

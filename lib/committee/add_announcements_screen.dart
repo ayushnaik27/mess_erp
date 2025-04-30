@@ -2,7 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
+<<<<<<< HEAD
 import 'package:mess_erp/providers/announcement_provider.dart';
+=======
+import 'package:mess_erp/features/student/models/announcement_model.dart';
+import 'package:mess_erp/features/student/services/announcement_service.dart';
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
 
 class AddAnnouncementScreen extends StatefulWidget {
   static const routeName = '/addAnnouncement';
@@ -57,7 +62,11 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
               ElevatedButton(
                 onPressed: _pickFile,
                 style: ElevatedButton.styleFrom(
+<<<<<<< HEAD
                   primary: Theme.of(context).primaryColor,
+=======
+                  backgroundColor: Theme.of(context).primaryColor,
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
                 ),
                 child: Text(
                   'Pick File',
@@ -73,7 +82,11 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
                       title: _titleController.text,
                       description: _descriptionController.text,
                     );
+<<<<<<< HEAD
                     AnnouncementServices()
+=======
+                    AnnouncementService()
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
                         .uploadAnnouncementWithoutFile(newAnnouncement);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
@@ -89,7 +102,11 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
                     description: _descriptionController.text,
                     file: File(_filePath!),
                   );
+<<<<<<< HEAD
                   AnnouncementServices().uploadAnnouncement(
+=======
+                  AnnouncementService().uploadAnnouncement(
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
                       newAnnouncement, newAnnouncement.file);
                   // Call the function to upload announcement
                   // You may want to use a service or repository for this
@@ -103,7 +120,11 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
                       context); // Return to the previous screen after adding announcement
                 },
                 style: ElevatedButton.styleFrom(
+<<<<<<< HEAD
                   primary: Theme.of(context).primaryColor,
+=======
+                  backgroundColor: Theme.of(context).primaryColor,
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
                 ),
                 child: Text(
                   'Add Announcement',

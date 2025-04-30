@@ -101,7 +101,11 @@ class _ApproveExtraItemsScreenState extends State<ApproveExtraItemsScreen> {
                                   amount: request.amount);
                         },
                         style: ElevatedButton.styleFrom(
+<<<<<<< HEAD
                             primary: Theme.of(context).primaryColor),
+=======
+                            backgroundColor: Theme.of(context).primaryColor),
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
                         child: Text(
                           'Approve',
                           style: TextStyle(
@@ -120,8 +124,11 @@ class _ApproveExtraItemsScreenState extends State<ApproveExtraItemsScreen> {
   }
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
 // import 'package:flutter/material.dart';
 // import 'package:intl/intl.dart';
 // import 'package:provider/provider.dart';

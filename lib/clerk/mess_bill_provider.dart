@@ -3,6 +3,11 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+<<<<<<< HEAD
+=======
+import 'package:mess_erp/features/student/models/announcement_model.dart';
+import 'package:mess_erp/features/student/services/announcement_service.dart';
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
 import 'package:open_filex/open_filex.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -244,7 +249,11 @@ class MessBillProvider with ChangeNotifier {
         File('${output.path}/mess_bill_${DateTime.now().month.toString()}.pdf');
     file.writeAsBytesSync(pdfBytes);
 
+<<<<<<< HEAD
     AnnouncementServices().uploadAnnouncement(
+=======
+    AnnouncementService().uploadAnnouncement(
+>>>>>>> 701f01e7b22ea1c616895b5da016062859e05f15
         Announcement(
             title: 'Mess Bill', description: 'Mess bill for month last month'),
         file);
