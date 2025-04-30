@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -13,6 +15,7 @@ class ExtraItem {
 class ExtraItemRequest {
   final String id;
   final String rollNumber;
+  final String roomNumber;
   final String itemName;
   final int quantity;
   double amount;
@@ -20,6 +23,7 @@ class ExtraItemRequest {
 
   ExtraItemRequest(
       {required this.rollNumber,
+      required this.roomNumber,
       required this.itemName,
       required this.quantity,
       required this.id,
@@ -91,9 +95,11 @@ class ExtraItemsProvider with ChangeNotifier {
       {required String rollNumber,
       required String itemName,
       required int quantity,
-      required double amount}) async {
+      required double amount,
+      required String roomNumber}) async {
     await FirebaseFirestore.instance.collection('extra_item_requests').add({
       'rollNumber': rollNumber,
+      'roomNumber': roomNumber,
       'itemName': itemName,
       'quantity': quantity,
       'amount': amount,
@@ -109,6 +115,7 @@ class ExtraItemsProvider with ChangeNotifier {
       return snapshot.docs.map((doc) {
         return ExtraItemRequest(
           rollNumber: doc['rollNumber'],
+          roomNumber: doc['roomNumber'],
           itemName: doc['itemName'],
           quantity: doc['quantity'],
           id: doc.id,
@@ -126,8 +133,8 @@ class ExtraItemsProvider with ChangeNotifier {
         .delete();
   }
 
-  Future<void> addBillForStudent(
-      String rollNumber, DateTime date, String itemName, double amount) async {
+  Future<void> addBillForStudent(String rollNumber, DateTime date,
+      String itemName, double amount, int quantity) async {
     try {
       CollectionReference studentsBillCollection = FirebaseFirestore.instance
           .collection('loginCredentials')
@@ -153,7 +160,10 @@ class ExtraItemsProvider with ChangeNotifier {
         // 'amount': amount,
       }, SetOptions(merge: true));
 
-      FirebaseFirestore.instance
+      await sendPersonalizedAnnouncement(
+          rollNumber, itemName, amount, quantity);
+
+      await FirebaseFirestore.instance
           .collection('extra_amount')
           .doc('extra_amount')
           .set({
@@ -173,14 +183,50 @@ class ExtraItemsProvider with ChangeNotifier {
     // Logic to delete the request and reflect the entry in the student's account
     // (Replace 'requestsCollection' and 'studentsAccountCollection' with your actual collection names)
 
-    print(requestId);
-    deleteExtraItemRequest(requestId);
-    print('done');
-    addBillForStudent(rollNumber, DateTime.now(), itemName, amount);
-    print('done2');
+    log(requestId);
+    await deleteExtraItemRequest(requestId);
+    log('done');
+
+    await addBillForStudent(
+        rollNumber, DateTime.now(), itemName, amount, quantity);
+    log('done2');
 
     // Reflect the entry in the student's account (Update 'studentsAccountCollection' accordingly)
     // ...
+    await FirebaseFirestore.instance
+        .collection('loginCredentials')
+        .doc('roles')
+        .collection('student')
+        .doc(rollNumber)
+        .set({
+      'balance': FieldValue.increment(-amount),
+    }, SetOptions(merge: true));
     notifyListeners();
+  }
+}
+
+Future<void> sendPersonalizedAnnouncement(
+    String rollNumber, String itemName, double amount, int quantity) async {
+  try {
+    // Reference to the announcements collection of the user
+    CollectionReference announcementsRef = FirebaseFirestore.instance
+        .collection('loginCredentials')
+        .doc('roles')
+        .collection('student')
+        .doc(rollNumber)
+        .collection('announcements');
+
+    // Creating personalized message
+    String title = 'Extra Item Approved!';
+    String message = 'Your request for $quantity $itemName has been approved';
+
+    // Adding the announcement to Firestore
+    await announcementsRef.add({
+      'title': title,
+      'message': message,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
+  } catch (e) {
+    print('Error sending announcement: $e');
   }
 }

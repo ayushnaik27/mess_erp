@@ -358,7 +358,7 @@ class _ImposeExtraDialogState extends State<ImposeExtraDialog> {
                     rollNumberController.text,
                     DateTime.now(),
                     itemNameController.text,
-                    double.parse(amountController.text));
+                    double.parse(amountController.text),1);
             ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Extra amount imposed')));
             Navigator.of(context).pop();

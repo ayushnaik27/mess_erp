@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:io';
 import 'dart:typed_data';
 
@@ -91,11 +92,30 @@ class MessBillProvider with ChangeNotifier {
 
     _messBills.clear();
 
-    messBillSnapshot.docs.forEach((messBill) {
+    // messBillSnapshot.docs.forEach((messBill) {
+    //   String yearMonth = messBill.id;
+
+    //   if (isMonthInSemester(yearMonth, selectedSemester, requiredYear)) {
+    //     print('I am here');
+    //     _messBills.add(MessBill(
+    //       rollNumber: rollNumber,
+    //       totalDiets: messBill['totalDiets'],
+    //       totalExtra: messBill['totalExtra'],
+    //       fine: messBill['totalFine'],
+    //       totalAmount: messBill['totalAmount'],
+    //       extraList: (messBill['extraList'] as List<dynamic>)
+    //           .map((item) => item as Map<String, dynamic>)
+    //           .toList(),
+    //       month: messBill.id,
+    //     ));
+    //     print('I am here also');
+    //   }
+    // });
+    for (var messBill in messBillSnapshot.docs) {
       String yearMonth = messBill.id;
 
       if (isMonthInSemester(yearMonth, selectedSemester, requiredYear)) {
-        print('I am here');
+        log('I am here');
         _messBills.add(MessBill(
           rollNumber: rollNumber,
           totalDiets: messBill['totalDiets'],
@@ -107,9 +127,9 @@ class MessBillProvider with ChangeNotifier {
               .toList(),
           month: messBill.id,
         ));
-        print('I am here also');
+        log('I am here also');
       }
-    });
+    }
 
     return _messBills;
   }
@@ -141,7 +161,7 @@ class MessBillProvider with ChangeNotifier {
       12: 31
     };
 
-    num _totalMonthDiets = monthDays[previousMonth]! * 3;
+    num totalMonthDiets = monthDays[previousMonth]! * 3;
 
     QuerySnapshot<Map<String, dynamic>> studentSnapshot =
         await FirebaseFirestore.instance
@@ -159,22 +179,15 @@ class MessBillProvider with ChangeNotifier {
           .get()
           .then((value) => value.data()!['totalExtra'] as double);
 
-      num totalLeaves = 0;
+      num totalLeaves = await FirebaseFirestore.instance
+          .collection('loginCredentials')
+          .doc('roles')
+          .collection('student')
+          .doc(student.id)
+          .get()
+          .then((value) => value.data()!['leaveCount'] as num);
 
-      QuerySnapshot<Map<String, dynamic>> studentLeaveSnapshot =
-          await FirebaseFirestore.instance
-              .collection('loginCredentials')
-              .doc('roles')
-              .collection('student')
-              .doc(student.id)
-              .collection('leaveDetails')
-              .get();
-
-      if (studentLeaveSnapshot.docs.isNotEmpty) {
-        print('Hello');
-        totalLeaves += studentLeaveSnapshot.docs.last['leaveCount'];
-      }
-      final num totalDiets = _totalMonthDiets - totalLeaves * 3;
+      final num totalDiets = totalMonthDiets - totalLeaves;
 
       double totalFine = 0.0;
 
@@ -188,7 +201,7 @@ class MessBillProvider with ChangeNotifier {
               .get();
 
       if (studentFineSnapshot.docs.isNotEmpty) {
-        print('Hello');
+        log('Hello');
         totalFine += studentFineSnapshot.docs.last['amount'];
       }
 
@@ -209,9 +222,9 @@ class MessBillProvider with ChangeNotifier {
       final List<Map<String, dynamic>> extraList = [];
 
       if (extraListSnapshot.docs.isNotEmpty) {
-        extraListSnapshot.docs.forEach((element) {
+        for (var element in extraListSnapshot.docs) {
           extraList.add(element.data());
-        });
+        }
       }
 
       await FirebaseFirestore.instance
@@ -236,6 +249,13 @@ class MessBillProvider with ChangeNotifier {
         totalAmount: totalAmount,
         extraList: extraList,
       ));
+
+      await FirebaseFirestore.instance
+          .collection('loginCredentials')
+          .doc('roles')
+          .collection('student')
+          .doc(student.id)
+          .update({'balance': FieldValue.increment(-totalAmount)});
     });
 
     final pdfBytes = await generateMessBillPDF();
@@ -244,7 +264,7 @@ class MessBillProvider with ChangeNotifier {
         File('${output.path}/mess_bill_${DateTime.now().month.toString()}.pdf');
     file.writeAsBytesSync(pdfBytes);
 
-    AnnouncementServices().uploadAnnouncement(
+    await AnnouncementServices().uploadAnnouncement(
         Announcement(
             title: 'Mess Bill', description: 'Mess bill for month last month'),
         file);

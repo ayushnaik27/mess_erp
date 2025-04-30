@@ -68,7 +68,7 @@ class AnnouncementServices {
         return Announcement(
           title: doc['title'],
           description: doc['description'],
-          file: doc['file']=='NoFile' ? null: File(doc['file']),
+          file: doc['file'] == 'NoFile' ? null : File(doc['file']),
           timestamp: doc['timestamp'],
         );
       }).toList();
@@ -95,7 +95,8 @@ class AnnouncementServices {
     final bytes = response.bodyBytes;
 
     final tempDir = await getTemporaryDirectory();
-    final tempDocumentPath = '${tempDir.path}/${openBill ? '${DateTime.now().month.toString()}_Mess_Bill' : 'announcement.pdf'}';
+    final tempDocumentPath =
+        '${tempDir.path}/${openBill ? '${DateTime.now().month.toString()}_Mess_Bill' : 'announcement.pdf'}';
 
     await File(tempDocumentPath).writeAsBytes(bytes);
     OpenFilex.open(tempDocumentPath,

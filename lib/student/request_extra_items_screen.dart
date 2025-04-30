@@ -20,6 +20,7 @@ class _RequestExtraItemsScreenState extends State<RequestExtraItemsScreen> {
   TextEditingController quantityController = TextEditingController();
   int quantity = 0;
   String rollNumber = '';
+  String roomNumber = '';
 
   @override
   Widget build(BuildContext context) {
@@ -41,6 +42,7 @@ class _RequestExtraItemsScreenState extends State<RequestExtraItemsScreen> {
                       return Container();
                     }
                     rollNumber = snapshot.data!.username;
+                    roomNumber = snapshot.data!.roomNumber;
                     return Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(snapshot.data!.username,
@@ -161,6 +163,7 @@ class _RequestExtraItemsScreenState extends State<RequestExtraItemsScreen> {
                     Provider.of<ExtraItemsProvider>(context, listen: false)
                         .addExtraItemRequest(
                             rollNumber: rollNumber,
+                            roomNumber: roomNumber,
                             itemName: selectedItem.name,
                             quantity: quantity,
                             amount: ourItem.price * quantity);

@@ -23,7 +23,7 @@ class _EnrollmentRequestScreenState extends State<EnrollmentRequestScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Enrollment Request')),
+      appBar: AppBar(title: const Text('Enrollment Request')),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -35,78 +35,104 @@ class _EnrollmentRequestScreenState extends State<EnrollmentRequestScreen> {
               } else if (snapshot.hasError) {
                 return Center(child: Text('Error: ${snapshot.error}'));
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                return Center(child: Text('No enrollment requests found.'));
+                return const Center(
+                    child: Text('No enrollment requests found.'));
               } else {
                 return ListView.builder(
                   shrinkWrap: true,
-                  physics: NeverScrollableScrollPhysics(),
+                  physics: const NeverScrollableScrollPhysics(),
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
                     String key = snapshot.data!.keys.elementAt(index);
                     String name = snapshot.data![key]['name'] ?? 'Unknown';
                     String rollNumber =
                         snapshot.data![key]['rollNumber'] ?? 'Unknown';
+                    String roomNumber =
+                        snapshot.data![key]['roomNumber'] ?? 'Unknown';
                     String password =
                         snapshot.data![key]['password'] ?? 'Unknown';
 
                     return Card(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8, horizontal: 10),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 3,
                       child: ListTile(
-                        title: Text(key),
-                        subtitle: Text(name),
-                        trailing: SizedBox(
-                          width: 100,
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.close,
-                                    color: Colors.red,
-                                  ),
-                                  onPressed: () {
-                                    // Remove student from the enrollment collection
-                                    FirebaseFirestore.instance
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        title: Text(
+                          'Room $roomNumber',
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const SizedBox(height: 4),
+                            Text(
+                              '$name • $rollNumber',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade700,
+                              ),
+                            ),
+                          ],
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: const Icon(Icons.close, color: Colors.red),
+                              tooltip: "Reject",
+                              onPressed: () {
+                                FirebaseFirestore.instance
+                                    .collection('enrollments')
+                                    .doc(key)
+                                    .delete();
+                                setState(() {});
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.check_circle,
+                                  color: Colors.green),
+                              tooltip: "Approve",
+                              onPressed: () {
+                                double balance = 15000;
+                                FirebaseFirestore.instance
+                                    .collection('loginCredentials')
+                                    .doc('roles')
+                                    .collection('student')
+                                    .doc(rollNumber)
+                                    .set({
+                                  'name': name,
+                                  'rollNumber': rollNumber,
+                                  'roomNumber': roomNumber,
+                                  'role': 'student',
+                                  'password': password,
+                                  'balance': balance,
+                                }).then(
+                                  (_) async {
+                                    await FirebaseFirestore.instance
                                         .collection('enrollments')
                                         .doc(key)
                                         .delete();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text('Student added'),
+                                        backgroundColor: Colors.green,
+                                      ),
+                                    );
                                     setState(() {});
                                   },
-                                ),
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.check_box,
-                                    color: Colors.green,
-                                  ),
-                                  onPressed: () {
-                                    // Add student to the student collection
-                                    FirebaseFirestore.instance
-                                        .collection('loginCredentials')
-                                        .doc('roles')
-                                        .collection('student')
-                                        .doc(rollNumber)
-                                        .set({
-                                      'name': name,
-                                      'rollNumber': rollNumber,
-                                      'role': 'student',
-                                      'password': password,
-                                    }).then(
-                                      (_) {
-                                        FirebaseFirestore.instance
-                                            .collection('enrollments')
-                                            .doc(key)
-                                            .delete();
-
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(const SnackBar(
-                                          content: Text('Student added'),
-                                          backgroundColor: Colors.green,
-                                        ));
-                                        setState(() {});
-                                      },
-                                    );
-                                  },
-                                ),
-                              ]),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                       ),
                     );

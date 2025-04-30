@@ -8,6 +8,7 @@ class StudentRegisterScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     TextEditingController rollNumberController = TextEditingController();
+    TextEditingController roomNumberController = TextEditingController();
     TextEditingController nameController = TextEditingController();
     TextEditingController passwordController = TextEditingController();
     TextEditingController confirmPasswordController = TextEditingController();
@@ -43,6 +44,26 @@ class StudentRegisterScreen extends StatelessWidget {
                     border: const OutlineInputBorder()),
               ),
               const SizedBox(height: 10),
+              TextField(
+                controller: roomNumberController,
+                style: Theme.of(context).textTheme.bodyMedium,
+                decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Theme.of(context).colorScheme.tertiary),
+                    ),
+                    labelStyle: TextStyle(
+                        fontSize:
+                            Theme.of(context).textTheme.bodyMedium!.fontSize,
+                        color: Colors.black),
+                    enabledBorder: const OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.black),
+                    ),
+                    labelText: 'Room Number',
+                    border: const OutlineInputBorder()),
+              ),
+              const SizedBox(height: 10),
+
               TextField(
                 controller: emailController,
                 style: Theme.of(context).textTheme.bodyMedium,
@@ -129,6 +150,7 @@ class StudentRegisterScreen extends StatelessWidget {
                       nameController.text.isEmpty ||
                       passwordController.text.isEmpty ||
                       confirmPasswordController.text.isEmpty ||
+                      roomNumberController.text.isEmpty ||
                       emailController.text.isEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text('Please fill all the fields'),
@@ -181,6 +203,7 @@ class StudentRegisterScreen extends StatelessWidget {
                     'name': nameController.text,
                     'password': password,
                     'rollNumber': rollNumberController.text,
+                    'roomNumber': roomNumberController.text,
                     'email': emailController.text
                   });
 

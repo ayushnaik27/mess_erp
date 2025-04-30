@@ -72,7 +72,9 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
       backgroundColor: Theme.of(context).colorScheme.primary,
       body: loading
-          ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.tertiary))
+          ? Center(
+              child: CircularProgressIndicator(
+                  color: Theme.of(context).colorScheme.tertiary))
           : Stack(
               children: [
                 // Image.asset(
@@ -270,7 +272,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                             listen: false)
                                         .fetchUserDetails(adminUsername,
                                             admin: true, role: role);
-                                    await Provider.of<VendorNameProvider>(context,
+                                    await Provider.of<VendorNameProvider>(
+                                            context,
                                             listen: false)
                                         .fetchAndSetVendorNames();
                                     await Provider.of<ItemListProvider>(context,
@@ -469,13 +472,26 @@ class _LoginScreenState extends State<LoginScreen> {
                                   style: TextStyle(
                                       color: Color.fromARGB(255, 1, 95, 172))),
                             ),
-                            // TextButton(
-                            //   child: Text("try"),
-                            //   onPressed: () {
-                            //     log(HashHelper.encode(
-                            //         "VQUiwchdxj2Mg+KxEbQRY0lneA50+ILRdTm7PVFFUFI="));
-                            //   },
-                            // )
+                            TextButton(
+                              child: const Text("try"),
+                              onPressed: () async {
+                                CollectionReference students = FirebaseFirestore
+                                    .instance
+                                    .collection('loginCredentials')
+                                    .doc('roles')
+                                    .collection('student');
+
+                                QuerySnapshot querySnapshot =
+                                    await students.get();
+
+                                querySnapshot.docs.forEach((doc) {
+                                  log(doc.id);
+                                  students
+                                      .doc(doc.id)
+                                      .update({'roomNumber': "N/A"});
+                                });
+                              },
+                            )
                           ],
                         ),
                       ],

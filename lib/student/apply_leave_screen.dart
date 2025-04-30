@@ -102,59 +102,11 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
     );
   }
 
-  // void showToMealOptions() {
-  //   List<String> options = [];
-  //   if (selectedFromDate.day == selectedToDate.day) {
-  //     setState(() {
-  //       options = ['Dinner'];
-  //       selectedToMeal = options[0];
-  //     });
-  //   } else if (selectedToDate.day == selectedFromDate.day + 1 ||
-  //       selectedToDate.month == selectedFromDate.month + 1 ||
-  //       selectedToDate.year == selectedFromDate.year + 1) {
-  //     setState(() {
-  //       if (selectedFromMeal == 'Breakfast' || selectedFromMeal == 'Lunch') {
-  //         options = ['Lunch', 'Dinner'];
-  //       } else {
-  //         options = ['Dinner'];
-  //       }
-  //       selectedToMeal = options[0];
-  //     });
-  //   } else {
-  //     setState(() {
-  //       options = ['Breakfast'];
-  //       selectedToMeal = options[0];
-  //     });
-  //   }
-
-  //   showAdaptiveDialog(
-  //     context: context,
-  //     builder: (context) => AlertDialog(
-  //       title: const Text('Select Meal'),
-  //       content: Column(
-  //         mainAxisSize: MainAxisSize.min,
-  //         children: options
-  //             .map((e) => ListTile(
-  //                   title: Text(e),
-  //                   onTap: () {
-  //                     setState(() {
-  //                       selectedToMeal = e;
-  //                     });
-  //                     Navigator.of(context).pop();
-  //                   },
-  //                 ))
-  //             .toList(),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   void showToMealOptions() {
     List<String> allMeals = ['Breakfast', 'Lunch', 'Dinner'];
     List<String> options = [];
 
     // Determine the index of the selectedFromMeal in allMeals
-    int fromMealIndex = allMeals.indexOf(selectedFromMeal);
 
     // Handle case when selectedToDate is the same as selectedFromDate
     if (selectedFromDate.day == selectedToDate.day &&
@@ -361,6 +313,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
+                        backgroundColor: Colors.green,
                         content: Text('Leave request submitted successfully!'),
                       ),
                     );
@@ -369,7 +322,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                 });
               },
               style: ElevatedButton.styleFrom(
-                primary: Theme.of(context).colorScheme.primary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
               ),
               child: Text(
                 'Submit Leave Request',
@@ -389,33 +342,27 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
           .doc('roles')
           .collection('student')
           .doc(rollNumber)
-          .collection('leaveDetails')
+          .collection('newLeaveDetails')
+          .orderBy('timestamp', descending: false)
+          .limit(1)
           .get();
-
       if (leaveDetailSnapshot.docs.isNotEmpty) {
         QueryDocumentSnapshot lastLeaveDetailSnapshot =
             leaveDetailSnapshot.docs.last;
-
-        DateTime lastLeaveDate = DateTime(
-          lastLeaveDetailSnapshot['year'],
-          lastLeaveDetailSnapshot['month'],
-          lastLeaveDetailSnapshot['day'],
-        );
-
+        DateTime lastLeaveDate = DateTime(lastLeaveDetailSnapshot['year'],
+            lastLeaveDetailSnapshot['month'], lastLeaveDetailSnapshot['day']);
         if (selectedFromDate.isBefore(lastLeaveDate)) {
           return false;
         }
       }
-
       List<DateTime> datesToApply = [];
-
       for (DateTime date = selectedFromDate;
           date.isBefore(selectedToDate.add(const Duration(days: 1)));
           date = date.add(const Duration(days: 1))) {
         datesToApply.add(date);
       }
 
-      WriteBatch batch = FirebaseFirestore.instance.batch();
+      int leaveCount = 0;
 
       for (DateTime date in datesToApply) {
         List<String> onLeaveMeals = [];
@@ -439,8 +386,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
             .collection('newLeaveDetails')
             .doc(leaveDate);
 
-        batch.set(
-          newLeaveDocRef,
+        await newLeaveDocRef.set(
           {
             'date': leaveDate,
             'onLeaveMeals': onLeaveMeals,
@@ -450,33 +396,120 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
           },
           SetOptions(merge: true),
         );
-
-        DocumentReference leaveDetailDocRef = FirebaseFirestore.instance
-            .collection('loginCredentials')
-            .doc('roles')
-            .collection('student')
-            .doc(rollNumber)
-            .collection('leaveDetails')
-            .doc();
-
-        batch.set(
-          leaveDetailDocRef,
-          {
-            'day': date.day,
-            'month': date.month,
-            'year': date.year,
-            'onLeave': true,
-            'leaveCount': FieldValue.increment(1),
-          },
-          SetOptions(merge: true),
-        );
+        leaveCount += onLeaveMeals.length;
       }
 
-      await batch.commit();
+      FirebaseFirestore.instance
+          .collection('loginCredentials')
+          .doc('roles')
+          .collection('student')
+          .doc(rollNumber)
+          .update({
+        'leaveCount': FieldValue.increment(leaveCount),
+      });
+
       return true;
-    } catch (e, stackTrace) {
-      log('Error submitting leave request: $e', stackTrace: stackTrace);
+    } catch (e) {
+      log('Error submitting leave request: $e');
       return false;
     }
   }
+
+  // Future<bool> _submitLeaveRequest(String rollNumber) async {
+  //   try {
+  //     QuerySnapshot leaveDetailSnapshot = await FirebaseFirestore.instance
+  //         .collection('loginCredentials')
+  //         .doc('roles')
+  //         .collection('student')
+  //         .doc(rollNumber)
+  //         .collection('leaveDetails')
+  //         .get();
+
+  //     if (leaveDetailSnapshot.docs.isNotEmpty) {
+  //       QueryDocumentSnapshot lastLeaveDetailSnapshot =
+  //           leaveDetailSnapshot.docs.last;
+
+  //       DateTime lastLeaveDate = DateTime(
+  //         lastLeaveDetailSnapshot['year'],
+  //         lastLeaveDetailSnapshot['month'],
+  //         lastLeaveDetailSnapshot['day'],
+  //       );
+
+  //       if (selectedFromDate.isBefore(lastLeaveDate)) {
+  //         return false;
+  //       }
+  //     }
+
+  //     List<DateTime> datesToApply = [];
+
+  //     for (DateTime date = selectedFromDate;
+  //         date.isBefore(selectedToDate.add(const Duration(days: 1)));
+  //         date = date.add(const Duration(days: 1))) {
+  //       datesToApply.add(date);
+  //     }
+
+  //     WriteBatch batch = FirebaseFirestore.instance.batch();
+
+  //     for (DateTime date in datesToApply) {
+  //       List<String> onLeaveMeals = [];
+  //       if (date == selectedFromDate) {
+  //         onLeaveMeals.addAll(fromMealOptions
+  //             .sublist(fromMealOptions.indexOf(selectedFromMeal)));
+  //       } else if (date == selectedToDate) {
+  //         onLeaveMeals.addAll(toMealOptions.sublist(
+  //             0, toMealOptions.indexOf(selectedToMeal) + 1));
+  //       } else {
+  //         onLeaveMeals.addAll(toMealOptions);
+  //       }
+
+  //       String leaveDate = DateFormat('dd-MM-yyyy').format(date);
+
+  //       DocumentReference newLeaveDocRef = FirebaseFirestore.instance
+  //           .collection('loginCredentials')
+  //           .doc('roles')
+  //           .collection('student')
+  //           .doc(rollNumber)
+  //           .collection('newLeaveDetails')
+  //           .doc(leaveDate);
+
+  //       batch.set(
+  //         newLeaveDocRef,
+  //         {
+  //           'date': leaveDate,
+  //           'onLeaveMeals': onLeaveMeals,
+  //           'timestamp': date,
+  //           'fromDate': DateFormat('dd-MM-yyyy').format(selectedFromDate),
+  //           'toDate': DateFormat('dd-MM-yyyy').format(selectedToDate),
+  //         },
+  //         SetOptions(merge: true),
+  //       );
+
+  //       DocumentReference leaveDetailDocRef = FirebaseFirestore.instance
+  //           .collection('loginCredentials')
+  //           .doc('roles')
+  //           .collection('student')
+  //           .doc(rollNumber)
+  //           .collection('leaveDetails')
+  //           .doc();
+
+  //       batch.set(
+  //         leaveDetailDocRef,
+  //         {
+  //           'day': date.day,
+  //           'month': date.month,
+  //           'year': date.year,
+  //           'onLeave': true,
+  //           'leaveCount': FieldValue.increment(1),
+  //         },
+  //         SetOptions(merge: true),
+  //       );
+  //     }
+
+  //     await batch.commit();
+  //     return true;
+  //   } catch (e, stackTrace) {
+  //     log('Error submitting leave request: $e', stackTrace: stackTrace);
+  //     return false;
+  //   }
+  // }
 }
