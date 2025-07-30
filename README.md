@@ -72,5 +72,5 @@
 
 ---
 
-## 🏗️ Folder Structure (Simplified)
+<!-- ## 🏗️ Folder Structure (Simplified) -->
 
