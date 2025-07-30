@@ -29,6 +29,45 @@
 ---
 
 ## 📸 Screenshots
+<!-- <style>
+  .screenshot-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    justify-content: center;
+  }
+  .screenshot-grid img {
+    flex: 1 0 20%;
+    max-height: 500px;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  }
+</style> -->
+
+<div class="screenshot-grid">
+  <img src="assets/images/screenshots/1.png" alt="Screenshot 1" width="200"/>
+  <img src="assets/images/screenshots/2.png" alt="Screenshot 2" width="200"/>
+  <img src="assets/images/screenshots/3.png" alt="Screenshot 3" width="200"/>
+  <img src="assets/images/screenshots/4.png" alt="Screenshot 4" width="200"/>
+  <img src="assets/images/screenshots/5.png" alt="Screenshot 5" width="200"/>
+  <img src="assets/images/screenshots/6.png" alt="Screenshot 6" width="200"/>
+  <img src="assets/images/screenshots/7.png" alt="Screenshot 7" width="200"/>
+  <img src="assets/images/screenshots/8.png" alt="Screenshot 8" width="200"/>
+  <img src="assets/images/screenshots/9.png" alt="Screenshot 9" width="200"/>
+  <img src="assets/images/screenshots/10.png" alt="Screenshot 10" width="200"/>
+  <img src="assets/images/screenshots/11.png" alt="Screenshot 11" width="200"/>
+  <img src="assets/images/screenshots/12.png" alt="Screenshot 12" width="200"/>
+  <img src="assets/images/screenshots/13.png" alt="Screenshot 13" width="200"/>
+  <img src="assets/images/screenshots/14.png" alt="Screenshot 14" width="200"/>
+  <img src="assets/images/screenshots/15.png" alt="Screenshot 15" width="200"/>
+  <img src="assets/images/screenshots/16.png" alt="Screenshot 16" width="200"/>
+  <img src="assets/images/screenshots/17.png" alt="Screenshot 17" width="200"/>
+</div>
+
+
+
+
 
 
 ---
