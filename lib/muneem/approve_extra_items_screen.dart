@@ -101,7 +101,7 @@ class _ApproveExtraItemsScreenState extends State<ApproveExtraItemsScreen> {
                                   amount: request.amount);
                         },
                         style: ElevatedButton.styleFrom(
-                            primary: Theme.of(context).primaryColor),
+                            backgroundColor: Theme.of(context).primaryColor),
                         child: Text(
                           'Approve',
                           style: TextStyle(

@@ -369,7 +369,7 @@ class _ApplyLeaveScreenState extends State<ApplyLeaveScreen> {
                 });
               },
               style: ElevatedButton.styleFrom(
-                primary: Theme.of(context).colorScheme.primary,
+                backgroundColor: Theme.of(context).colorScheme.primary,
               ),
               child: Text(
                 'Submit Leave Request',

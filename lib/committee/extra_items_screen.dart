@@ -111,7 +111,7 @@ class _ExtraItemsScreenState extends State<ExtraItemsScreen> {
               },
 
               style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).primaryColor,
+                  backgroundColor: Theme.of(context).primaryColor,
                 ),
                 child: Text(
                   'Add New Item',

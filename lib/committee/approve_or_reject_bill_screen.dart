@@ -193,7 +193,7 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                                               );
                                             },
                                             style: ElevatedButton.styleFrom(
-                                                primary: Theme.of(context)
+                                                backgroundColor: Theme.of(context)
                                                     .primaryColor),
                                             child: Text(
                                               'Reject',
@@ -208,7 +208,7 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                                     }));
                               },
                               style: ElevatedButton.styleFrom(
-                                  primary: Theme.of(context).primaryColor),
+                                  backgroundColor: Theme.of(context).primaryColor),
                               child: Text(
                                 'Reject',
                                 style: TextStyle(
@@ -224,7 +224,7 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                                 Navigator.pop(context);
                               },
                               style: ElevatedButton.styleFrom(
-                                  primary: Theme.of(context).primaryColor),
+                                  backgroundColor: Theme.of(context).primaryColor),
                               child: Text(
                                 'Approve',
                                 style: TextStyle(
@@ -315,7 +315,7 @@ class _ApproveOrRejectBillScreenState extends State<ApproveOrRejectBillScreen> {
                       }
                     : null,
                 style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).primaryColor),
+                    backgroundColor: Theme.of(context).primaryColor),
                 child: Text(
                   'Yes',
                   style:

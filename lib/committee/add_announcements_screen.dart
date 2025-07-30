@@ -57,7 +57,7 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
               ElevatedButton(
                 onPressed: _pickFile,
                 style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).primaryColor,
+                  backgroundColor: Theme.of(context).primaryColor,
                 ),
                 child: Text(
                   'Pick File',
@@ -103,7 +103,7 @@ class _AddAnnouncementScreenState extends State<AddAnnouncementScreen> {
                       context); // Return to the previous screen after adding announcement
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).primaryColor,
+                  backgroundColor: Theme.of(context).primaryColor,
                 ),
                 child: Text(
                   'Add Announcement',

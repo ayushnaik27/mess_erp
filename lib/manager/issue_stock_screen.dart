@@ -116,7 +116,7 @@ class _IssueStockScreenState extends State<IssueStockScreen> {
                 Navigator.of(context).pop();
               },
               style: ElevatedButton.styleFrom(
-                primary: Theme.of(context).primaryColor,
+                backgroundColor: Theme.of(context).primaryColor,
               ),
               child: Text('Submit',
                   style:
