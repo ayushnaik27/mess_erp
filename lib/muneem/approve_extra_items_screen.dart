@@ -112,6 +112,7 @@ class _ApproveExtraItemsScreenState extends State<ApproveExtraItemsScreen> {
                             Text(
                               'Room: ${request.roomNumber}',
                               style: const TextStyle(
+
                                   fontSize: 14, fontWeight: FontWeight.w500),
                             ),
 
@@ -180,6 +181,28 @@ class _ApproveExtraItemsScreenState extends State<ApproveExtraItemsScreen> {
                               ],
                             ),
                           ],
+
+                                  fontSize: 10, color: Colors.grey)),
+                        ],
+                      ),
+                      trailing: ElevatedButton(
+                        onPressed: () {
+                          Provider.of<ExtraItemsProvider>(context,
+                                  listen: false)
+                              .approveExtraItemRequest(
+                                  itemName: request.itemName,
+                                  quantity: request.quantity,
+                                  rollNumber: request.rollNumber,
+                                  requestId: request.id,
+                                  amount: request.amount);
+                        },
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor),
+                        child: Text(
+                          'Approve',
+                          style: TextStyle(
+                              color: Theme.of(context).colorScheme.tertiary),
+
                         ),
                       ),
                     );

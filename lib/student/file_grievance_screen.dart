@@ -141,6 +141,7 @@ class _FileGrievanceScreenState extends State<FileGrievanceScreen> {
                     type: FileType.custom,
                     allowedExtensions: ['pdf'],
                   );
+
                   if (result != null) {
                     setState(() {
                       _filePath = result.files.single.path;
@@ -181,6 +182,14 @@ class _FileGrievanceScreenState extends State<FileGrievanceScreen> {
                   textStyle: theme.textTheme.bodyMedium,
                 ),
                 child: Text('Submit', style: theme.textTheme.bodyMedium),
+
+                  return;
+                }
+                submitGrievance(context);
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: theme.colorScheme.primary,
+                textStyle: theme.textTheme.bodyMedium,
               ),
             ],
           ),
