@@ -101,7 +101,7 @@ class _OpenTenderScreenState extends State<OpenTenderScreen> {
               ElevatedButton(
                 onPressed: _addItem,
                 style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).primaryColor),
+                    backgroundColor: Theme.of(context).primaryColor),
                 child: Text('Add Item',
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.tertiary)),
@@ -148,7 +148,7 @@ class _OpenTenderScreenState extends State<OpenTenderScreen> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                          primary: Theme.of(context).primaryColor),
+                          backgroundColor: Theme.of(context).primaryColor),
                       child: Text(
                           _filePath == '' ? 'Upload File' : 'File Selected',
                           style: TextStyle(
@@ -166,7 +166,7 @@ class _OpenTenderScreenState extends State<OpenTenderScreen> {
               ElevatedButton(
                 onPressed: _submitTender,
                 style: ElevatedButton.styleFrom(
-                    primary: Theme.of(context).primaryColor),
+                    backgroundColor: Theme.of(context).primaryColor),
                 child: Text('Submit Tender',
                     style: TextStyle(
                         color: Theme.of(context).colorScheme.tertiary)),
@@ -249,7 +249,7 @@ class _OpenTenderScreenState extends State<OpenTenderScreen> {
                 setState(() {});
               },
               style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).primaryColor),
+                  backgroundColor: Theme.of(context).primaryColor),
               child: Text('Add Item',
                   style:
                       TextStyle(color: Theme.of(context).colorScheme.tertiary)),

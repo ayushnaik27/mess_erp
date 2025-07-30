@@ -186,7 +186,7 @@ class _AddItemScreenState extends State<AddItemScreen> {
                   Navigator.pop(context);
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: Theme.of(context).primaryColor,
+                  backgroundColor: Theme.of(context).primaryColor,
                 ),
                 child: Text(
                   'Add Item',
