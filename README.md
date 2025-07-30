@@ -1,8 +1,6 @@
-# mess_erp
-
 # MessERP 🍽️📲
 
-MessERP is a comprehensive hostel mess management system built using **Flutter**, **Dart**, and **Firebase**. The app replaces traditional paper-based workflows with a fully digitized ecosystem, enabling efficient handling of student leave requests, meal tracking, billing, stock updates, and real-time announcements—all from a single platform.
+> *MessERP is a comprehensive hostel mess management system built using **Flutter**, **Dart**, and **Firebase**. The app replaces traditional paper-based workflows with a fully digitized ecosystem, enabling efficient handling of student leave requests, meal tracking, billing, stock updates, and real-time announcements—all from a single platform.*
 
 ---
 
@@ -32,8 +30,8 @@ MessERP is a comprehensive hostel mess management system built using **Flutter**
 
 ## 📸 Screenshots
 
-> *(Include a few GIFs or screenshots of the UI here like: Leave Screen, Bill Approval UI, QR Code Scanner, Stock Entry form, etc.)*
 
 ---
 
 ## 🏗️ Folder Structure (Simplified)
+
