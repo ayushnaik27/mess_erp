@@ -73,10 +73,12 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   CircleAvatar(
-                    backgroundColor: Theme.of(context).colorScheme.tertiary,
                     radius: 30,
-                    child: const Text('A'),
-                    // child: Text("H"),
+                    backgroundColor: Theme.of(context).colorScheme.tertiary,
+                    child: Text(
+                      user.name[0],
+                      style: const TextStyle(fontSize: 24),
+                    ),
                   ),
                   const SizedBox(width: 16),
                   Column(
@@ -84,8 +86,17 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
+                        user.name,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      Text(
                         user.username,
                         style: const TextStyle(fontSize: 16),
+                      ),
+                      Text(
+                        user.balance.toString(),
+                        style: const TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.w400),
                       ),
                     ],
                   ),
@@ -237,9 +248,20 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Text(
-                  'Announcements',
-                  style: Theme.of(context).textTheme.titleSmall,
+                child: Row(
+                  children: [
+                    Text(
+                      'Announcements',
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
+                    const Spacer(),
+                    IconButton(
+                      onPressed: () {
+                        Navigator.of(context).pushNamed('/viewAnnouncements');
+                      },
+                      icon: const Icon(Icons.notifications_active),
+                    ),
+                  ],
                 ),
               ),
               Container(
@@ -307,7 +329,7 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                               if (announcements[index].title == 'Mess Bill') {
                                 openBill = true;
                               }
-                              print(openBill);
+                              log(openBill.toString());
                               announcements[index].file == null
                                   ? null
                                   : AnnouncementServices().openAnnouncement(
@@ -334,7 +356,6 @@ class _StudentDashboardScreenState extends State<StudentDashboardScreen> {
                   ),
                   shrinkWrap: true,
                   children: [
-                    
                     GestureDetector(
                       onTap: () {
                         Navigator.of(context).pushNamed(

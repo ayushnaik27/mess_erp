@@ -97,14 +97,19 @@ class MonthlyReportProvider with ChangeNotifier {
     int previousYear = currentMonth == 1 ? currentYear - 1 : currentYear;
 
     QuerySnapshot<Map<String, dynamic>> balanceSnapshot =
-        await FirebaseFirestore.instance.collection('stock').orderBy('transactionDate',descending: true).get();
+        await FirebaseFirestore.instance
+            .collection('stock')
+            .orderBy('transactionDate', descending: true)
+            .get();
 
-    QueryDocumentSnapshot<Map<String, dynamic>> requiredSnapshot = balanceSnapshot.docs.lastWhere((element) {
+    QueryDocumentSnapshot<Map<String, dynamic>> requiredSnapshot =
+        balanceSnapshot.docs.lastWhere((element) {
       return element['date']['month'] == previousMonth &&
           element['date']['year'] == previousYear;
     });
 
-    _previousMonthStockBalance = double.parse(requiredSnapshot['balance'].toString());
+    _previousMonthStockBalance =
+        double.parse(requiredSnapshot['balance'].toString());
 
     notifyListeners();
     return double.parse(requiredSnapshot['balance'].toString());
@@ -116,7 +121,8 @@ class MonthlyReportProvider with ChangeNotifier {
 
     QueryDocumentSnapshot<Map<String, dynamic>> requiredSnapshot =
         balanceSnapshot.docs.last;
-    _nextMonthStockBalance = double.parse(requiredSnapshot['balance'].toString());
+    _nextMonthStockBalance =
+        double.parse(requiredSnapshot['balance'].toString());
     notifyListeners();
     return double.parse(requiredSnapshot['balance'].toString());
   }
@@ -324,13 +330,9 @@ class MonthlyReportProvider with ChangeNotifier {
           .doc('roles')
           .collection('student')
           .doc(student.id)
-          .collection('newLeaveDetails')
-          .get()
-          .then((value) {
-        value.docs.forEach((element) {
-          element.reference.delete();
-        });
-      });
+          .set({
+        'leaveCount': 0,
+      }, SetOptions(merge: true));
 
       await FirebaseFirestore.instance
           .collection('loginCredentials')

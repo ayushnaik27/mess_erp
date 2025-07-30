@@ -1,45 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
-
-Future<List<Map<String, dynamic>>> getStudentsOnLeave() async {
-  DateTime currentTime = DateTime.now();
-  List<Map<String, dynamic>> studentsOnLeave = [];
-
-  QuerySnapshot studentSnapshot = await FirebaseFirestore.instance
-      .collection('loginCredentials')
-      .doc('roles')
-      .collection('student')
-      .get();
-
-  DateTime today =
-      DateTime(currentTime.year, currentTime.month, currentTime.day);
-
-  await Future.forEach(studentSnapshot.docs, (studentDoc) async {
-    DocumentSnapshot leaveSnapshot = await FirebaseFirestore.instance
-        .collection('loginCredentials')
-        .doc('roles')
-        .collection('student')
-        .doc(studentDoc.id) // Using student ID instead of widget.rollNumber
-        .collection('newLeaveDetails')
-        .doc(DateFormat('dd-MM-yyyy').format(today))
-        .get();
-
-    if (leaveSnapshot.exists) {
-      Map<String, dynamic> leaveData =
-          leaveSnapshot.data() as Map<String, dynamic>;
-      studentsOnLeave.add({
-        'rollNumber': studentDoc.id,
-        'meals': leaveData['onLeaveMeals'],
-      });
-    }
-  });
-
-  return studentsOnLeave;
-}
+import 'dart:async';
 
 class StudentsOnLeaveScreen extends StatefulWidget {
+  const StudentsOnLeaveScreen({super.key});
+
   @override
   State<StudentsOnLeaveScreen> createState() => _StudentsOnLeaveScreenState();
 }
@@ -47,12 +13,72 @@ class StudentsOnLeaveScreen extends StatefulWidget {
 class _StudentsOnLeaveScreenState extends State<StudentsOnLeaveScreen> {
   TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+  Timer? _debounce;
+
+  Stream<List<Map<String, dynamic>>> fetchStudentsOnLeave() {
+    DateTime today = DateTime.now();
+    String formattedDate = DateFormat('dd-MM-yyyy').format(today);
+
+    return FirebaseFirestore.instance
+        .collection('loginCredentials')
+        .doc('roles')
+        .collection('student')
+        .snapshots()
+        .asyncMap((querySnapshot) async {
+      List<Map<String, dynamic>> studentsOnLeave = [];
+
+      for (var studentDoc in querySnapshot.docs) {
+        DocumentSnapshot leaveSnapshot = await FirebaseFirestore.instance
+            .collection('loginCredentials')
+            .doc('roles')
+            .collection('student')
+            .doc(studentDoc.id)
+            .collection('newLeaveDetails')
+            .doc(formattedDate)
+            .get();
+
+        if (leaveSnapshot.exists) {
+          studentsOnLeave.add({
+            'roomNumber': studentDoc['roomNumber'],
+            'rollNumber': studentDoc.id,
+            'meals': (leaveSnapshot.data()
+                    as Map<String, dynamic>)['onLeaveMeals'] ??
+                [],
+          });
+        }
+      }
+      return studentsOnLeave;
+    });
+  }
+
+  void _onSearchChanged(String value) {
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      setState(() => _searchQuery = value);
+    });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    _debounce?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Students on Leave'),
-        actions: [Text(DateFormat('dd-MM-yyyy').format(DateTime.now()))],
+        title: const Text(
+          'Students on Leave',
+          style: TextStyle(fontSize: 24),
+        ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Text(DateFormat('dd-MM-yyyy').format(DateTime.now())),
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -61,27 +87,24 @@ class _StudentsOnLeaveScreenState extends State<StudentsOnLeaveScreen> {
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                labelText: 'Search by Roll Number',
-                labelStyle: Theme.of(context).textTheme.bodyMedium,
-                border: const OutlineInputBorder(),
+                labelText: 'Search by Room Number / Roll Number',
+                labelStyle: Theme.of(context).textTheme.bodySmall,
+                border:
+                    OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                 prefixIcon: const Icon(Icons.search),
               ),
-              onChanged: (value) {
-                setState(() {
-                  _searchQuery = value;
-                });
-              },
+              onChanged: _onSearchChanged,
             ),
           ),
           Expanded(
-            child: FutureBuilder(
-              future: getStudentsOnLeave(),
+            child: StreamBuilder<List<Map<String, dynamic>>>(
+              stream: fetchStudentsOnLeave(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(child: CircularProgressIndicator());
                 }
 
-                if (snapshot.data == null) {
+                if (!snapshot.hasData || snapshot.data!.isEmpty) {
                   return const Center(child: Text('No students on leave'));
                 }
 
@@ -90,6 +113,7 @@ class _StudentsOnLeaveScreenState extends State<StudentsOnLeaveScreen> {
                 if (_searchQuery.isNotEmpty) {
                   studentsOnLeave = studentsOnLeave
                       .where((student) =>
+                          student['roomNumber'].contains(_searchQuery) ||
                           student['rollNumber'].contains(_searchQuery))
                       .toList();
                 }
@@ -101,21 +125,38 @@ class _StudentsOnLeaveScreenState extends State<StudentsOnLeaveScreen> {
                 return ListView.builder(
                   itemCount: studentsOnLeave.length,
                   itemBuilder: (context, index) {
-                    Map<String, dynamic> studentData = snapshot.data![index];
-                    String rollNumber = studentData['rollNumber'];
-                    List<dynamic> mealsDynamic = studentData['meals'];
-                    List<String> meals =
-                        mealsDynamic.map((e) => e.toString()).toList();
+                    final student = studentsOnLeave[index];
 
-                    return ListTile(
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 6),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 2,
+                      child: ListTile(
                         title: Text(
-                          'Roll Number: $rollNumber',
-                          style: Theme.of(context).textTheme.bodyMedium,
+                          'Room Number: ${student['roomNumber']}',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
                         ),
-                        subtitle: Text(
-                          'Meals: ${meals.join(', ')}',
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ));
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Roll Number: ${student['rollNumber']}',
+                                style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12)),
+                            Text('Meals: ${student['meals'].join(', ')}',
+                                style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12)),
+                          ],
+                        ),
+                      ),
+                    );
                   },
                 );
               },

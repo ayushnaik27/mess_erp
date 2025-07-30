@@ -29,6 +29,7 @@ import 'package:mess_erp/student/apply_leave_screen.dart';
 import 'package:mess_erp/student/dashboard.dart';
 import 'package:mess_erp/student/request_extra_items_screen.dart';
 import 'package:mess_erp/student/track_complaints_screen.dart';
+import 'package:mess_erp/student/view_announcements_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/grievance_provider.dart';
@@ -66,6 +67,7 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider(create: (_) => ItemListProvider()),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Mess ERP',
         theme: ThemeData(
           colorScheme: const ColorScheme.light(
@@ -166,6 +168,8 @@ class _MyAppState extends State<MyApp> {
               const TrackComplaintScreen(),
           AllGrievancesScreen.routeName: (context) =>
               const AllGrievancesScreen(),
+          ViewAnnouncementsScreen.routeName: (context) =>
+              const ViewAnnouncementsScreen(),
         },
         home: const LoginScreen(),
       ),
