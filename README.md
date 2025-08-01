@@ -46,23 +46,23 @@
 </style> -->
 
 <div class="screenshot-grid">
-  <img src="assets/images/screenshots/1.png" alt="Screenshot 1" width="100"/>
-  <img src="assets/images/screenshots/2.png" alt="Screenshot 2" width="100"/>
-  <img src="assets/images/screenshots/3.png" alt="Screenshot 3" width="100"/>
-  <img src="assets/images/screenshots/4.png" alt="Screenshot 4" width="100"/>
-  <img src="assets/images/screenshots/5.png" alt="Screenshot 5" width="100"/>
-  <img src="assets/images/screenshots/6.png" alt="Screenshot 6" width="100"/>
-  <img src="assets/images/screenshots/7.png" alt="Screenshot 7" width="100"/>
-  <img src="assets/images/screenshots/8.png" alt="Screenshot 8" width="100"/>
-  <img src="assets/images/screenshots/9.png" alt="Screenshot 9" width="100"/>
-  <img src="assets/images/screenshots/10.png" alt="Screenshot 10" width="100"/>
-  <img src="assets/images/screenshots/11.png" alt="Screenshot 11" width="100"/>
-  <img src="assets/images/screenshots/12.png" alt="Screenshot 12" width="100"/>
-  <img src="assets/images/screenshots/13.png" alt="Screenshot 13" width="100"/>
-  <img src="assets/images/screenshots/14.png" alt="Screenshot 14" width="100"/>
-  <img src="assets/images/screenshots/15.png" alt="Screenshot 15" width="100"/>
-  <img src="assets/images/screenshots/16.png" alt="Screenshot 16" width="100"/>
-  <img src="assets/images/screenshots/17.png" alt="Screenshot 17" width="100"/>
+  <img src="assets/images/screenshots/1.png" alt="Screenshot 1" width="150"/>
+  <img src="assets/images/screenshots/2.png" alt="Screenshot 2" width="150"/>
+  <img src="assets/images/screenshots/3.png" alt="Screenshot 3" width="150"/>
+  <img src="assets/images/screenshots/4.png" alt="Screenshot 4" width="150"/>
+  <img src="assets/images/screenshots/5.png" alt="Screenshot 5" width="150"/>
+  <img src="assets/images/screenshots/6.png" alt="Screenshot 6" width="150"/>
+  <img src="assets/images/screenshots/7.png" alt="Screenshot 7" width="150"/>
+  <img src="assets/images/screenshots/8.png" alt="Screenshot 8" width="150"/>
+  <img src="assets/images/screenshots/9.png" alt="Screenshot 9" width="150"/>
+  <img src="assets/images/screenshots/10.png" alt="Screenshot 10" width="150"/>
+  <img src="assets/images/screenshots/11.png" alt="Screenshot 11" width="150"/>
+  <img src="assets/images/screenshots/12.png" alt="Screenshot 12" width="150"/>
+  <img src="assets/images/screenshots/13.png" alt="Screenshot 13" width="150"/>
+  <img src="assets/images/screenshots/14.png" alt="Screenshot 14" width="150"/>
+  <img src="assets/images/screenshots/15.png" alt="Screenshot 15" width="150"/>
+  <img src="assets/images/screenshots/16.png" alt="Screenshot 16" width="150"/>
+  <img src="assets/images/screenshots/17.png" alt="Screenshot 17" width="150"/>
 </div>
 
 
